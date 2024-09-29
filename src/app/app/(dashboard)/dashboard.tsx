@@ -157,65 +157,44 @@ export default function Dashboard({ user }: { user: User }) {
         </div>
         <nav className="flex-1 space-y-2 px-2 py-4">
           <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="#"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-primary hover:text-primary"
-                  onClick={showNotImplementedToast}
-                >
-                  <Home className="h-5 w-5" />
-                  {isSidebarExpanded && <span>Dashboard</span>}
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">Dashboard</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="#"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground hover:text-primary"
-                  onClick={showNotImplementedToast}
-                >
-                  <Package className="h-5 w-5" />
-                  {isSidebarExpanded && (
-                    <>
-                      <span>Subscriptions</span>
-                      <Badge className="ml-auto flex h-5 w-5 items-center justify-center rounded-full">
-                        {subscriptions.length}
-                      </Badge>
-                    </>
-                  )}
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">Subscriptions</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="#"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground hover:text-primary"
-                  onClick={showNotImplementedToast}
-                >
-                  <LineChart className="h-5 w-5" />
-                  {isSidebarExpanded && <span>Analytics</span>}
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">Analytics</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="#"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground hover:text-primary"
-                  onClick={showNotImplementedToast}
-                >
-                  <Zap className="h-5 w-5" />
-                  {isSidebarExpanded && <span>Discover</span>}
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">Discover</TooltipContent>
-            </Tooltip>
+            {[
+              { icon: Home, label: "Dashboard", href: "#" },
+              {
+                icon: Package,
+                label: "Subscriptions",
+                href: "#",
+                badge: subscriptions.length,
+              },
+              { icon: LineChart, label: "Analytics", href: "#" },
+              { icon: Zap, label: "Discover", href: "#" },
+            ].map((item, index) => (
+              <Tooltip key={index}>
+                <TooltipTrigger asChild>
+                  <Link
+                    href={item.href}
+                    className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground hover:text-primary"
+                    onClick={showNotImplementedToast}
+                  >
+                    <item.icon
+                      className={clsx("min-h-5 min-w-5 transition-all")}
+                    />
+                    {isSidebarExpanded && (
+                      <>
+                        <span>{item.label}</span>
+                        {item.badge && (
+                          <Badge className="ml-auto flex h-5 w-5 items-center justify-center rounded-full">
+                            {item.badge}
+                          </Badge>
+                        )}
+                      </>
+                    )}
+                  </Link>
+                </TooltipTrigger>
+                {!isSidebarExpanded && (
+                  <TooltipContent side="right">{item.label}</TooltipContent>
+                )}
+              </Tooltip>
+            ))}
           </TooltipProvider>
         </nav>
         <div className="p-4">
