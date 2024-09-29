@@ -22,6 +22,7 @@ import {
 import { AddSubscriptionDialog } from "./add-subscription-dialog";
 import { toast } from "sonner";
 import { api } from "@/trpc/react";
+import { CURRENCY_SYMBOL } from "@/lib/constants";
 
 export function SubscriptionsSection() {
   const { data: subscriptions, refetch } = api.subscription.getAll.useQuery();
@@ -93,7 +94,10 @@ export function SubscriptionsSection() {
                   <TableCell className="font-medium">
                     {subscription.name}
                   </TableCell>
-                  <TableCell>${subscription.cost.toFixed(2)}</TableCell>
+                  <TableCell>
+                    {CURRENCY_SYMBOL}
+                    {subscription.cost.toFixed(2)}
+                  </TableCell>
                   <TableCell>{subscription.billingCycle}</TableCell>
                   <TableCell className="text-right">
                     <Button

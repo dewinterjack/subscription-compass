@@ -26,6 +26,7 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
+import { CURRENCY_SYMBOL } from "@/lib/constants";
 
 export default function LandingPage({ session }: { session: Session | null }) {
   const sectionRefs = [
@@ -240,7 +241,9 @@ export default function LandingPage({ session }: { session: Session | null }) {
               whileHover="hover"
             >
               <h3 className="mb-4 text-center text-2xl font-bold">Free Tier</h3>
-              <p className="mb-4 text-center text-4xl font-bold">$0/month</p>
+              <p className="mb-4 text-center text-4xl font-bold">
+                {CURRENCY_SYMBOL}0/month
+              </p>
               <ul className="mb-6 space-y-2">
                 <li className="flex items-center">
                   <Check className="mr-2 h-5 w-5 text-green-500" />
@@ -263,7 +266,9 @@ export default function LandingPage({ session }: { session: Session | null }) {
               whileHover="hover"
             >
               <h3 className="mb-4 text-center text-2xl font-bold">Pro Tier</h3>
-              <p className="mb-4 text-center text-4xl font-bold">$9.99/month</p>
+              <p className="mb-4 text-center text-4xl font-bold">
+                {CURRENCY_SYMBOL}9.99/month
+              </p>
               <ul className="mb-6 space-y-2">
                 <li className="flex items-center">
                   <Check className="mr-2 h-5 w-5" />

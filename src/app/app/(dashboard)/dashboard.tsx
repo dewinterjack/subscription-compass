@@ -14,6 +14,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { SubscriptionsSection } from "./subscriptions";
 import { api } from "@/trpc/react";
+import { CURRENCY_SYMBOL } from "@/lib/constants";
 
 export default function Dashboard() {
   const {
@@ -52,7 +53,8 @@ export default function Dashboard() {
                 <CardHeader className="pb-2">
                   <CardDescription>Monthly Spend</CardDescription>
                   <CardTitle className="text-4xl">
-                    ${totalMonthlyCost.toFixed(2)}
+                    {CURRENCY_SYMBOL}
+                    {totalMonthlyCost.toFixed(2)}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -68,7 +70,9 @@ export default function Dashboard() {
               <Card>
                 <CardHeader className="pb-2">
                   <CardDescription>Potential Savings</CardDescription>
-                  <CardTitle className="text-4xl">$75</CardTitle>
+                  <CardTitle className="text-4xl">
+                    {CURRENCY_SYMBOL}75
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="text-xs text-muted-foreground">
@@ -115,7 +119,10 @@ export default function Dashboard() {
                         </p>
                       </div>
                     </div>
-                    <span className="font-medium">${sub.cost.toFixed(2)}</span>
+                    <span className="font-medium">
+                      {CURRENCY_SYMBOL}
+                      {sub.cost.toFixed(2)}
+                    </span>
                   </div>
                 ))}
               </CardContent>
