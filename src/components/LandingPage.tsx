@@ -74,7 +74,7 @@ export default function LandingPage({ session }: { session: Session | null }) {
         className="relative flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white"
       >
         <div className="container flex flex-col items-center justify-center gap-8 px-4 py-16">
-          <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
+          <h1 className="text-center text-4xl font-extrabold tracking-tight sm:text-5xl md:text-[5rem]">
             Track Your <span className="text-[hsl(280,100%,70%)]">Sub</span>
             scriptions
           </h1>
@@ -151,7 +151,7 @@ export default function LandingPage({ session }: { session: Session | null }) {
           </Button>
         </div>
 
-        <div className="container mx-auto">
+        <div className="container mx-auto py-20">
           <h2 className="mb-12 text-center text-3xl font-bold tracking-tighter sm:text-5xl">
             Key Features
           </h2>
@@ -229,7 +229,7 @@ export default function LandingPage({ session }: { session: Session | null }) {
           </Button>
         </div>
 
-        <div className="container mx-auto px-4 md:px-6">
+        <div className="container mx-auto px-4 py-20 md:px-6">
           <h2 className="mb-12 text-center text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
             Simple, Transparent Pricing
           </h2>
