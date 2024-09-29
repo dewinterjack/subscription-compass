@@ -57,7 +57,7 @@ export function AddSubscriptionDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Add New Subscription</DialogTitle>
           <DialogDescription>
@@ -66,12 +66,16 @@ export function AddSubscriptionDialog({
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">
-                Name
+            <div className="grid grid-cols-6 items-center gap-4">
+              <Label
+                htmlFor="subscription-name"
+                className="col-span-2 text-right"
+              >
+                Service Name
               </Label>
               <Input
-                id="name"
+                id="subscription-name"
+                autoComplete="off"
                 value={newSubscription.name}
                 onChange={(e) =>
                   setNewSubscription({
@@ -79,12 +83,12 @@ export function AddSubscriptionDialog({
                     name: e.target.value,
                   })
                 }
-                className="col-span-3"
+                className="col-span-4"
                 required
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="cost" className="text-right">
+            <div className="grid grid-cols-6 items-center gap-4">
+              <Label htmlFor="cost" className="col-span-2 text-right">
                 Cost
               </Label>
               <Input
@@ -98,12 +102,12 @@ export function AddSubscriptionDialog({
                     cost: parseFloat(e.target.value),
                   })
                 }
-                className="col-span-3"
+                className="col-span-4"
                 required
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="billingCycle" className="text-right">
+            <div className="grid grid-cols-6 items-center gap-4">
+              <Label htmlFor="billingCycle" className="col-span-2 text-right">
                 Billing Cycle
               </Label>
               <Select
@@ -115,7 +119,7 @@ export function AddSubscriptionDialog({
                   })
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger className="col-span-4">
                   <SelectValue placeholder="Select billing cycle" />
                 </SelectTrigger>
                 <SelectContent>
