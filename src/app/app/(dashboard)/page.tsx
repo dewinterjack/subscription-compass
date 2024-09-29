@@ -1,16 +1,15 @@
 import { redirect } from "next/navigation";
-import SignOutButton from "./sign-out-button";
 import { getServerAuthSession } from "@/server/auth";
+import Dashboard from "./dashboard";
 
-export default async function Dashboard() {
+export default async function DashboardPage() {
   const session = await getServerAuthSession();
   if (!session) {
     redirect("/login");
   }
   return (
     <div>
-      <h1>Your dashboard</h1>
-      <SignOutButton />
+      <Dashboard user={session.user} />
     </div>
   );
 }
