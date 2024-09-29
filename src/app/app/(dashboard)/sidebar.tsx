@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import clsx from "clsx";
+import { usePathname } from "next/navigation";
 import {
   Home,
   ShoppingBasket,
@@ -35,9 +36,14 @@ type SidebarProps = {
 
 export function DashboardSidebar({ subscriptions }: SidebarProps) {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
+  const pathname = usePathname();
 
   const handleToggleSidebar = () => {
     setIsSidebarExpanded(!isSidebarExpanded);
+  };
+
+  const isActive = (path: string) => {
+    return pathname === path;
   };
 
   return (
@@ -90,16 +96,25 @@ export function DashboardSidebar({ subscriptions }: SidebarProps) {
               <TooltipTrigger asChild>
                 <Link
                   href={item.href}
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground hover:text-primary"
+                  className={clsx(
+                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                    isActive(item.href)
+                      ? "bg-muted text-primary"
+                      : "text-muted-foreground hover:bg-muted hover:text-primary",
+                  )}
                 >
                   <item.icon
-                    className={clsx("min-h-5 min-w-5 transition-all")}
+                    className={clsx(
+                      // needs both max and min height and width otherwise expand and collapse looks odd
+                      "max-h-5 min-h-5 min-w-5 max-w-5 transition-colors",
+                      isActive(item.href) ? "text-primary" : "",
+                    )}
                   />
                   {isSidebarExpanded && (
                     <>
                       <span>{item.label}</span>
                       {item.badge && (
-                        <Badge className="ml-auto flex h-5 w-5 items-center justify-center rounded-full">
+                        <Badge variant="secondary" className="ml-auto">
                           {item.badge}
                         </Badge>
                       )}
