@@ -9,6 +9,12 @@ export const metadata: Metadata = {
   title: "SubCompass",
   description: "Track your subscriptions in one place.",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
+  openGraph: {
+    images: ["/api/og"],
+    title: "SubCompass",
+    siteName: "SubCompass",
+    description: "Track your subscriptions in one place.",
+  },
 };
 
 export default function RootLayout({
