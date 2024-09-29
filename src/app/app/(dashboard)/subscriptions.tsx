@@ -23,11 +23,12 @@ import { AddSubscriptionDialog } from "./add-subscription-dialog";
 import { toast } from "sonner";
 import { api } from "@/trpc/react";
 import { CURRENCY_SYMBOL } from "@/lib/constants";
+import { useRouter } from "next/navigation";
 
 export function SubscriptionsSection() {
   const { data: subscriptions, refetch } = api.subscription.getAll.useQuery();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-
+  const router = useRouter();
   const handleAddSubscription = api.subscription.create.useMutation({
     onSuccess: () => {
       toast.success("Subscription added successfully.");
@@ -116,10 +117,7 @@ export function SubscriptionsSection() {
         )}
       </CardContent>
       <CardFooter className="flex justify-between">
-        <Button
-          variant="outline"
-          onClick={() => toast.info("Not implemented.")}
-        >
+        <Button variant="outline" onClick={() => router.push("/subscriptions")}>
           View All
         </Button>
         <Button
