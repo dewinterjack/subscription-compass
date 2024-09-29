@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 
 export const metadata: Metadata = {
-  title: "Login | SubCompass",
+  title: "Login | SubsCompass",
 };
 
 export default async function AuthLayout({

@@ -75,11 +75,11 @@ export default function LandingPage({ session }: { session: Session | null }) {
       >
         <div className="container flex flex-col items-center justify-center gap-8 px-4 py-16">
           <h1 className="text-center text-4xl font-extrabold tracking-tight sm:text-5xl md:text-[5rem]">
-            Track Your <span className="text-[hsl(280,100%,70%)]">Sub</span>
-            scriptions
+            Track Your <span className="text-[hsl(280,100%,70%)]">Subs</span>
+            criptions
           </h1>
           <p className="mx-auto -mt-4 mb-8 max-w-[700px] text-center text-xl">
-            Never miss a price change or discount. SubCompass helps you manage
+            Never miss a price change or discount. SubsCompass helps you manage
             all your subscriptions in one place, with a free base tier for
             everyone.
           </p>
@@ -118,7 +118,7 @@ export default function LandingPage({ session }: { session: Session | null }) {
                 href={`${process.env.NEXT_PUBLIC_APP_URL}/login`}
                 className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
               >
-                {session ? "Sign out" : "Sign in"}
+                {session ? "Go to App" : "Get Started"}
               </Link>
             </div>
           </div>
@@ -336,7 +336,7 @@ export default function LandingPage({ session }: { session: Session | null }) {
             of.
           </p>
           <p className="mb-4">
-            That&apos;s why I built SubCompass. It&apos;s designed to help you
+            That&apos;s why I built SubsCompass. It&apos;s designed to help you
             take back control by tracking all your subscriptions in one place.
           </p>
           <p className="mb-4">

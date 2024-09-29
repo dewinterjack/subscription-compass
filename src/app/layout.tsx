@@ -7,14 +7,14 @@ import { TRPCReactProvider } from "@/trpc/react";
 import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
-  title: "SubCompass",
+  title: "SubsCompass",
   description: "Track your subscriptions in one place.",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
   openGraph: {
     images: ["/api/og"],
     url: "https://www.subscompass.com",
-    title: "SubCompass",
-    siteName: "SubCompass",
+    title: "SubsCompass",
+    siteName: "SubsCompass",
     description: "Track your subscriptions in one place.",
   },
 };

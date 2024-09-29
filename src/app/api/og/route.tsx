@@ -28,7 +28,7 @@ export async function GET() {
             color: "transparent",
           }}
         >
-          Sub 🧭 Compass
+          Subs 🧭 Compass
         </div>
         <div
           style={{
