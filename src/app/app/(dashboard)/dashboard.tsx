@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { AlertCircle, CreditCard, DollarSign } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -14,20 +13,20 @@ import {
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { SubscriptionsSection } from "./subscriptions";
+import { api } from "@/trpc/react";
 
 export default function Dashboard() {
-  const [subscriptions] = useState([]);
+  const {
+    data: subscriptions,
+    isLoading,
+    isError,
+  } = api.subscription.getAll.useQuery();
 
-  const totalMonthlyCost = subscriptions.reduce(
-    //@ts-expect-error temp
-    //eslint-disable-next-line
-    (total, sub) => total + sub.cost,
-    0,
-  );
+  const totalMonthlyCost =
+    subscriptions?.reduce((total, sub) => total + sub.cost, 0) ?? 0;
 
-  const showNotImplementedToast = () => {
-    toast.info("This feature is not yet implemented.");
-  };
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error loading subscriptions.</div>;
 
   return (
     <div className="flex w-full flex-col">
@@ -39,7 +38,7 @@ export default function Dashboard() {
                 <CardHeader className="pb-2">
                   <CardDescription>Total Subscriptions</CardDescription>
                   <CardTitle className="text-4xl">
-                    {subscriptions.length}
+                    {subscriptions?.length ?? 0}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -100,13 +99,9 @@ export default function Dashboard() {
                 <CardDescription>Next 7 days</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {[
-                  { name: "Netflix", renewsIn: 2, cost: 19.99 },
-                  { name: "Spotify", renewsIn: 5, cost: 14.99 },
-                  { name: "GitHub", renewsIn: 7, cost: 4.0 },
-                ].map((sub, index) => (
+                {subscriptions?.slice(0, 3).map((sub) => (
                   <div
-                    key={index}
+                    key={sub.id}
                     className="flex items-center justify-between"
                   >
                     <div className="flex items-center gap-3">
@@ -116,7 +111,7 @@ export default function Dashboard() {
                       <div>
                         <p className="font-medium">{sub.name}</p>
                         <p className="text-sm text-muted-foreground">
-                          Renews in {sub.renewsIn} days
+                          Renews in 30 days
                         </p>
                       </div>
                     </div>
@@ -167,7 +162,9 @@ export default function Dashboard() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={showNotImplementedToast}
+                      onClick={() =>
+                        toast.info("This feature is not yet implemented.")
+                      }
                     >
                       {opportunity.action}
                     </Button>
@@ -214,7 +211,9 @@ export default function Dashboard() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={showNotImplementedToast}
+                      onClick={() =>
+                        toast.info("This feature is not yet implemented.")
+                      }
                     >
                       {alert.action}
                     </Button>

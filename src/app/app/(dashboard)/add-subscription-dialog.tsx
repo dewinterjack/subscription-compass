@@ -19,17 +19,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-type Subscription = {
-  name: string;
-  cost: number;
-  billingCycle: string;
-};
+import { toast } from "sonner";
+import type { InputType } from "@/server/api/root";
+import type { BillingCycle } from "@prisma/client";
 
 type AddSubscriptionDialogProps = {
   isOpen: boolean;
   onClose: () => void;
-  onAddSubscription: (subscription: Subscription) => void;
+  onAddSubscription: (
+    subscription: InputType["subscription"]["create"],
+  ) => void;
 };
 
 export function AddSubscriptionDialog({
@@ -37,7 +36,9 @@ export function AddSubscriptionDialog({
   onClose,
   onAddSubscription,
 }: AddSubscriptionDialogProps) {
-  const [newSubscription, setNewSubscription] = useState<Subscription>({
+  const [newSubscription, setNewSubscription] = useState<
+    InputType["subscription"]["create"]
+  >({
     name: "",
     cost: 0,
     billingCycle: "Monthly",
@@ -45,9 +46,12 @@ export function AddSubscriptionDialog({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (newSubscription.name && newSubscription.cost) {
+    if (newSubscription.name && newSubscription.cost > 0) {
       onAddSubscription(newSubscription);
       setNewSubscription({ name: "", cost: 0, billingCycle: "Monthly" });
+      toast.success("Subscription added successfully.");
+    } else {
+      toast.error("Please fill in all fields correctly.");
     }
   };
 
@@ -76,6 +80,7 @@ export function AddSubscriptionDialog({
                   })
                 }
                 className="col-span-3"
+                required
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
@@ -94,6 +99,7 @@ export function AddSubscriptionDialog({
                   })
                 }
                 className="col-span-3"
+                required
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
@@ -105,17 +111,17 @@ export function AddSubscriptionDialog({
                 onValueChange={(value) =>
                   setNewSubscription({
                     ...newSubscription,
-                    billingCycle: value,
+                    billingCycle: value as BillingCycle,
                   })
                 }
               >
-                <SelectTrigger className="col-span-3">
+                <SelectTrigger>
                   <SelectValue placeholder="Select billing cycle" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="Weekly">Weekly</SelectItem>
                   <SelectItem value="Monthly">Monthly</SelectItem>
                   <SelectItem value="Yearly">Yearly</SelectItem>
-                  <SelectItem value="Weekly">Weekly</SelectItem>
                 </SelectContent>
               </Select>
             </div>

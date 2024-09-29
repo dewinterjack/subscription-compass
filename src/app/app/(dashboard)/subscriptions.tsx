@@ -21,25 +21,32 @@ import {
 } from "@/components/ui/table";
 import { AddSubscriptionDialog } from "./add-subscription-dialog";
 import { toast } from "sonner";
-
-type Subscription = {
-  name: string;
-  cost: number;
-  billingCycle: string;
-};
+import { api } from "@/trpc/react";
 
 export function SubscriptionsSection() {
-  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+  const { data: subscriptions, refetch } = api.subscription.getAll.useQuery();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const handleAddSubscription = (newSubscription: Subscription) => {
-    setSubscriptions([...subscriptions, newSubscription]);
-    setIsDialogOpen(false);
-  };
+  const handleAddSubscription = api.subscription.create.useMutation({
+    onSuccess: () => {
+      toast.success("Subscription added successfully.");
+      setIsDialogOpen(false);
+      void refetch();
+    },
+    onError: () => {
+      toast.error("Failed to add subscription.");
+    },
+  });
 
-  const showNotImplementedToast = () => {
-    toast.info("This feature is not yet implemented.");
-  };
+  const handleDeleteSubscription = api.subscription.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Subscription deleted.");
+      void refetch();
+    },
+    onError: () => {
+      toast.error("Failed to delete subscription.");
+    },
+  });
 
   return (
     <Card>
@@ -56,7 +63,7 @@ export function SubscriptionsSection() {
         </Button>
       </CardHeader>
       <CardContent>
-        {subscriptions.length === 0 ? (
+        {subscriptions && subscriptions.length === 0 ? (
           <div className="flex flex-col items-center justify-center space-y-3 py-12">
             <div className="rounded-full bg-muted p-3">
               <ShoppingBasket className="h-6 w-6" />
@@ -81,15 +88,22 @@ export function SubscriptionsSection() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {subscriptions.map((subscription, index) => (
-                <TableRow key={index}>
+              {subscriptions?.map((subscription) => (
+                <TableRow key={subscription.id}>
                   <TableCell className="font-medium">
                     {subscription.name}
                   </TableCell>
                   <TableCell>${subscription.cost.toFixed(2)}</TableCell>
                   <TableCell>{subscription.billingCycle}</TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost">Edit</Button>
+                    <Button
+                      variant="ghost"
+                      onClick={() =>
+                        handleDeleteSubscription.mutate({ id: subscription.id })
+                      }
+                    >
+                      Delete
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -98,17 +112,25 @@ export function SubscriptionsSection() {
         )}
       </CardContent>
       <CardFooter className="flex justify-between">
-        <Button variant="outline" onClick={showNotImplementedToast}>
+        <Button
+          variant="outline"
+          onClick={() => toast.info("Not implemented.")}
+        >
           View All
         </Button>
-        <Button variant="outline" onClick={showNotImplementedToast}>
+        <Button
+          variant="outline"
+          onClick={() => toast.info("Not implemented.")}
+        >
           Export
         </Button>
       </CardFooter>
       <AddSubscriptionDialog
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
-        onAddSubscription={handleAddSubscription}
+        onAddSubscription={(subscription) =>
+          handleAddSubscription.mutate(subscription)
+        }
       />
     </Card>
   );
