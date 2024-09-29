@@ -115,7 +115,7 @@ export default function LandingPage({ session }: { session: Session | null }) {
                 {session && <span>Logged in as {session.user?.name}</span>}
               </p>
               <Link
-                href={session ? "/api/auth/signout" : "/api/auth/signin"}
+                href={`${process.env.NEXT_PUBLIC_APP_URL}/login`}
                 className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
               >
                 {session ? "Sign out" : "Sign in"}
