@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
   openGraph: {
     images: ["/api/og"],
+    url: "https://subcompass.com",
     title: "SubCompass",
     siteName: "SubCompass",
     description: "Track your subscriptions in one place.",
