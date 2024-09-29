@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import type { FormEvent } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -15,8 +16,10 @@ import {
   Search,
   Sparkles,
   Zap,
-  Menu,
+  ChevronsLeft,
+  ChevronsRight,
 } from "lucide-react";
+import { toast } from "sonner";
 
 import clsx from "clsx";
 
@@ -55,6 +58,22 @@ import {
   TooltipProvider,
 } from "@/components/ui/tooltip";
 import { SignOutButton } from "./sign-out-button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 import type { User } from "next-auth";
 
@@ -93,6 +112,15 @@ export default function Dashboard({ user }: { user: User }) {
     0,
   );
 
+  const showNotImplementedToast = () => {
+    toast.info("This feature is not yet implemented.");
+  };
+
+  const handleSearch = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    showNotImplementedToast();
+  };
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <aside
@@ -104,29 +132,28 @@ export default function Dashboard({ user }: { user: User }) {
           },
         )}
       >
-        <div className="flex flex-col items-center p-4">
-          {isSidebarExpanded && (
-            <Link href="#" className="mb-4 text-lg font-semibold">
-              SubsCompass
-            </Link>
+        <div className="flex items-center justify-between p-4">
+          {isSidebarExpanded ? (
+            <>
+              <Link href="#" className="text-lg font-semibold">
+                SubsCompass
+              </Link>
+              <Button variant="ghost" size="icon" onClick={handleToggleSidebar}>
+                <ChevronsLeft className="h-5 w-5" />
+                <span className="sr-only">Toggle sidebar</span>
+              </Button>
+            </>
+          ) : (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleToggleSidebar}
+              className="mx-auto"
+            >
+              <ChevronsRight className="h-5 w-5" />
+              <span className="sr-only">Toggle sidebar</span>
+            </Button>
           )}
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={handleToggleSidebar}
-            className="mb-4"
-          >
-            <Menu className="h-5 w-5" />
-            <span className="sr-only">Toggle sidebar</span>
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            className="mb-4 rounded-full bg-black text-white hover:bg-gray-800"
-          >
-            <Sparkles className="h-5 w-5" />
-            <span className="sr-only">SubsCompass</span>
-          </Button>
         </div>
         <nav className="flex-1 space-y-2 px-2 py-4">
           <TooltipProvider>
@@ -135,6 +162,7 @@ export default function Dashboard({ user }: { user: User }) {
                 <Link
                   href="#"
                   className="flex items-center gap-3 rounded-lg px-3 py-2 text-primary hover:text-primary"
+                  onClick={showNotImplementedToast}
                 >
                   <Home className="h-5 w-5" />
                   {isSidebarExpanded && <span>Dashboard</span>}
@@ -147,6 +175,7 @@ export default function Dashboard({ user }: { user: User }) {
                 <Link
                   href="#"
                   className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground hover:text-primary"
+                  onClick={showNotImplementedToast}
                 >
                   <Package className="h-5 w-5" />
                   {isSidebarExpanded && (
@@ -166,6 +195,7 @@ export default function Dashboard({ user }: { user: User }) {
                 <Link
                   href="#"
                   className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground hover:text-primary"
+                  onClick={showNotImplementedToast}
                 >
                   <LineChart className="h-5 w-5" />
                   {isSidebarExpanded && <span>Analytics</span>}
@@ -178,6 +208,7 @@ export default function Dashboard({ user }: { user: User }) {
                 <Link
                   href="#"
                   className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground hover:text-primary"
+                  onClick={showNotImplementedToast}
                 >
                   <Zap className="h-5 w-5" />
                   {isSidebarExpanded && <span>Discover</span>}
@@ -193,13 +224,14 @@ export default function Dashboard({ user }: { user: User }) {
               <>
                 <CardHeader>
                   <CardTitle>Upgrade to Pro</CardTitle>
-                  <CardDescription>
-                    Unlock all features and get unlimited access to our support
-                    team
-                  </CardDescription>
+                  <CardDescription>Unlock all pro features</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Button size="sm" className="w-full">
+                  <Button
+                    size="sm"
+                    className="w-full"
+                    onClick={showNotImplementedToast}
+                  >
                     Upgrade
                   </Button>
                 </CardContent>
@@ -218,8 +250,16 @@ export default function Dashboard({ user }: { user: User }) {
         )}
       >
         <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4">
-          <div className="w-full flex-1">
-            <form>
+          <div className="flex w-full flex-1 items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-full bg-primary text-primary-foreground hover:bg-accent-foreground hover:text-accent"
+              onClick={showNotImplementedToast}
+            >
+              <Sparkles className="h-5 w-5 transition-all hover:scale-110" />
+            </Button>
+            <form className="flex-1" onSubmit={handleSearch}>
               <div className="relative">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -230,7 +270,12 @@ export default function Dashboard({ user }: { user: User }) {
               </div>
             </form>
           </div>
-          <Button variant="outline" size="icon" className="relative">
+          <Button
+            variant="outline"
+            size="icon"
+            className="relative"
+            onClick={showNotImplementedToast}
+          >
             <Bell className="h-4 w-4" />
             <span className="sr-only">Notifications</span>
             <Badge
@@ -259,19 +304,24 @@ export default function Dashboard({ user }: { user: User }) {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Profile</DropdownMenuItem>
-              <DropdownMenuItem>Billing</DropdownMenuItem>
-              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuItem onClick={showNotImplementedToast}>
+                Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={showNotImplementedToast}>
+                Billing
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={showNotImplementedToast}>
+                Settings
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <SignOutButton />
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
         <main className="flex flex-1 flex-col gap-4 p-4">
-          <div className="3xl:grid-cols-[2fr,1fr] grid gap-4">
+          <div className="grid gap-4 3xl:grid-cols-[2fr,1fr]">
             <div className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                {/* Total Subscriptions Card */}
                 <Card>
                   <CardHeader className="pb-2">
                     <CardDescription>Total Subscriptions</CardDescription>
@@ -286,7 +336,6 @@ export default function Dashboard({ user }: { user: User }) {
                   </CardContent>
                 </Card>
 
-                {/* Monthly Spend Card */}
                 <Card>
                   <CardHeader className="pb-2">
                     <CardDescription>Monthly Spend</CardDescription>
@@ -304,7 +353,6 @@ export default function Dashboard({ user }: { user: User }) {
                   </CardFooter>
                 </Card>
 
-                {/* Potential Savings Card */}
                 <Card>
                   <CardHeader className="pb-2">
                     <CardDescription>Potential Savings</CardDescription>
@@ -317,7 +365,6 @@ export default function Dashboard({ user }: { user: User }) {
                   </CardContent>
                 </Card>
 
-                {/* Placeholder Card */}
                 <Card>
                   <CardHeader className="pb-2">
                     <CardDescription>Placeholder</CardDescription>
@@ -393,14 +440,17 @@ export default function Dashboard({ user }: { user: User }) {
                   )}
                 </CardContent>
                 <CardFooter className="flex justify-between">
-                  <Button variant="outline">View All</Button>
-                  <Button variant="outline">Export</Button>
+                  <Button variant="outline" onClick={showNotImplementedToast}>
+                    View All
+                  </Button>
+                  <Button variant="outline" onClick={showNotImplementedToast}>
+                    Export
+                  </Button>
                 </CardFooter>
               </Card>
             </div>
 
             <div className="space-y-4">
-              {/* Upcoming Renewals Card */}
               <Card>
                 <CardHeader>
                   <CardTitle>Upcoming Renewals</CardTitle>
@@ -435,7 +485,6 @@ export default function Dashboard({ user }: { user: User }) {
                 </CardContent>
               </Card>
 
-              {/* Savings Opportunities Card */}
               <Card>
                 <CardHeader>
                   <CardTitle>Savings Opportunities</CardTitle>
@@ -474,7 +523,11 @@ export default function Dashboard({ user }: { user: User }) {
                           </p>
                         </div>
                       </div>
-                      <Button variant="outline" size="sm">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={showNotImplementedToast}
+                      >
                         {opportunity.action}
                       </Button>
                     </div>
@@ -482,7 +535,6 @@ export default function Dashboard({ user }: { user: User }) {
                 </CardContent>
               </Card>
 
-              {/* Alerts Card */}
               <Card>
                 <CardHeader>
                   <CardTitle>Alerts</CardTitle>
@@ -518,7 +570,11 @@ export default function Dashboard({ user }: { user: User }) {
                           </p>
                         </div>
                       </div>
-                      <Button variant="outline" size="sm">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={showNotImplementedToast}
+                      >
                         {alert.action}
                       </Button>
                     </div>
@@ -528,21 +584,21 @@ export default function Dashboard({ user }: { user: User }) {
             </div>
           </div>
         </main>
-        {/* Add Subscription Dialog */}
-        {isDialogOpen && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="w-11/12 max-w-md rounded-lg bg-white p-6 shadow-lg">
-              <h2 className="mb-4 text-xl font-semibold">
-                Add New Subscription
-              </h2>
-              <form onSubmit={handleAddSubscription}>
-                <div className="mb-4">
-                  <label
-                    htmlFor="name"
-                    className="block text-sm font-medium text-gray-700"
-                  >
+
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Add New Subscription</DialogTitle>
+              <DialogDescription>
+                Enter the details of your new subscription here.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleAddSubscription}>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="name" className="text-right">
                     Name
-                  </label>
+                  </Label>
                   <Input
                     id="name"
                     value={newSubscription.name}
@@ -552,17 +608,13 @@ export default function Dashboard({ user }: { user: User }) {
                         name: e.target.value,
                       })
                     }
-                    required
-                    className="mt-1 block w-full"
+                    className="col-span-3"
                   />
                 </div>
-                <div className="mb-4">
-                  <label
-                    htmlFor="cost"
-                    className="block text-sm font-medium text-gray-700"
-                  >
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="cost" className="text-right">
                     Cost
-                  </label>
+                  </Label>
                   <Input
                     id="cost"
                     type="number"
@@ -574,47 +626,39 @@ export default function Dashboard({ user }: { user: User }) {
                         cost: e.target.value,
                       })
                     }
-                    required
-                    className="mt-1 block w-full"
+                    className="col-span-3"
                   />
                 </div>
-                <div className="mb-4">
-                  <label
-                    htmlFor="billingCycle"
-                    className="block text-sm font-medium text-gray-700"
-                  >
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="billingCycle" className="text-right">
                     Billing Cycle
-                  </label>
-                  <select
-                    id="billingCycle"
+                  </Label>
+                  <Select
                     value={newSubscription.billingCycle}
-                    onChange={(e) =>
+                    onValueChange={(value) =>
                       setNewSubscription({
                         ...newSubscription,
-                        billingCycle: e.target.value,
+                        billingCycle: value,
                       })
                     }
-                    className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm"
                   >
-                    <option value="Monthly">Monthly</option>
-                    <option value="Yearly">Yearly</option>
-                    <option value="Weekly">Weekly</option>
-                  </select>
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue placeholder="Select billing cycle" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Monthly">Monthly</SelectItem>
+                      <SelectItem value="Yearly">Yearly</SelectItem>
+                      <SelectItem value="Weekly">Weekly</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-                <div className="flex justify-end space-x-2">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => setIsDialogOpen(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button type="submit">Add Subscription</Button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
+              </div>
+              <DialogFooter>
+                <Button type="submit">Add Subscription</Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
