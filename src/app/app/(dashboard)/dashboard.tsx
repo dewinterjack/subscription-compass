@@ -1,5 +1,3 @@
-"use client";
-
 import { AlertCircle, CreditCard, DollarSign } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -32,9 +30,9 @@ export default function Dashboard() {
   return (
     <div className="flex w-full flex-col">
       <main className="flex flex-1 flex-col gap-4 p-4">
-        <div className="grid gap-4 3xl:grid-cols-[2fr,1fr]">
-          <div className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-[repeat(auto-fit,minmax(550px,1fr))] xl:grid-cols-[2fr,1fr]">
+          <div className="w-full space-y-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
               <Card>
                 <CardHeader className="pb-2">
                   <CardDescription>Total Subscriptions</CardDescription>
@@ -96,7 +94,7 @@ export default function Dashboard() {
             <SubscriptionsSection />
           </div>
 
-          <div className="space-y-4">
+          <div className="w-full space-y-4">
             <Card>
               <CardHeader>
                 <CardTitle>Upcoming Renewals</CardTitle>
