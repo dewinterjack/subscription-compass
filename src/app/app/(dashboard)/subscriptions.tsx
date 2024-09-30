@@ -120,12 +120,6 @@ export function SubscriptionsSection() {
         <Button variant="outline" onClick={() => router.push("/subscriptions")}>
           View All
         </Button>
-        <Button
-          variant="outline"
-          onClick={() => toast.info("Not implemented.")}
-        >
-          Export
-        </Button>
       </CardFooter>
       <AddSubscriptionDialog
         isOpen={isDialogOpen}
