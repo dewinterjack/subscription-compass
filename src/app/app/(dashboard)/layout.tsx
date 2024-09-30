@@ -1,5 +1,5 @@
 import { getServerAuthSession } from "@/server/auth";
-import { DashboardHeader } from "./header";
+import DashboardHeader from "./header";
 import { DashboardSidebar } from "./sidebar";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";

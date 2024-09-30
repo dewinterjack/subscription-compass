@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import type { FormEvent } from "react";
 import Image from "next/image";
 import { Search, Sparkles, Bell } from "lucide-react";
@@ -24,10 +25,46 @@ type HeaderProps = {
   };
 };
 
-export function DashboardHeader({ user }: HeaderProps) {
+type Notification = {
+  id: number;
+  title: string;
+  description: string;
+  isRead: boolean;
+};
+
+export default function DashboardHeader({ user }: HeaderProps) {
+  const [notifications, setNotifications] = useState<Notification[]>([
+    {
+      id: 1,
+      title: "Price Change",
+      description: "Netflix subscription price increased by $2",
+      isRead: false,
+    },
+    {
+      id: 2,
+      title: "Renewal Reminder",
+      description: "Spotify subscription renews in 3 days",
+      isRead: false,
+    },
+    {
+      id: 3,
+      title: "New Feature",
+      description: "Check out our new Subscription Alternative Discovery!",
+      isRead: false,
+    },
+  ]);
+
   const handleSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     toast.info("Not implemented yet");
+  };
+
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
+
+  const markAsRead = (id: number) => {
+    setNotifications(
+      notifications.map((n) => (n.id === id ? { ...n, isRead: true } : n)),
+    );
   };
 
   return (
@@ -52,21 +89,54 @@ export function DashboardHeader({ user }: HeaderProps) {
           </div>
         </form>
       </div>
-      <Button
-        variant="outline"
-        size="icon"
-        className="relative"
-        onClick={() => toast.info("Not implemented yet")}
-      >
-        <Bell className="h-4 w-4" />
-        <span className="sr-only">Notifications</span>
-        <Badge
-          className="absolute -right-1 -top-1 h-4 w-4 rounded-full p-0"
-          variant="destructive"
-        >
-          3
-        </Badge>
-      </Button>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="outline"
+            size="icon"
+            className="relative focus-visible:ring-0 focus-visible:ring-offset-0"
+          >
+            <Bell className="h-4 w-4" />
+            <span className="sr-only">Notifications</span>
+            {unreadCount > 0 && (
+              <Badge
+                className="absolute -right-2 -top-2 h-5 w-5 items-center justify-center rounded-full p-0"
+                variant="destructive"
+              >
+                {unreadCount}
+              </Badge>
+            )}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-80">
+          <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {notifications.map((notification) => (
+            <DropdownMenuItem
+              key={notification.id}
+              className="flex flex-col items-start"
+            >
+              <div className="font-semibold">{notification.title}</div>
+              <div className="text-sm text-muted-foreground">
+                {notification.description}
+              </div>
+              {!notification.isRead && (
+                <Button
+                  variant="link"
+                  size="sm"
+                  className="mt-1 h-auto p-0"
+                  onClick={() => markAsRead(notification.id)}
+                >
+                  Mark as read
+                </Button>
+              )}
+            </DropdownMenuItem>
+          ))}
+          {notifications.length === 0 && (
+            <DropdownMenuItem disabled>No new notifications</DropdownMenuItem>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
