@@ -76,7 +76,7 @@ export default function LandingPage({ session }: { session: Session | null }) {
       >
         <div className="container flex flex-col items-center justify-center gap-8 px-4 py-16">
           <h1 className="text-center text-4xl font-extrabold tracking-tight sm:text-5xl md:text-[5rem]">
-            Track Your <span className="text-[hsl(280,100%,70%)]">Subs</span>
+            Simplify Your <span className="text-[hsl(280,100%,70%)]">Subs</span>
             criptions
           </h1>
           <p className="mx-auto -mt-4 mb-8 max-w-[700px] text-center text-xl">

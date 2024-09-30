@@ -8,14 +8,14 @@ import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "SubsCompass",
-  description: "Track your subscriptions in one place.",
+  description: "Simplify your subscription management with SubsCompass.",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
   openGraph: {
     images: ["/api/og"],
     url: "https://subscompass.com",
     title: "SubsCompass",
     siteName: "SubsCompass",
-    description: "Track your subscriptions in one place.",
+    description: "Simplify your subscription management with SubsCompass.",
   },
 };
 
