@@ -2,7 +2,7 @@ import "@/styles/globals.css";
 
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
-
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { TRPCReactProvider } from "@/trpc/react";
 import { Toaster } from "sonner";
 
@@ -33,6 +33,7 @@ export default function RootLayout({
       <body>
         <TRPCReactProvider>
           {children}
+          <ReactQueryDevtools initialIsOpen={false} />
           <Toaster className="dark:hidden" />
           <Toaster theme="dark" className="hidden dark:block" />
         </TRPCReactProvider>
