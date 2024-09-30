@@ -12,9 +12,9 @@ export async function GET() {
           justifyContent: "center",
           flexDirection: "column",
           backgroundImage: "linear-gradient(to bottom, #dbf4ff, #fff1f1)",
-          fontSize: 80,
+          fontSize: 120,
           letterSpacing: -2,
-          fontWeight: 700,
+          fontWeight: 800,
           textAlign: "center",
         }}
       >
@@ -26,7 +26,7 @@ export async function GET() {
             // @ts-expect-error ignore
             "-webkit-background-clip": "text",
             color: "transparent",
-            paddingBottom: 20,
+            paddingBottom: 70,
           }}
         >
           Subs 🧭 Compass
@@ -39,8 +39,9 @@ export async function GET() {
             // @ts-expect-error ignore
             "-webkit-background-clip": "text",
             color: "transparent",
-            fontSize: 50,
+            fontSize: 80,
             paddingBottom: 10,
+            fontWeight: 600,
           }}
         >
           Simplify your subscriptions
@@ -53,7 +54,8 @@ export async function GET() {
             // @ts-expect-error ignore
             "-webkit-background-clip": "text",
             color: "transparent",
-            fontSize: 30,
+            fontSize: 60,
+            fontWeight: 400,
           }}
         >
           Manage all your subscriptions in one place
