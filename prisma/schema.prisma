@@ -69,14 +69,15 @@ model User {
 }
 
 model PlaidItem {
-    id          String   @id @default(cuid())
-    user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId      String
-    accessToken String
-    itemId      String
-    institution String?
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+    id              String   @id @default(cuid())
+    user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId          String
+    accessToken     String
+    itemId          String
+    institutionId   String?
+    institutionName String?
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
 
     @@index([userId])
 }

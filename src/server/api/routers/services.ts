@@ -1,9 +1,23 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { client } from "@/server/plaid";
+import { type CountryCode } from "plaid";
 
 export const serviceRouter = createTRPCRouter({
-    exchangePublicToken: protectedProcedure
+  getPlaidItems: protectedProcedure
+  .query(async ({ ctx }) => {
+    const plaidItems = await ctx.db.plaidItem.findMany({
+      where: {
+        userId: ctx.session.user.id,
+      },
+      select: {
+        institutionName: true,
+        institutionId: true,
+      },
+    });
+    return plaidItems;
+  }),
+  exchangePublicToken: protectedProcedure
     .input(z.object({ publicToken: z.string() }))
     .mutation(async ({ ctx, input }) => {
       try {
@@ -14,11 +28,28 @@ export const serviceRouter = createTRPCRouter({
         const accessToken = response.data.access_token;
         const itemID = response.data.item_id;
 
+        const itemGetResponse = await client.itemGet({
+          access_token: accessToken,
+        });
+
+        const institutionId = itemGetResponse.data.item.institution_id;
+
+        let institutionName = null;
+        if (institutionId) {
+          const institutionResponse = await client.institutionsGetById({
+            institution_id: institutionId,
+            country_codes: ['GB'] as CountryCode[],
+          });
+          institutionName = institutionResponse.data.institution.name;
+        }
+
         await ctx.db.plaidItem.create({
           data: {
             userId: ctx.session?.user?.id,
             accessToken: accessToken,
-            itemId: itemID
+            itemId: itemID,
+            institutionId: institutionId,
+            institutionName: institutionName,
           },
         });
 

@@ -3,6 +3,7 @@ import { createTRPCContext } from "@/server/api/trpc";
 import type { Session } from "next-auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import AccountList from "./account-list";
 
 const getLinkToken = async (session: Session) => {
   const headersList = headers();
@@ -18,8 +19,8 @@ const getLinkToken = async (session: Session) => {
       body: JSON.stringify({ userId: session.user.id }),
     },
   );
-  const data = await response.json();
-  return data.link_token as string;
+  const data = (await response.json()) as { link_token: string };
+  return data.link_token;
 };
 
 export default async function ProfilePage(req: Request) {
@@ -32,6 +33,7 @@ export default async function ProfilePage(req: Request) {
     <div>
       <h1>Profile</h1>
       <ConnectAccount linkToken={linkToken} />
+      <AccountList />
     </div>
   );
 }
