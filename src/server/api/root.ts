@@ -1,7 +1,9 @@
 import { postRouter } from "@/server/api/routers/post";
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
 import { subscriptionRouter } from "./routers/subscriptions";
+import { serviceRouter } from "./routers/services";
 import type { inferRouterOutputs, inferRouterInputs } from "@trpc/server";
+
 
 /**
  * This is the primary router for your server.
@@ -11,6 +13,7 @@ import type { inferRouterOutputs, inferRouterInputs } from "@trpc/server";
 export const appRouter = createTRPCRouter({
   post: postRouter,
   subscription: subscriptionRouter,
+  service: serviceRouter,
 });
 
 // export type definition of API

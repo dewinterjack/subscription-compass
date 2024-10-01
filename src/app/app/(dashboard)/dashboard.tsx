@@ -1,3 +1,5 @@
+"use client";
+
 import { AlertCircle, CreditCard, DollarSign } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";

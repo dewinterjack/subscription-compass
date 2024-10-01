@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SignOutButton } from "./sign-out-button";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 type HeaderProps = {
   user: {
@@ -33,6 +34,7 @@ type Notification = {
 };
 
 export default function DashboardHeader({ user }: HeaderProps) {
+  const router = useRouter();
   const [notifications, setNotifications] = useState<Notification[]>([
     {
       id: 1,
@@ -156,7 +158,7 @@ export default function DashboardHeader({ user }: HeaderProps) {
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => toast.info("Not implemented yet")}>
+          <DropdownMenuItem onClick={() => router.push("/profile")}>
             Profile
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => toast.info("Not implemented yet")}>
