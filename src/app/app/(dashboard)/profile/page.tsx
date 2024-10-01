@@ -1,9 +1,9 @@
 import { ConnectAccount } from "./connect-account";
-import { createTRPCContext } from "@/server/api/trpc";
 import type { Session } from "next-auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import AccountList from "./account-list";
+import { getServerAuthSession } from "@/server/auth";
 
 const getLinkToken = async (session: Session) => {
   const headersList = headers();
@@ -23,12 +23,12 @@ const getLinkToken = async (session: Session) => {
   return data.link_token;
 };
 
-export default async function ProfilePage(req: Request) {
-  const ctx = await createTRPCContext({ headers: req.headers });
-  if (!ctx.session) {
+export default async function ProfilePage() {
+  const session = await getServerAuthSession();
+  if (!session) {
     redirect("/login");
   }
-  const linkToken = await getLinkToken(ctx.session);
+  const linkToken = await getLinkToken(session);
   return (
     <div>
       <h1>Profile</h1>
