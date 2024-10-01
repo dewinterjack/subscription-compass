@@ -1,4 +1,3 @@
-import { ConnectAccount } from "./connect-account";
 import type { Session } from "next-auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
@@ -31,9 +30,7 @@ export default async function ProfilePage() {
   const linkToken = await getLinkToken(session);
   return (
     <div>
-      <h1>Profile</h1>
-      <ConnectAccount linkToken={linkToken} />
-      <AccountList />
+      <AccountList linkToken={linkToken} />
     </div>
   );
 }
