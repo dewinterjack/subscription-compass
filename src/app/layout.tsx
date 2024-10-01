@@ -6,7 +6,11 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { TRPCReactProvider } from "@/trpc/react";
 import { Toaster } from "sonner";
 import { PHProvider } from "./providers";
-import PostHogPageView from "./PostHogPageView";
+import dynamic from "next/dynamic";
+
+const PostHogPageView = dynamic(() => import("./PostHogPageView"), {
+  ssr: false,
+});
 
 export const metadata: Metadata = {
   title: "SubsCompass",
