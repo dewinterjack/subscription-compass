@@ -7,10 +7,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { RefreshCw, Landmark } from "lucide-react";
 import { api } from "@/trpc/react";
 import { ConnectAccount } from "./connect-account";
+import { useFeatureFlagEnabled } from "posthog-js/react";
 
 export default function AccountList({ linkToken }: { linkToken: string }) {
   const { data, isLoading, isFetching, error, refetch } =
     api.service.getPlaidItems.useQuery();
+
+  const isFeatureFlagEnabled = useFeatureFlagEnabled("experiment626");
+
   if (error) return <div className="text-red-500">Error: {error.message}</div>;
 
   return (
@@ -68,7 +72,9 @@ export default function AccountList({ linkToken }: { linkToken: string }) {
                   <Card>
                     <CardContent className="flex items-center p-4">
                       {/* TODO: fallback for logo */}
-                      <Landmark className="mr-4 h-8 w-8 text-primary" />
+                      {isFeatureFlagEnabled && (
+                        <Landmark className="mr-4 h-8 w-8 text-primary" />
+                      )}
                       <span className="text-lg font-medium">
                         {item.institutionName}
                       </span>

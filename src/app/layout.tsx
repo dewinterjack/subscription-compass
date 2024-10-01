@@ -5,6 +5,8 @@ import { type Metadata } from "next";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { TRPCReactProvider } from "@/trpc/react";
 import { Toaster } from "sonner";
+import { PHProvider } from "./providers";
+import PostHogPageView from "./PostHogPageView";
 
 export const metadata: Metadata = {
   title: "SubsCompass",
@@ -32,7 +34,10 @@ export default function RootLayout({
       </head>
       <body>
         <TRPCReactProvider>
-          {children}
+          <PHProvider>
+            <PostHogPageView />
+            {children}
+          </PHProvider>
           <ReactQueryDevtools initialIsOpen={false} />
           <Toaster className="dark:hidden" />
           <Toaster theme="dark" className="hidden dark:block" />

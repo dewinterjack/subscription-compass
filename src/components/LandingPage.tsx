@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useEffect, useState } from "react";
-import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,8 +26,10 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { CURRENCY_SYMBOL } from "@/lib/constants";
+import { usePostHog } from "posthog-js/react";
 
 export default function LandingPage({ session }: { session: Session | null }) {
+  const posthog = usePostHog();
   const sectionRefs = [
     useRef<HTMLElement>(null),
     useRef<HTMLElement>(null),
@@ -115,12 +116,19 @@ export default function LandingPage({ session }: { session: Session | null }) {
               <p className="text-center text-2xl text-white">
                 {session && <span>Logged in as {session.user?.name}</span>}
               </p>
-              <Link
-                href={`${process.env.NEXT_PUBLIC_APP_URL}/login`}
+              <button
                 className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
+                onClick={() => {
+                  if (session) {
+                    posthog?.identify(session.user?.id, {
+                      email: session.user?.email,
+                    });
+                  }
+                  window.location.href = `${process.env.NEXT_PUBLIC_APP_URL}/login`;
+                }}
               >
                 {session ? "Go to App" : "Get Started"}
-              </Link>
+              </button>
             </div>
           </div>
         </div>
