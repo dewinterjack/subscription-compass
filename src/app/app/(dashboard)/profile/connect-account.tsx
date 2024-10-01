@@ -8,13 +8,7 @@ import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { getQueryKey } from "@trpc/react-query";
 
-export function ConnectAccount({
-  linkToken,
-  onConnecting,
-}: {
-  linkToken: string;
-  onConnecting: (state: boolean) => void;
-}) {
+export function ConnectAccount({ linkToken }: { linkToken: string }) {
   const queryClient = useQueryClient();
   const exchangePublicToken = api.service.exchangePublicToken.useMutation();
   const queryKey = getQueryKey(api.service.getPlaidItems);
@@ -22,18 +16,15 @@ export function ConnectAccount({
   const { open, ready } = usePlaidLink({
     token: linkToken,
     onSuccess: (publicToken) => {
-      onConnecting(true);
       exchangePublicToken.mutate(
         { publicToken },
         {
           onSuccess: () => {
             toast.success("Account connected successfully");
             void queryClient.invalidateQueries({ queryKey });
-            onConnecting(false);
           },
           onError: (error) => {
             toast.error(error.message);
-            onConnecting(false);
           },
         },
       );
@@ -43,7 +34,6 @@ export function ConnectAccount({
   return (
     <Button
       onClick={() => {
-        onConnecting(true);
         open();
       }}
       disabled={!ready}

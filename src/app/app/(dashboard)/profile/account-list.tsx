@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -12,7 +11,6 @@ import { ConnectAccount } from "./connect-account";
 export default function AccountList({ linkToken }: { linkToken: string }) {
   const { data, isLoading, isFetching, error, refetch } =
     api.service.getPlaidItems.useQuery();
-  const [isConnecting, setIsConnecting] = useState(false);
   if (error) return <div className="text-red-500">Error: {error.message}</div>;
 
   return (
@@ -47,7 +45,18 @@ export default function AccountList({ linkToken }: { linkToken: string }) {
               No connected accounts. Connect your first account below.
             </motion.div>
           ) : (
-            <motion.ul className="space-y-4">
+            <motion.ul className="relative space-y-4">
+              {isFetching && (
+                <motion.div
+                  className="absolute inset-0 z-10 flex items-center justify-center bg-background/50 backdrop-blur-sm"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <RefreshCw className="h-8 w-8 animate-spin text-primary" />
+                </motion.div>
+              )}
               {data.map((item) => (
                 <motion.li
                   key={item.institutionId}
@@ -59,7 +68,7 @@ export default function AccountList({ linkToken }: { linkToken: string }) {
                   <Card>
                     <CardContent className="flex items-center p-4">
                       {/* TODO: fallback for logo */}
-                      <Landmark className="mr-2 h-4 w-4" />
+                      <Landmark className="mr-4 h-8 w-8 text-primary" />
                       <span className="text-lg font-medium">
                         {item.institutionName}
                       </span>
@@ -71,10 +80,7 @@ export default function AccountList({ linkToken }: { linkToken: string }) {
           )}
         </AnimatePresence>
         <div className="mt-6">
-          <ConnectAccount
-            linkToken={linkToken}
-            onConnecting={setIsConnecting}
-          />
+          <ConnectAccount linkToken={linkToken} />
         </div>
       </CardContent>
     </Card>
