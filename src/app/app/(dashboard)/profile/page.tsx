@@ -44,13 +44,24 @@ export default async function ProfilePage() {
   const linkToken = await getLinkToken(session);
 
   const isConnected = (provider: string) => providers.includes(provider);
+  const totalConnectedProviders = providers.length;
 
   return (
     <div>
       <AccountList linkToken={linkToken} />
-      <div className="mx-auto mt-4 flex max-w-xl flex-col space-y-2">
-        <LoginButton provider="discord" isConnected={isConnected("discord")} />
-        <LoginButton provider="github" isConnected={isConnected("github")} />
+      <div className="mx-auto mt-4 flex max-w-sm flex-col space-y-2">
+        <LoginButton
+          provider="discord"
+          isConnected={isConnected("discord")}
+          userId={session.user.id}
+          totalConnectedProviders={totalConnectedProviders}
+        />
+        <LoginButton
+          provider="github"
+          isConnected={isConnected("github")}
+          userId={session.user.id}
+          totalConnectedProviders={totalConnectedProviders}
+        />
       </div>
     </div>
   );
