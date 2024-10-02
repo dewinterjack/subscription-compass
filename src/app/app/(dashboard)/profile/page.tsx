@@ -3,8 +3,8 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import AccountList from "./account-list";
 import { getServerAuthSession } from "@/server/auth";
-import LoginButton from "../../(auth)/login/login-button";
 import { db } from "@/server/db";
+import ConnectedProviderButton from "./connected-provider";
 
 const getLinkToken = async (session: Session) => {
   const headersList = headers();
@@ -47,16 +47,19 @@ export default async function ProfilePage() {
   const totalConnectedProviders = providers.length;
 
   return (
-    <div>
+    <div className="flex flex-row space-y-4">
       <AccountList linkToken={linkToken} />
-      <div className="mx-auto mt-4 flex max-w-sm flex-col space-y-2">
-        <LoginButton
+      <div className="mx-auto mt-4 flex flex-col space-y-1">
+        <h2 className="text-stone-600 dark:text-stone-400">
+          Connected Providers
+        </h2>
+        <ConnectedProviderButton
           provider="discord"
           isConnected={isConnected("discord")}
           userId={session.user.id}
           totalConnectedProviders={totalConnectedProviders}
         />
-        <LoginButton
+        <ConnectedProviderButton
           provider="github"
           isConnected={isConnected("github")}
           userId={session.user.id}
