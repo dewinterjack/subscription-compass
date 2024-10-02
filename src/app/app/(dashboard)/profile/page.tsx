@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import AccountList from "./account-list";
 import { getServerAuthSession } from "@/server/auth";
+import LoginButton from "../../(auth)/login/login-button";
 
 const getLinkToken = async (session: Session) => {
   const headersList = headers();
@@ -30,6 +31,8 @@ export default async function ProfilePage() {
   const linkToken = await getLinkToken(session);
   return (
     <div>
+      <LoginButton provider="discord" />
+      <LoginButton provider="github" />
       <AccountList linkToken={linkToken} />
     </div>
   );
