@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import AccountList from "./account-list";
 import { getServerAuthSession } from "@/server/auth";
 import LoginButton from "../../(auth)/login/login-button";
+import { db } from "@/server/db";
 
 const getLinkToken = async (session: Session) => {
   const headersList = headers();
@@ -28,12 +29,29 @@ export default async function ProfilePage() {
   if (!session) {
     redirect("/login");
   }
+  const providers = await db.account
+    .findMany({
+      where: {
+        userId: session.user.id,
+      },
+      select: {
+        provider: true,
+      },
+      distinct: ["provider"],
+    })
+    .then((accounts) => accounts.map((account) => account.provider));
+
   const linkToken = await getLinkToken(session);
+
+  const isConnected = (provider: string) => providers.includes(provider);
+
   return (
     <div>
-      <LoginButton provider="discord" />
-      <LoginButton provider="github" />
       <AccountList linkToken={linkToken} />
+      <div className="mx-auto mt-4 flex max-w-xl flex-col space-y-2">
+        <LoginButton provider="discord" isConnected={isConnected("discord")} />
+        <LoginButton provider="github" isConnected={isConnected("github")} />
+      </div>
     </div>
   );
 }
