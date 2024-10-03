@@ -5,6 +5,7 @@ import AccountList from "./account-list";
 import { getServerAuthSession } from "@/server/auth";
 import { db } from "@/server/db";
 import ConnectedProviderButton from "./connected-provider";
+import EditableProfile from "./editable-profile";
 
 const getLinkToken = async (session: Session) => {
   const headersList = headers();
@@ -29,6 +30,16 @@ export default async function ProfilePage() {
   if (!session) {
     redirect("/login");
   }
+
+  const user = await db.user.findUnique({
+    where: { id: session.user.id },
+    select: { name: true, email: true },
+  });
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
   const providers = await db.account
     .findMany({
       where: {
@@ -47,24 +58,35 @@ export default async function ProfilePage() {
   const totalConnectedProviders = providers.length;
 
   return (
-    <div className="flex flex-row space-y-4">
-      <AccountList linkToken={linkToken} />
-      <div className="mx-auto mt-4 flex flex-col space-y-1">
-        <h2 className="text-stone-600 dark:text-stone-400">
+    <div className="flex flex-col space-y-4">
+      <div className="mx-auto mt-4 w-full max-w-2xl">
+        <h1 className="mb-4 text-2xl font-bold">Profile</h1>
+        <EditableProfile
+          initialName={user.name}
+          userId={session.user.id}
+          email={user.email}
+        />
+
+        <h2 className="mb-2 mt-6 text-xl font-semibold text-stone-600 dark:text-stone-400">
           Connected Providers
         </h2>
-        <ConnectedProviderButton
-          provider="discord"
-          isConnected={isConnected("discord")}
-          userId={session.user.id}
-          totalConnectedProviders={totalConnectedProviders}
-        />
-        <ConnectedProviderButton
-          provider="github"
-          isConnected={isConnected("github")}
-          userId={session.user.id}
-          totalConnectedProviders={totalConnectedProviders}
-        />
+        <div className="flex flex-col space-y-2">
+          <ConnectedProviderButton
+            provider="discord"
+            isConnected={isConnected("discord")}
+            userId={session.user.id}
+            totalConnectedProviders={totalConnectedProviders}
+          />
+          <ConnectedProviderButton
+            provider="github"
+            isConnected={isConnected("github")}
+            userId={session.user.id}
+            totalConnectedProviders={totalConnectedProviders}
+          />
+        </div>
+      </div>
+      <div className="mx-auto w-full max-w-2xl">
+        <AccountList linkToken={linkToken} />
       </div>
     </div>
   );
