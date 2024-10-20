@@ -29,14 +29,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { toast } from "sonner";
+import { api } from "@/trpc/react";
 
-type SidebarProps = {
-  subscriptions: Array<{ cost: number }>;
-};
-
-export function DashboardSidebar({ subscriptions }: SidebarProps) {
+export function DashboardSidebar() {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const pathname = usePathname();
+  const { data: subscriptionCount } = api.subscription.count.useQuery();
 
   const handleToggleSidebar = () => {
     setIsSidebarExpanded(!isSidebarExpanded);
@@ -87,7 +85,7 @@ export function DashboardSidebar({ subscriptions }: SidebarProps) {
               icon: ShoppingBasket,
               label: "Subscriptions",
               href: "/subscriptions",
-              badge: subscriptions.length,
+              badge: subscriptionCount,
             },
             { icon: LineChart, label: "Analytics", href: "#" },
             { icon: Zap, label: "Discover", href: "#" },

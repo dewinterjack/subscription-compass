@@ -103,7 +103,6 @@ export function AddSubscriptionDialog({
       onAddSubscription(newSubscription);
       setNewSubscription({ name: "", cost: 0, billingCycle: "Monthly" });
       setUserInput("");
-      toast.success("Subscription added successfully.");
     } else {
       toast.error("Please fill in all fields correctly.");
     }

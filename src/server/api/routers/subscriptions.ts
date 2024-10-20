@@ -25,6 +25,11 @@ export const subscriptionRouter = createTRPCRouter({
       orderBy: { createdAt: "desc" },
     });
   }),
+  count: protectedProcedure.query(async ({ ctx }) => {
+    return ctx.db.subscription.count({
+      where: { createdBy: { id: ctx.session.user.id } },
+    });
+  }),
 
   update: protectedProcedure
     .input(z.object({
