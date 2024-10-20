@@ -2,7 +2,6 @@ import DashboardHeader from "./header";
 import { DashboardSidebar } from "./sidebar";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Dashboard | SubsCompass",
@@ -13,10 +12,6 @@ export default async function DashboardLayout({
 }: {
   children: ReactNode;
 }) {
-  // const session = await getServerAuthSession();
-  // if (!session) {
-  //   redirect("/login");
-  // }
 
   const subscriptions: { cost: number }[] = [];
 
@@ -24,7 +19,7 @@ export default async function DashboardLayout({
     <div className="flex min-h-screen">
       <DashboardSidebar subscriptions={subscriptions} />
       <div className="flex flex-1 flex-col transition-all duration-300">
-        <DashboardHeader  />
+        <DashboardHeader />
         <main className="flex-1 overflow-auto p-4">{children}</main>
       </div>
     </div>

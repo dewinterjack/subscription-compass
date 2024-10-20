@@ -1,8 +1,6 @@
 import type { Session } from "next-auth";
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 import AccountList from "./account-list";
-import { getServerAuthSession } from "@/server/auth";
 import { db } from "@/server/db";
 import ConnectedProviderButton from "./connected-provider";
 import EditableProfile from "./editable-profile";
@@ -26,11 +24,7 @@ const getLinkToken = async (session: Session) => {
 };
 
 export default async function ProfilePage() {
-  // const session = await getServerAuthSession();
-  // if (!session) {
-  //   redirect("/login");
-  // }
-
+  // add getUser()
   const user = await db.user.findUnique({
     where: { id: session.user.id },
     select: { name: true, email: true },
