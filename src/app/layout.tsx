@@ -7,7 +7,7 @@ import { TRPCReactProvider } from "@/trpc/react";
 import { Toaster } from "sonner";
 import { PHProvider } from "./providers";
 import dynamic from "next/dynamic";
-import { ClerkProvider, SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
+import { ClerkProvider } from '@clerk/nextjs'
 
 const PostHogPageView = dynamic(() => import("./PostHogPageView"), {
   ssr: false,
@@ -31,7 +31,6 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <ClerkProvider>
-
       <html lang="en" className={`${GeistSans.variable}`}>
         <head>
           <meta
@@ -40,12 +39,6 @@ export default function RootLayout({
           />
         </head>
         <body>
-        <SignedOut>
-              <SignInButton />
-            </SignedOut>
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
           <TRPCReactProvider>
             <PHProvider>
               <PostHogPageView />

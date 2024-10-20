@@ -26,10 +26,10 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { CURRENCY_SYMBOL } from "@/lib/constants";
-import { usePostHog } from "posthog-js/react";
+import { SignInButton, SignedOut, useAuth } from '@clerk/nextjs'
+import { redirect } from "next/navigation";
 
 export default function LandingPage({ session }: { session: Session | null }) {
-  const posthog = usePostHog();
   const sectionRefs = [
     useRef<HTMLElement>(null),
     useRef<HTMLElement>(null),
@@ -49,6 +49,7 @@ export default function LandingPage({ session }: { session: Session | null }) {
       },
     },
   };
+  const { isSignedIn } = useAuth();
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -68,6 +69,12 @@ export default function LandingPage({ session }: { session: Session | null }) {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   });
+
+  useEffect(() => {
+    if (isSignedIn) {
+      redirect('/app')
+    }
+  }, [isSignedIn]);
 
   return (
     <main className="flex flex-col">
@@ -116,19 +123,12 @@ export default function LandingPage({ session }: { session: Session | null }) {
               <p className="text-center text-2xl text-white">
                 {session && <span>Logged in as {session.user?.name}</span>}
               </p>
-              <button
-                className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
-                onClick={() => {
-                  if (session) {
-                    posthog?.identify(session.user?.id, {
-                      email: session.user?.email,
-                    });
-                  }
-                  window.location.href = `${process.env.NEXT_PUBLIC_APP_URL}/login`;
-                }}
-              >
-                {session ? "Go to App" : "Get Started"}
-              </button>
+              {/* <div className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20" */}
+              <SignedOut>
+                <SignInButton />
+              </SignedOut>
+
+              {/* </div> */}
             </div>
           </div>
         </div>
@@ -399,6 +399,7 @@ export default function LandingPage({ session }: { session: Session | null }) {
         </div>
       </section>
     </main>
+
   );
 }
 
