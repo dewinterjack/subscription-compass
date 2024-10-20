@@ -26,10 +26,10 @@ const getLinkToken = async (session: Session) => {
 };
 
 export default async function ProfilePage() {
-  const session = await getServerAuthSession();
-  if (!session) {
-    redirect("/login");
-  }
+  // const session = await getServerAuthSession();
+  // if (!session) {
+  //   redirect("/login");
+  // }
 
   const user = await db.user.findUnique({
     where: { id: session.user.id },

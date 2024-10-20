@@ -1,4 +1,3 @@
-import { getServerAuthSession } from "@/server/auth";
 import DashboardHeader from "./header";
 import { DashboardSidebar } from "./sidebar";
 import type { Metadata } from "next";
@@ -14,10 +13,10 @@ export default async function DashboardLayout({
 }: {
   children: ReactNode;
 }) {
-  const session = await getServerAuthSession();
-  if (!session) {
-    redirect("/login");
-  }
+  // const session = await getServerAuthSession();
+  // if (!session) {
+  //   redirect("/login");
+  // }
 
   const subscriptions: { cost: number }[] = [];
 
@@ -25,7 +24,7 @@ export default async function DashboardLayout({
     <div className="flex min-h-screen">
       <DashboardSidebar subscriptions={subscriptions} />
       <div className="flex flex-1 flex-col transition-all duration-300">
-        <DashboardHeader user={session.user} />
+        <DashboardHeader  />
         <main className="flex-1 overflow-auto p-4">{children}</main>
       </div>
     </div>

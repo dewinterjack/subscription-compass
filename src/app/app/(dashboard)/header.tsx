@@ -33,7 +33,7 @@ type Notification = {
   isRead: boolean;
 };
 
-export default function DashboardHeader({ user }: HeaderProps) {
+export default function DashboardHeader() {
   const router = useRouter();
   const [notifications, setNotifications] = useState<Notification[]>([
     {
@@ -147,7 +147,7 @@ export default function DashboardHeader({ user }: HeaderProps) {
             className="overflow-hidden rounded-full"
           >
             <Image
-              src={user.image ?? "/placeholder-user.jpg"}
+              src={"/placeholder-user.jpg"}
               width={36}
               height={36}
               alt="Avatar"
