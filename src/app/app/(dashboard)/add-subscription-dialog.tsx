@@ -191,6 +191,7 @@ export function AddSubscriptionDialog({
                 id="cost"
                 type="number"
                 step="0.01"
+                min="0"
                 value={newSubscription.cost}
                 onChange={(e) =>
                   setNewSubscription({
