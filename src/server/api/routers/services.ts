@@ -13,7 +13,10 @@ export const serviceRouter = createTRPCRouter({
             contains: input.query,
             mode: "insensitive",
           },
-          // TODO: Add OR condition for only showing verified services unless user is creator
+          OR: [
+            { isVerified: true },
+            { createdBy: { id: ctx.session.user.id } },
+          ],
         },
         take: 10,
       });
