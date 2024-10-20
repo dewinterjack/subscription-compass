@@ -29,7 +29,7 @@ export function SubscriptionsSection() {
   const { data: subscriptions, refetch } = api.subscription.getAll.useQuery();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const router = useRouter();
-  const handleAddSubscription = api.subscription.create.useMutation({
+  const createSubscription = api.subscription.create.useMutation({
     onSuccess: () => {
       toast.success("Subscription added successfully.");
       setIsDialogOpen(false);
@@ -93,7 +93,7 @@ export function SubscriptionsSection() {
               {subscriptions?.map((subscription) => (
                 <TableRow key={subscription.id}>
                   <TableCell className="font-medium">
-                    {subscription.name}
+                    {subscription.service.name}
                   </TableCell>
                   <TableCell>
                     {CURRENCY_SYMBOL}
@@ -124,9 +124,7 @@ export function SubscriptionsSection() {
       <AddSubscriptionDialog
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
-        onAddSubscription={(subscription) =>
-          handleAddSubscription.mutate(subscription)
-        }
+        createSubscription={createSubscription}
       />
     </Card>
   );

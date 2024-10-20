@@ -66,6 +66,7 @@ model User {
     posts         Post[]
     Subscription  Subscription[]
     plaidItems    PlaidItem[]
+    Service       Service[]
 }
 
 model PlaidItem {
@@ -91,16 +92,19 @@ model VerificationToken {
 }
 
 model Service {
-    id           String       @id @default(cuid())
-    name         String       @unique
-    defaultCost  Float
+    id                  String         @id @default(cuid())
+    name                String         @unique
+    defaultCost         Float
     defaultBillingCycle BillingCycle
-    isVerified   Boolean      @default(false)
-    createdAt    DateTime     @default(now())
-    updatedAt    DateTime     @updatedAt
-    subscriptions Subscription[]
+    isVerified          Boolean        @default(false)
+    createdBy           User           @relation(fields: [createdById], references: [id])
+    createdById         String
+    createdAt           DateTime       @default(now())
+    updatedAt           DateTime       @updatedAt
+    subscriptions       Subscription[]
 
     @@index([name])
+    @@index([createdById])
 }
 
 model Subscription {

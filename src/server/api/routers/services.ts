@@ -1,9 +1,40 @@
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc";
 import { client } from "@/server/plaid";
 import type { RemovedTransaction, Transaction, TransactionsSyncRequest, CountryCode } from "plaid";
 
 export const serviceRouter = createTRPCRouter({
+  search: protectedProcedure
+    .input(z.object({ query: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return ctx.db.service.findMany({
+        where: {
+          name: {
+            contains: input.query,
+            mode: "insensitive",
+          },
+          // TODO: Add OR condition for only showing verified services unless user is creator
+        },
+        take: 10,
+      });
+    }),
+
+  create: publicProcedure
+    .input(z.object({
+      name: z.string().min(1),
+      defaultCost: z.number().positive(),
+      defaultBillingCycle: z.enum(["Weekly", "Monthly", "Yearly"]),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.service.create({
+        data: {
+          name: input.name,
+          defaultCost: input.defaultCost,
+          defaultBillingCycle: input.defaultBillingCycle,
+          isVerified: false,
+        },
+      });
+    }),
   getPlaidItems: protectedProcedure
   .query(async ({ ctx }) => {
     const plaidItems = await ctx.db.plaidItem.findMany({
@@ -126,38 +157,4 @@ export const serviceRouter = createTRPCRouter({
   return recurringTransactions.data.outflow_streams;
     }),
 });
-import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 
-export const serviceRouter = createTRPCRouter({
-  search: publicProcedure
-    .input(z.object({ query: z.string() }))
-    .query(async ({ ctx, input }) => {
-      return ctx.db.service.findMany({
-        where: {
-          name: {
-            contains: input.query,
-            mode: "insensitive",
-          },
-        },
-        take: 10,
-      });
-    }),
-
-  create: publicProcedure
-    .input(z.object({
-      name: z.string().min(1),
-      defaultCost: z.number().positive(),
-      defaultBillingCycle: z.enum(["Weekly", "Monthly", "Yearly"]),
-    }))
-    .mutation(async ({ ctx, input }) => {
-      return ctx.db.service.create({
-        data: {
-          name: input.name,
-          defaultCost: input.defaultCost,
-          defaultBillingCycle: input.defaultBillingCycle,
-          isVerified: false,
-        },
-      });
-    }),
-});

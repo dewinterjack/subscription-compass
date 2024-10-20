@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -24,7 +24,6 @@ import type { InputType } from "@/server/api/root";
 import type { BillingCycle } from "@prisma/client";
 import {
   Command,
-  CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
@@ -37,14 +36,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ChevronDownIcon, Loader2 } from "lucide-react";
-import { api } from "@/utils/api";
+import { api } from "@/trpc/react";
+import { useDebounce } from "@/hooks/use-debounce";
 
 type AddSubscriptionDialogProps = {
   isOpen: boolean;
   onClose: () => void;
-  onAddSubscription: (
-    subscription: InputType["subscription"]["create"],
-  ) => void;
+  createSubscription: ReturnType<typeof api.subscription.create.useMutation>;
 };
 
 type Service = {
@@ -57,56 +55,54 @@ type Service = {
 export function AddSubscriptionDialog({
   isOpen,
   onClose,
-  onAddSubscription,
+  createSubscription,
 }: AddSubscriptionDialogProps) {
   const [newSubscription, setNewSubscription] = useState<
     InputType["subscription"]["create"]
   >({
-    serviceId: "",
+    service: { id: "" },
     cost: 0,
     billingCycle: "Monthly",
   });
+  const [newServiceName, setNewServiceName] = useState("");
 
-  const [searchResults, setSearchResults] = useState<Service[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
   const [userInput, setUserInput] = useState("");
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const debouncedUserInput = useDebounce(userInput, 300);
 
-  const searchServices = api.service.search.useMutation();
-  const createService = api.service.create.useMutation();
-
-  useEffect(() => {
-    if (userInput) {
-      setIsSearching(true);
-      const timeoutId = setTimeout(() => {
-        searchServices.mutate(
-          { query: userInput },
-          {
-            onSuccess: (data) => {
-              setSearchResults(data);
-              setIsSearching(false);
-            },
-            onError: () => {
-              toast.error("Failed to search services");
-              setIsSearching(false);
-            },
-          }
-        );
-      }, 300);
-
-      return () => clearTimeout(timeoutId);
-    } else {
-      setSearchResults([]);
-    }
-  }, [userInput]);
+  const { data: searchResults, isFetching: isSearching } =
+    api.service.search.useQuery(
+      { query: debouncedUserInput },
+      {
+        enabled: debouncedUserInput.length > 0,
+      },
+    );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (newSubscription.serviceId && newSubscription.cost > 0) {
-      onAddSubscription(newSubscription);
-      setNewSubscription({ serviceId: "", cost: 0, billingCycle: "Monthly" });
-      setUserInput("");
-      toast.success("Subscription added successfully.");
+    if (newSubscription.cost > 0) {
+      const subscriptionData = {
+        service: newSubscription.service.id
+          ? { id: newSubscription.service.id }
+          : {
+              name: userInput,
+              defaultCost: newSubscription.cost,
+              defaultBillingCycle: newSubscription.billingCycle,
+            },
+        cost: newSubscription.cost,
+        billingCycle: newSubscription.billingCycle,
+      };
+      createSubscription.mutate(subscriptionData, {
+        onSuccess: () => {
+          setUserInput("");
+          setNewServiceName("");
+          setNewSubscription({
+            service: { id: "" },
+            cost: 0,
+            billingCycle: "Monthly",
+          });
+        },
+      });
     } else {
       toast.error("Please fill in all fields correctly.");
     }
@@ -114,38 +110,17 @@ export function AddSubscriptionDialog({
 
   const handleServiceSelect = (service: Service) => {
     setNewSubscription({
-      serviceId: service.id,
+      service,
       cost: service.defaultCost,
       billingCycle: service.defaultBillingCycle,
     });
     setUserInput(service.name);
-    setSearchResults([]);
     setIsPopoverOpen(false);
   };
 
-  const handleCreateNewService = () => {
-    if (userInput) {
-      createService.mutate(
-        {
-          name: userInput,
-          defaultCost: newSubscription.cost,
-          defaultBillingCycle: newSubscription.billingCycle,
-        },
-        {
-          onSuccess: (newService) => {
-            setNewSubscription({
-              serviceId: newService.id,
-              cost: newService.defaultCost,
-              billingCycle: newService.defaultBillingCycle,
-            });
-            toast.success("New service created successfully.");
-          },
-          onError: () => {
-            toast.error("Failed to create new service");
-          },
-        }
-      );
-    }
+  const handleSetNewServiceName = () => {
+    setNewServiceName(userInput);
+    setIsPopoverOpen(false);
   };
 
   return (
@@ -175,7 +150,9 @@ export function AddSubscriptionDialog({
                       aria-expanded={isPopoverOpen}
                       className="w-full justify-between"
                     >
-                      {newSubscription.name || "Select a service..."}
+                      {newSubscription.service?.name ||
+                        newServiceName ||
+                        "Select a service..."}
                       <ChevronDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                   </PopoverTrigger>
@@ -194,11 +171,15 @@ export function AddSubscriptionDialog({
                             </div>
                           </CommandLoading>
                         )}
-                        <CommandEmpty>No results found.</CommandEmpty>
                         <CommandGroup heading="Services">
-                          {searchResults.map((service) => (
+                          {/* {userInput.trim() !== "" && (
+                            <CommandItem onSelect={handleSetNewServiceName}>
+                              Create new service: &quot;{userInput}&quot;
+                            </CommandItem>
+                          )} */}
+                          {searchResults?.map((service) => (
                             <CommandItem
-                              key={service.name}
+                              key={service.id}
                               onSelect={() => handleServiceSelect(service)}
                             >
                               {service.name}
@@ -256,7 +237,16 @@ export function AddSubscriptionDialog({
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit">Add Subscription</Button>
+            <Button type="submit" disabled={createSubscription.isPending}>
+              {createSubscription.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Adding...
+                </>
+              ) : (
+                "Add Subscription"
+              )}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
