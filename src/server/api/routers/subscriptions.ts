@@ -4,14 +4,14 @@ import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 export const subscriptionRouter = createTRPCRouter({
   create: protectedProcedure
     .input(z.object({
-      name: z.string().min(1),
+      serviceId: z.string(),
       cost: z.number().positive(),
       billingCycle: z.enum(["Weekly", "Monthly", "Yearly"]),
     }))
     .mutation(async ({ ctx, input }) => {
       return ctx.db.subscription.create({
         data: {
-          name: input.name,
+          service: { connect: { id: input.serviceId } },
           cost: input.cost,
           billingCycle: input.billingCycle,
           createdBy: { connect: { id: ctx.session.user.id } },
@@ -22,6 +22,7 @@ export const subscriptionRouter = createTRPCRouter({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     return ctx.db.subscription.findMany({
       where: { createdBy: { id: ctx.session.user.id } },
+      include: { service: true },
       orderBy: { createdAt: "desc" },
     });
   }),
@@ -29,7 +30,7 @@ export const subscriptionRouter = createTRPCRouter({
   update: protectedProcedure
     .input(z.object({
       id: z.string(),
-      name: z.string().min(1).optional(),
+      serviceId: z.string().optional(),
       cost: z.number().positive().optional(),
       billingCycle: z.enum(["Weekly", "Monthly", "Yearly"]).optional(),
     }))
@@ -37,7 +38,7 @@ export const subscriptionRouter = createTRPCRouter({
       return ctx.db.subscription.update({
         where: { id: input.id },
         data: {
-          name: input.name,
+          service: input.serviceId ? { connect: { id: input.serviceId } } : undefined,
           cost: input.cost,
           billingCycle: input.billingCycle,
         },

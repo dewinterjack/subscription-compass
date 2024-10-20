@@ -37,6 +37,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ChevronDownIcon, Loader2 } from "lucide-react";
+import { api } from "@/utils/api";
 
 type AddSubscriptionDialogProps = {
   isOpen: boolean;
@@ -46,20 +47,12 @@ type AddSubscriptionDialogProps = {
   ) => void;
 };
 
-const mockServices = [
-  { name: "Netflix", defaultCost: 15.99, defaultBillingCycle: "Monthly" },
-  { name: "Spotify", defaultCost: 9.99, defaultBillingCycle: "Monthly" },
-  { name: "Amazon Prime", defaultCost: 119, defaultBillingCycle: "Yearly" },
-  { name: "Disney+", defaultCost: 7.99, defaultBillingCycle: "Monthly" },
-  { name: "HBO Max", defaultCost: 14.99, defaultBillingCycle: "Monthly" },
-  { name: "Apple Music", defaultCost: 9.99, defaultBillingCycle: "Monthly" },
-  {
-    name: "YouTube Premium",
-    defaultCost: 11.99,
-    defaultBillingCycle: "Monthly",
-  },
-  { name: "Hulu", defaultCost: 5.99, defaultBillingCycle: "Monthly" },
-];
+type Service = {
+  id: string;
+  name: string;
+  defaultCost: number;
+  defaultBillingCycle: BillingCycle;
+};
 
 export function AddSubscriptionDialog({
   isOpen,
@@ -69,27 +62,37 @@ export function AddSubscriptionDialog({
   const [newSubscription, setNewSubscription] = useState<
     InputType["subscription"]["create"]
   >({
-    name: "",
+    serviceId: "",
     cost: 0,
     billingCycle: "Monthly",
   });
 
-  const [searchResults, setSearchResults] = useState<typeof mockServices>([]);
+  const [searchResults, setSearchResults] = useState<Service[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [userInput, setUserInput] = useState("");
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
+  const searchServices = api.service.search.useMutation();
+  const createService = api.service.create.useMutation();
+
   useEffect(() => {
     if (userInput) {
       setIsSearching(true);
-      // Simulate API call delay
       const timeoutId = setTimeout(() => {
-        const results = mockServices.filter((service) =>
-          service.name.toLowerCase().includes(userInput.toLowerCase()),
+        searchServices.mutate(
+          { query: userInput },
+          {
+            onSuccess: (data) => {
+              setSearchResults(data);
+              setIsSearching(false);
+            },
+            onError: () => {
+              toast.error("Failed to search services");
+              setIsSearching(false);
+            },
+          }
         );
-        setSearchResults(results);
-        setIsSearching(false);
-      }, 500);
+      }, 300);
 
       return () => clearTimeout(timeoutId);
     } else {
@@ -99,9 +102,9 @@ export function AddSubscriptionDialog({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (newSubscription.name && newSubscription.cost > 0) {
+    if (newSubscription.serviceId && newSubscription.cost > 0) {
       onAddSubscription(newSubscription);
-      setNewSubscription({ name: "", cost: 0, billingCycle: "Monthly" });
+      setNewSubscription({ serviceId: "", cost: 0, billingCycle: "Monthly" });
       setUserInput("");
       toast.success("Subscription added successfully.");
     } else {
@@ -109,15 +112,40 @@ export function AddSubscriptionDialog({
     }
   };
 
-  const handleServiceSelect = (service: (typeof mockServices)[0]) => {
+  const handleServiceSelect = (service: Service) => {
     setNewSubscription({
-      name: service.name,
+      serviceId: service.id,
       cost: service.defaultCost,
-      billingCycle: service.defaultBillingCycle as BillingCycle,
+      billingCycle: service.defaultBillingCycle,
     });
     setUserInput(service.name);
     setSearchResults([]);
     setIsPopoverOpen(false);
+  };
+
+  const handleCreateNewService = () => {
+    if (userInput) {
+      createService.mutate(
+        {
+          name: userInput,
+          defaultCost: newSubscription.cost,
+          defaultBillingCycle: newSubscription.billingCycle,
+        },
+        {
+          onSuccess: (newService) => {
+            setNewSubscription({
+              serviceId: newService.id,
+              cost: newService.defaultCost,
+              billingCycle: newService.defaultBillingCycle,
+            });
+            toast.success("New service created successfully.");
+          },
+          onError: () => {
+            toast.error("Failed to create new service");
+          },
+        }
+      );
+    }
   };
 
   return (
