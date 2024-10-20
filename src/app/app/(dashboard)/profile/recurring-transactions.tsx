@@ -4,7 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { DollarSignIcon, LightbulbIcon, ShoppingCartIcon } from "lucide-react";
 import { api } from "@/trpc/react";
-import type { TransactionStream } from "plaid";
+import type { TransactionStream as PlaidTransactionStream } from "plaid";
+
+interface TransactionStream extends PlaidTransactionStream {
+  predicted_next_date: string;
+}
 
 const formatCurrency = (amount: number, currency: string) => {
   return new Intl.NumberFormat("en-US", { style: "currency", currency }).format(
@@ -90,18 +94,35 @@ const TransactionCard = ({ transaction }: TransactionProps) => {
             </span>
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-medium text-muted-foreground">
-              Average Amount
-            </span>
             {transaction.average_amount?.amount &&
               transaction.average_amount?.iso_currency_code && (
+                <>
+                  <span className="text-sm font-medium text-muted-foreground">
+                    Average Amount
+                  </span>
+                  <span className="text-sm">
+                    {formatCurrency(
+                      transaction.average_amount.amount / 100,
+                      transaction.average_amount.iso_currency_code,
+                    )}
+                  </span>
+                </>
+              )}
+          </div>
+          <div className="flex flex-col">
+            {transaction.last_amount?.amount && (
+              <>
+                <span className="text-sm font-medium text-muted-foreground">
+                  Last Amount
+                </span>
                 <span className="text-sm">
                   {formatCurrency(
-                    transaction.average_amount.amount / 100,
-                    transaction.average_amount.iso_currency_code,
+                    transaction.last_amount.amount / 100,
+                    transaction.last_amount.iso_currency_code ?? "GBP",
                   )}
                 </span>
-              )}
+              </>
+            )}
           </div>
         </div>
       </CardContent>
@@ -111,7 +132,7 @@ const TransactionCard = ({ transaction }: TransactionProps) => {
 
 export default function RecurringTransactions() {
   const { data: transactions, isLoading } =
-    api.service.getRecurringTransactions.useQuery();
+    api.service.getRecurringTransactions.useQuery<TransactionStream[]>();
 
   return (
     <div className="container mx-auto p-4">

@@ -6,7 +6,6 @@ import { getServerAuthSession } from "@/server/auth";
 import { db } from "@/server/db";
 import ConnectedProviderButton from "./connected-provider";
 import EditableProfile from "./editable-profile";
-import TransactionsList from "./transactions-list";
 import RecurringTransactions from "./recurring-transactions";
 
 const getLinkToken = async (session: Session) => {
@@ -90,7 +89,6 @@ export default async function ProfilePage() {
       <div className="mx-auto w-full max-w-2xl">
         <AccountList linkToken={linkToken} />
         <RecurringTransactions />
-        {/* <TransactionsList /> */}
       </div>
     </div>
   );
