@@ -27,8 +27,8 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { CURRENCY_SYMBOL } from "@/lib/constants";
-import { useAuth, SignInButton, SignedOut } from '@clerk/nextjs'
-import { redirect } from "next/navigation";
+import { SignInButton, SignedOut, SignedIn } from '@clerk/nextjs'
+import { useRouter } from "next/navigation";
 
 export default function LandingPage({ session }: { session: Session | null }) {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -52,7 +52,7 @@ export default function LandingPage({ session }: { session: Session | null }) {
     },
   };
 
-  const { isSignedIn } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -73,11 +73,6 @@ export default function LandingPage({ session }: { session: Session | null }) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   });
 
-  useEffect(() => {
-    if (isSignedIn) {
-      redirect(`${process.env.NEXT_PUBLIC_APP_URL}/`)
-    }
-  }, [isSignedIn]);
 
   return (
     <ScrollArea className="h-screen" ref={scrollAreaRef}>
@@ -135,6 +130,9 @@ export default function LandingPage({ session }: { session: Session | null }) {
                 <SignedOut>
                   <SignInButton />
                 </SignedOut>
+                <SignedIn>
+                  <button onClick={() => router.push(`${process.env.NEXT_PUBLIC_APP_URL}/`)}>Go to Dashboard</button>
+                </SignedIn>
               </div>
             </div>
           </div>
