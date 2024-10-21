@@ -53,7 +53,6 @@ export default clerkMiddleware((auth, request) => {
     auth().protect()
   }
 
-  return middleware(request)
 })
 
 export const config = {
