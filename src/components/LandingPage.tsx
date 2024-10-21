@@ -27,7 +27,7 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { CURRENCY_SYMBOL } from "@/lib/constants";
-import { SignInButton, SignedOut, SignedIn } from '@clerk/nextjs'
+import { SignInButton, SignedOut, SignedIn, UserButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 
 export default function LandingPage({ session }: { session: Session | null }) {
@@ -73,7 +73,6 @@ export default function LandingPage({ session }: { session: Session | null }) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   });
 
-
   return (
     <ScrollArea className="h-screen" ref={scrollAreaRef}>
       <main className="flex flex-col">
@@ -87,6 +86,9 @@ export default function LandingPage({ session }: { session: Session | null }) {
               <span className="text-[hsl(280,100%,70%)]">Subs</span>
               criptions
             </h1>
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
             <p className="mx-auto -mt-4 mb-8 max-w-[700px] text-center text-xl">
               Never miss a price change or discount. SubsCompass helps you
               manage all your subscriptions in one place, with a free base tier
@@ -131,7 +133,13 @@ export default function LandingPage({ session }: { session: Session | null }) {
                   <SignInButton />
                 </SignedOut>
                 <SignedIn>
-                  <button onClick={() => router.push(`${process.env.NEXT_PUBLIC_APP_URL}/`)}>Go to Dashboard</button>
+                  <button
+                    onClick={() =>
+                      router.push(`${process.env.NEXT_PUBLIC_APP_URL}/`)
+                    }
+                  >
+                    Go to Dashboard
+                  </button>
                 </SignedIn>
               </div>
             </div>
