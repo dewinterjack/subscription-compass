@@ -50,7 +50,7 @@ async function middleware(req: NextRequest) {
 
 export default clerkMiddleware((auth, request) => {
   if (!isPublicRoute(request)) {
-    auth().protect({ unauthorizedUrl: '/app/login' })
+    auth().protect()
   }
 
   return middleware(request)

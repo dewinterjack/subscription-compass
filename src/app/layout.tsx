@@ -30,7 +30,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider signInFallbackRedirectUrl={`${process.env.NEXT_PUBLIC_APP_URL}`}>
       <html lang="en" className={`${GeistSans.variable}`}>
         <head>
           <meta
