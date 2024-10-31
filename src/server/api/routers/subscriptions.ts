@@ -14,20 +14,20 @@ export const subscriptionRouter = createTRPCRouter({
           name: input.name,
           cost: input.cost,
           billingCycle: input.billingCycle,
-          createdBy: { connect: { id: ctx.session.user.id } },
+          createdBy: { connect: { id: ctx.user?.id } },
         },
       });
     }),
 
   getAll: protectedProcedure.query(async ({ ctx }) => {
     return ctx.db.subscription.findMany({
-      where: { createdBy: { id: ctx.session.user.id } },
+      where: { createdBy: { id: ctx.user?.id } },
       orderBy: { createdAt: "desc" },
     });
   }),
   count: protectedProcedure.query(async ({ ctx }) => {
     return ctx.db.subscription.count({
-      where: { createdBy: { id: ctx.session.user.id } },
+      where: { createdBy: { id: ctx.user?.id } },
     });
   }),
 

@@ -18,6 +18,7 @@ const config = {
       },
     ],
   },
+  trailingSlash: true,
 
   experimental: {
     serverActions: {

@@ -8,7 +8,7 @@ export const serviceRouter = createTRPCRouter({
   .query(async ({ ctx }) => {
     const plaidItems = await ctx.db.plaidItem.findMany({
       where: {
-        userId: ctx.session.user.id,
+        userId: ctx.user?.id,
       },
       select: {
         institutionName: true,
@@ -45,7 +45,7 @@ export const serviceRouter = createTRPCRouter({
 
         await ctx.db.plaidItem.create({
           data: {
-            userId: ctx.session?.user?.id,
+            userId: ctx.user?.id,
             accessToken: accessToken,
             itemId: itemID,
             institutionId: institutionId,
@@ -69,7 +69,7 @@ export const serviceRouter = createTRPCRouter({
   let cursor;
   const plaidItem = await ctx.db.plaidItem.findFirst({
     where: {
-      userId: ctx.session.user.id,
+      userId: ctx.user?.id,
     },
   });
   const accessToken = plaidItem?.accessToken;
@@ -112,7 +112,7 @@ export const serviceRouter = createTRPCRouter({
     .query(async ({ ctx }) => {
   const plaidItem = await ctx.db.plaidItem.findFirst({
     where: {
-      userId: ctx.session.user.id,
+      userId: ctx.user?.id,
     },
   });
   const accessToken = plaidItem?.accessToken;
