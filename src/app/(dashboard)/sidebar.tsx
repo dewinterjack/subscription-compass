@@ -80,7 +80,7 @@ export function DashboardSidebar() {
       <nav className="flex-1 space-y-2 px-2 py-4">
         <TooltipProvider>
           {[
-            { icon: Home, label: "Dashboard", href: "/" },
+            { icon: Home, label: "Home", href: "/" },
             {
               icon: ShoppingBasket,
               label: "Subscriptions",
