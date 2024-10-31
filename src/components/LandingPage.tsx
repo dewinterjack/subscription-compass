@@ -27,10 +27,10 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { CURRENCY_SYMBOL } from "@/lib/constants";
-import { usePostHog } from "posthog-js/react";
+import { SignInButton, SignedOut, SignedIn, UserButton } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 export default function LandingPage({ session }: { session: Session | null }) {
-  const posthog = usePostHog();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const sectionRefs = [
     useRef<HTMLElement>(null),
@@ -51,6 +51,8 @@ export default function LandingPage({ session }: { session: Session | null }) {
       },
     },
   };
+
+  const router = useRouter();
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -84,6 +86,9 @@ export default function LandingPage({ session }: { session: Session | null }) {
               <span className="text-[hsl(280,100%,70%)]">Subs</span>
               criptions
             </h1>
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
             <p className="mx-auto -mt-4 mb-8 max-w-[700px] text-center text-xl">
               Never miss a price change or discount. SubsCompass helps you
               manage all your subscriptions in one place, with a free base tier
@@ -124,19 +129,24 @@ export default function LandingPage({ session }: { session: Session | null }) {
                 <p className="text-center text-2xl text-white">
                   {session && <span>Logged in as {session.user?.name}</span>}
                 </p>
-                <button
-                  className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
-                  onClick={() => {
-                    if (session) {
-                      posthog?.identify(session.user?.id, {
-                        email: session.user?.email,
-                      });
+                <SignedOut>
+                  <SignInButton forceRedirectUrl="/dashboard">
+                    <button className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20">
+                      Sign in
+                    </button>
+                  </SignInButton>
+                </SignedOut>
+                <SignedIn>
+                  <button
+                    onClick={() =>
+                      router.push(
+                        `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
+                      )
                     }
-                    window.location.href = `${process.env.NEXT_PUBLIC_APP_URL}/login`;
-                  }}
-                >
-                  {session ? "Go to App" : "Get Started"}
-                </button>
+                  >
+                    Go to Dashboard
+                  </button>
+                </SignedIn>
               </div>
             </div>
           </div>

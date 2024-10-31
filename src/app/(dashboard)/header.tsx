@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import type { FormEvent } from "react";
-import Image from "next/image";
-import { Search, Sparkles, Bell } from "lucide-react";
+import { Search, Sparkles, Bell, UserIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,15 +15,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { SignOutButton } from "./sign-out-button";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-
-type HeaderProps = {
-  user: {
-    image?: string | null;
-  };
-};
+import { UserButton } from "@clerk/nextjs";
+import Link from "next/link";
 
 type Notification = {
   id: number;
@@ -33,7 +27,7 @@ type Notification = {
   isRead: boolean;
 };
 
-export default function DashboardHeader({ user }: HeaderProps) {
+export default function DashboardHeader() {
   const router = useRouter();
   const [notifications, setNotifications] = useState<Notification[]>([
     {
@@ -80,6 +74,11 @@ export default function DashboardHeader({ user }: HeaderProps) {
         >
           <Sparkles className="h-5 w-5 transition-all hover:scale-110" />
         </Button>
+        <Link href="/profile">
+          <Button variant="ghost" size="icon">
+            <UserIcon className="h-5 w-5" />
+          </Button>
+        </Link>
         <form className="flex-1" onSubmit={handleSearch}>
           <div className="relative">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -139,38 +138,7 @@ export default function DashboardHeader({ user }: HeaderProps) {
           )}
         </DropdownMenuContent>
       </DropdownMenu>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="outline"
-            size="icon"
-            className="overflow-hidden rounded-full"
-          >
-            <Image
-              src={user.image ?? "/placeholder-user.jpg"}
-              width={36}
-              height={36}
-              alt="Avatar"
-              className="overflow-hidden rounded-full"
-            />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => router.push("/profile")}>
-            Profile
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => toast.info("Not implemented yet")}>
-            Billing
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => toast.info("Not implemented yet")}>
-            Settings
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <SignOutButton />
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <UserButton />
     </header>
   );
 }

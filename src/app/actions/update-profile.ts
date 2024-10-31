@@ -6,7 +6,7 @@ export async function updateUserName(userId: string, name: string) {
   try {
     await db.user.update({
       where: { id: userId },
-      data: { name },
+      data: { firstName: name },
     });
   } catch (error) {
     console.error('Error updating user name:', error);

@@ -7,6 +7,7 @@ import { TRPCReactProvider } from "@/trpc/react";
 import { Toaster } from "sonner";
 import { PHProvider } from "./providers";
 import dynamic from "next/dynamic";
+import { ClerkProvider } from '@clerk/nextjs'
 
 const PostHogPageView = dynamic(() => import("./PostHogPageView"), {
   ssr: false,
@@ -29,24 +30,26 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${GeistSans.variable}`}>
-      <head>
-        <meta
-          name="google-site-verification"
-          content="0gSdTFwzVs4Qvw2pcRAQwKxJKgRAu3Pkw4ga6ihL5_8"
-        />
-      </head>
-      <body>
-        <TRPCReactProvider>
-          <PHProvider>
-            <PostHogPageView />
-            {children}
-          </PHProvider>
-          <ReactQueryDevtools initialIsOpen={false} />
-          <Toaster className="dark:hidden" />
-          <Toaster theme="dark" className="hidden dark:block" />
-        </TRPCReactProvider>
-      </body>
-    </html>
+    <ClerkProvider signInFallbackRedirectUrl={`${process.env.NEXT_PUBLIC_APP_URL}`}>
+      <html lang="en" className={`${GeistSans.variable}`}>
+        <head>
+          <meta
+            name="google-site-verification"
+            content="0gSdTFwzVs4Qvw2pcRAQwKxJKgRAu3Pkw4ga6ihL5_8"
+          />
+        </head>
+        <body>
+          <TRPCReactProvider>
+            <PHProvider>
+              <PostHogPageView />
+              {children}
+            </PHProvider>
+            <ReactQueryDevtools initialIsOpen={false} />
+            <Toaster className="dark:hidden" />
+            <Toaster theme="dark" className="hidden dark:block" />
+          </TRPCReactProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
