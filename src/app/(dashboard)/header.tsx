@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { Search, Sparkles, Bell } from "lucide-react";
+import { Search, Sparkles, Bell, UserIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,12 +18,7 @@ import {
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
-
-type HeaderProps = {
-  user: {
-    image?: string | null;
-  };
-};
+import Link from "next/link";
 
 type Notification = {
   id: number;
@@ -79,6 +74,11 @@ export default function DashboardHeader() {
         >
           <Sparkles className="h-5 w-5 transition-all hover:scale-110" />
         </Button>
+        <Link href="/profile">
+          <Button variant="ghost" size="icon">
+            <UserIcon className="h-5 w-5" />
+          </Button>
+        </Link>
         <form className="flex-1" onSubmit={handleSearch}>
           <div className="relative">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />

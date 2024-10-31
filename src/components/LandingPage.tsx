@@ -139,7 +139,9 @@ export default function LandingPage({ session }: { session: Session | null }) {
                 <SignedIn>
                   <button
                     onClick={() =>
-                      router.push(`${process.env.NEXT_PUBLIC_APP_URL}/`)
+                      router.push(
+                        `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
+                      )
                     }
                   >
                     Go to Dashboard
