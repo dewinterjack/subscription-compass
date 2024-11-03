@@ -30,8 +30,10 @@ import {
 } from "@/components/ui/card";
 import { toast } from "sonner";
 import { api } from "@/trpc/react";
+import ProPlanModal from "./pro-plan-modal";
 
 export function DashboardSidebar() {
+  const [isProModalOpen, setIsProModalOpen] = useState(false);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const pathname = usePathname();
   const { data: subscriptionCount } = api.subscription.count.useQuery();
@@ -43,6 +45,8 @@ export function DashboardSidebar() {
   const isActive = (path: string) => {
     return pathname === path;
   };
+
+  const isPro = false;
 
   return (
     <aside
@@ -136,17 +140,27 @@ export function DashboardSidebar() {
                 <CardDescription>Unlock all pro features</CardDescription>
               </CardHeader>
               <CardContent>
-                <Button
-                  size="sm"
-                  className="w-full"
-                  onClick={() => {
-                    toast.info("This feature is not yet implemented.");
-                  }}
-                >
-                  Upgrade
-                </Button>
+                {!isPro && (
+                  <Button
+                    size="sm"
+                    className="w-full"
+                    onClick={() => setIsProModalOpen(true)}
+                  >
+                    Upgrade
+                  </Button>
+                )}
               </CardContent>
             </>
+          )}
+          {isProModalOpen && (
+            <ProPlanModal
+              isOpen={isProModalOpen}
+              onClose={() => setIsProModalOpen(false)}
+              onSubscribe={() => {
+                // Handle subscription logic here
+                console.log("User subscribed to Pro plan");
+              }}
+            />
           )}
         </Card>
       </div>

@@ -319,6 +319,10 @@ export default function LandingPage({ session }: { session: Session | null }) {
                   </li>
                   <li className="flex items-center">
                     <Check className="mr-2 h-5 w-5" />
+                    <span>Bank account import</span>
+                  </li>
+                  <li className="flex items-center">
+                    <Check className="mr-2 h-5 w-5" />
                     <span>Priority customer support</span>
                   </li>
                 </ul>
