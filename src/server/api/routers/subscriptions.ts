@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { BillingCycle } from "@prisma/client";
@@ -84,5 +85,38 @@ export const subscriptionRouter = createTRPCRouter({
       orderBy: { plaidPredictedNextDate: 'asc' },
       take: 5,
     });
+  }),
+
+  getByCategory: protectedProcedure.query(async ({ ctx }) => {
+    const subscriptions = await ctx.db.subscription.findMany({
+      where: { createdBy: { id: ctx.user?.id } },
+    });
+
+    // Define a threshold for small transactions
+    const smallTransactionThreshold = 200; // Should be adjusted dynamically (percentiles?) relative to other transactions
+
+    // First group by category to count and sum
+    const categoryMap = subscriptions.reduce((acc, sub) => {
+      // @ts-expect-error todo
+      const metadata = JSON.parse(sub.plaidMetadata);
+      const category = sub.cost < smallTransactionThreshold 
+        ? "Other" 
+        : metadata.personal_finance_category.primary;
+      
+      if (!acc[category]) {
+        acc[category] = { count: 0, total: 0 };
+      }
+      
+      acc[category].count += 1;
+      acc[category].total += sub.cost / 100;
+      return acc;
+    }, {} as Record<string, { count: number; total: number }>);
+
+    // Convert to array of objects
+    return Object.entries(categoryMap).map(([category, stats]) => ({
+      category,
+      count: stats.count,
+      total: stats.total,
+    }));
   }),
 });
