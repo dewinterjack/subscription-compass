@@ -85,7 +85,7 @@ export function SubscriptionsSection() {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle>Your Subscriptions</CardTitle>
+          <CardTitle className="text-2xl">Your Subscriptions</CardTitle>
           <CardDescription>
             Manage and track your active subscriptions
           </CardDescription>

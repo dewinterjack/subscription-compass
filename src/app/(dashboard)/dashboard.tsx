@@ -40,8 +40,8 @@ export default function Dashboard() {
   if (isError) return <div>Error loading subscriptions.</div>;
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] w-full flex-col">
-      <main className="flex flex-1 flex-col gap-4 overflow-hidden p-4">
+    <div className="flex w-full flex-col">
+      <main className="flex flex-1 flex-col gap-4 p-4">
         <div className="grid h-full grid-cols-1 gap-4 md:grid-cols-[repeat(auto-fit,minmax(550px,1fr))] xl:grid-cols-[2fr,1fr]">
           <div className="flex w-full flex-col space-y-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
