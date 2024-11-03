@@ -23,8 +23,9 @@ export default function Dashboard() {
     isError,
   } = api.subscription.getAll.useQuery();
 
-  const totalMonthlyCost =
-    subscriptions?.reduce((total, sub) => total + sub.cost, 0) ?? 0;
+  const totalMonthlyCost = subscriptions
+    ? subscriptions.reduce((total, sub) => total + sub.cost, 0) / 100
+    : 0;
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error loading subscriptions.</div>;
