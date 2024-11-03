@@ -134,7 +134,7 @@ export default function Dashboard() {
                         <p className="text-sm text-muted-foreground">
                           Renews in{" "}
                           {differenceInDays(
-                            new Date(sub.plaidPredictedNextDate!),
+                            sub.plaidPredictedNextDate,
                             new Date(),
                           )}{" "}
                           days

@@ -172,6 +172,9 @@ export default function RecurringTransactions() {
     api.service.importTransactions.useMutation({
       onSuccess: () => {
         void utils.service.getRecurringTransactions.invalidate();
+        void utils.subscription.getUpcomingRenewals.invalidate();
+        void utils.subscription.getTotalMonthlyCost.invalidate();
+        void utils.subscription.getAll.invalidate();
       },
     });
 
