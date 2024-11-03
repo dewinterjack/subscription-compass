@@ -2,7 +2,12 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { DollarSignIcon, LightbulbIcon, ShoppingCartIcon } from "lucide-react";
+import {
+  DollarSignIcon,
+  LightbulbIcon,
+  ShoppingCartIcon,
+  Loader2,
+} from "lucide-react";
 import { api } from "@/trpc/react";
 import type { TransactionStream as PlaidTransactionStream } from "plaid";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -159,11 +164,16 @@ export default function RecurringTransactions() {
   const [selectedTransactions, setSelectedTransactions] = useState<Set<string>>(
     new Set(),
   );
+  const utils = api.useUtils();
   const { data: transactions, isLoading } =
     api.service.getRecurringTransactions.useQuery<TransactionStream[]>();
 
-  const { mutate: importTransactions } =
-    api.service.importTransactions.useMutation();
+  const { mutate: importTransactions, isPending: isImporting } =
+    api.service.importTransactions.useMutation({
+      onSuccess: () => {
+        void utils.service.getRecurringTransactions.invalidate();
+      },
+    });
 
   useEffect(() => {
     if (transactions) {
@@ -268,9 +278,16 @@ export default function RecurringTransactions() {
                 streamIds: Array.from(selectedTransactions),
               })
             }
-            disabled={selectedTransactions.size === 0}
+            disabled={selectedTransactions.size === 0 || isImporting}
           >
-            Import
+            {isImporting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Importing...
+              </>
+            ) : (
+              "Import"
+            )}
           </Button>
           <Button
             variant="outline"

@@ -27,11 +27,10 @@ model User {
 }
 
 model PlaidItem {
-    id              String         @id @default(cuid())
+    id              String         @id
     user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId          String
     accessToken     String
-    itemId          String
     institutionId   String?
     institutionName String?
     createdAt       DateTime       @default(now())
@@ -61,6 +60,8 @@ model Subscription {
 
 enum BillingCycle {
     Weekly
+    Biweekly
     Monthly
     Yearly
+    Unknown
 }

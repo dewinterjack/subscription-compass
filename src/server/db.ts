@@ -8,9 +8,12 @@ const createPrismaClient = () =>
       env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
   });
 
+export type Database = ReturnType<typeof createPrismaClient>;
+
 const globalForPrisma = globalThis as unknown as {
-  prisma: ReturnType<typeof createPrismaClient> | undefined;
+  prisma: Database | undefined;
 };
+
 
 export const db = globalForPrisma.prisma ?? createPrismaClient();
 
