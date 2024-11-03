@@ -20,11 +20,18 @@ export const subscriptionRouter = createTRPCRouter({
       });
     }),
 
+  // getAll: protectedProcedure.query(async ({ ctx }) => {
+  //   return ctx.db.subscription.findMany({
+  //     where: { createdBy: { id: ctx.user?.id } },
+  //     orderBy: { createdAt: "desc" },
+  //   });
+  // }),
   getAll: protectedProcedure.query(async ({ ctx }) => {
-    return ctx.db.subscription.findMany({
+    const subscriptions = ctx.db.subscription.findMany({
       where: { createdBy: { id: ctx.user?.id } },
       orderBy: { createdAt: "desc" },
     });
+    return subscriptions;
   }),
   count: protectedProcedure.query(async ({ ctx }) => {
     return ctx.db.subscription.count({

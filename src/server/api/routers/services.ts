@@ -121,11 +121,16 @@ export const serviceRouter = createTRPCRouter({
       const transactionsToImport = recurringTransactions.data.outflow_streams.filter((stream) => 
         input.streamIds.includes(stream.stream_id)
       );
-      await ctx.db.subscription.createMany({
+      return await ctx.db.subscription.createMany({
         data: transactionsToImport.map((stream) => ({
           name: stream.merchant_name!, 
           cost: stream.average_amount.amount!,
           billingCycle: mapPlaidFrequencyToBillingCycle(stream.frequency),
+          firstDate: stream.first_date,
+          lastDate: stream.last_date,
+          isActive: true,
+          // library needs updating?
+          plaidPredictedNextDate: stream.predicted_next_date,
           plaidItemId: itemId,
           plaidAccountId: stream.account_id,
           plaidStreamId: stream.stream_id,
