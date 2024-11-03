@@ -41,19 +41,23 @@ model PlaidItem {
 }
 
 model Subscription {
-    id             String       @id @default(cuid())
-    name           String
-    cost           Int
-    billingCycle   BillingCycle
-    plaidItem      PlaidItem?   @relation(fields: [plaidItemId], references: [id])
-    plaidItemId    String?
-    plaidAccountId String?
-    plaidStreamId  String?
-    plaidMetadata  Json?
-    createdBy      User         @relation(fields: [createdById], references: [id])
-    createdById    String
-    createdAt      DateTime     @default(now())
-    updatedAt      DateTime     @updatedAt
+    id                     String       @id @default(cuid())
+    name                   String
+    cost                   Int
+    billingCycle           BillingCycle
+    firstDate              String?
+    lastDate               String?
+    isActive               Boolean      @default(true)
+    plaidPredictedNextDate String?
+    plaidItem              PlaidItem?   @relation(fields: [plaidItemId], references: [id])
+    plaidItemId            String?
+    plaidAccountId         String?
+    plaidStreamId          String?
+    plaidMetadata          Json?
+    createdBy              User         @relation(fields: [createdById], references: [id])
+    createdById            String
+    createdAt              DateTime     @default(now())
+    updatedAt              DateTime     @updatedAt
 
     @@index([name])
 }
