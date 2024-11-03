@@ -1,18 +1,10 @@
 "use client"
 
-import { useMemo } from "react"
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart"
 import { api } from "@/trpc/react"
 import LoadingDots from "./icons/loading-dots"
-
-// This type matches the structure of the data returned by your function
-type SubscriptionData = {
-  category: string
-  count: number
-  total: number
-}
 
 // This would typically come from your API call
 
@@ -27,18 +19,13 @@ const COLORS = [
 export function SubscriptionPieChart() {
   const { data: categories, isLoading } = api.subscription.getByCategory.useQuery();
 
-
-  const totalSpent = useMemo(() => {
-    return categories?.reduce((acc, curr) => acc + curr.total, 0) || 0
-  }, [])
-
   const chartConfig = categories?.reduce((acc, { category }) => {
     acc[category] = {
       label: category.toLowerCase().replace(/_/g, ' '),
-      color: COLORS[Object.keys(acc).length % COLORS.length],
+      color: COLORS[Object.keys(acc).length % COLORS.length] ?? "hsl(var(--default-color))",
     }
     return acc
-  }, {} as Record<string, { label: string; color: string }>)
+  }, {} as Record<string, { label: string; color: string }>) ?? {};
 
   if(isLoading) {
     return (
@@ -66,7 +53,7 @@ export function SubscriptionPieChart() {
                 label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                 labelLine={false}
               >
-                {categories.map((entry, index) => (
+                {categories?.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
