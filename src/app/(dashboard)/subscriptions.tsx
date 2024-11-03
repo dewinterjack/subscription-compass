@@ -31,12 +31,25 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import ProPlanModal from "./pro-plan-modal";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 export function SubscriptionsSection() {
+  const isXLScreen = useMediaQuery("(min-width: 1280px)");
+  const isLgScreen = useMediaQuery("(min-width: 1024px)");
+  const isMdScreen = useMediaQuery("(min-width: 768px)");
+
   const [isProModalOpen, setIsProModalOpen] = useState(false);
   const { data: subscriptions, refetch } = api.subscription.getAll.useQuery();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const router = useRouter();
+
+  const getVisibleItems = () => {
+    if (isXLScreen) return 8;
+    if (isLgScreen) return 6;
+    if (isMdScreen) return 4;
+    return 3;
+  };
+
   const handleAddSubscription = api.subscription.create.useMutation({
     onSuccess: () => {
       toast.success("Subscription added successfully.");
@@ -106,7 +119,7 @@ export function SubscriptionsSection() {
           </Button>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pb-0">
         {subscriptions && subscriptions.length === 0 ? (
           <div className="flex flex-col items-center justify-center space-y-3 py-12">
             <div className="rounded-full bg-muted p-3">
@@ -132,7 +145,7 @@ export function SubscriptionsSection() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {subscriptions?.map((subscription) => (
+              {subscriptions?.slice(0, getVisibleItems()).map((subscription) => (
                 <TableRow key={subscription.id}>
                   <TableCell className="font-medium">
                     {subscription.name}
@@ -158,7 +171,7 @@ export function SubscriptionsSection() {
           </Table>
         )}
       </CardContent>
-      <CardFooter className="flex justify-between">
+      <CardFooter className="flex justify-end">
         <Button variant="outline" onClick={() => router.push("/subscriptions")}>
           View All
         </Button>

@@ -31,10 +31,10 @@ export default function Dashboard() {
   if (isError) return <div>Error loading subscriptions.</div>;
 
   return (
-    <div className="flex w-full flex-col">
-      <main className="flex flex-1 flex-col gap-4 p-4">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-[repeat(auto-fit,minmax(550px,1fr))] xl:grid-cols-[2fr,1fr]">
-          <div className="w-full space-y-4">
+    <div className="flex w-full flex-col h-[calc(100vh-4rem)]">
+      <main className="flex flex-1 flex-col gap-4 p-4 overflow-hidden">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-[repeat(auto-fit,minmax(550px,1fr))] xl:grid-cols-[2fr,1fr] h-full">
+          <div className="w-full space-y-4 flex flex-col">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
               <Card>
                 <CardHeader className="pb-2">
@@ -94,7 +94,9 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
             </div>
-            <SubscriptionsSection />
+            <div className="flex-grow overflow-hidden">
+              <SubscriptionsSection />
+            </div>
           </div>
 
           <div className="w-full space-y-4">
