@@ -7,7 +7,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -23,7 +22,6 @@ import { AddSubscriptionDialog } from "./add-subscription-dialog";
 import { toast } from "sonner";
 import { api } from "@/trpc/react";
 import { CURRENCY_SYMBOL } from "@/lib/constants";
-import { useRouter } from "next/navigation";
 import {
   Tooltip,
   TooltipContent,
@@ -31,24 +29,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import ProPlanModal from "./pro-plan-modal";
-import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 export function SubscriptionsSection() {
-  const isXLScreen = useMediaQuery("(min-width: 1280px)");
-  const isLgScreen = useMediaQuery("(min-width: 1024px)");
-  const isMdScreen = useMediaQuery("(min-width: 768px)");
-
   const [isProModalOpen, setIsProModalOpen] = useState(false);
   const { data: subscriptions, refetch } = api.subscription.getAll.useQuery();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const router = useRouter();
-
-  const getVisibleItems = () => {
-    if (isXLScreen) return 8;
-    if (isLgScreen) return 6;
-    if (isMdScreen) return 4;
-    return 3;
-  };
 
   const handleAddSubscription = api.subscription.create.useMutation({
     onSuccess: () => {
@@ -143,41 +128,34 @@ export function SubscriptionsSection() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {subscriptions
-                ?.slice(0, getVisibleItems())
-                .map((subscription) => (
-                  <TableRow key={subscription.id}>
-                    <TableCell className="font-medium">
-                      {subscription.name}
-                    </TableCell>
-                    <TableCell>
-                      {CURRENCY_SYMBOL}
-                      {(subscription.cost / 100).toFixed(2)}
-                    </TableCell>
-                    <TableCell>{subscription.billingCycle}</TableCell>
-                    <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        onClick={() =>
-                          handleDeleteSubscription.mutate({
-                            id: subscription.id,
-                          })
-                        }
-                      >
-                        Delete
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
+              {subscriptions?.map((subscription) => (
+                <TableRow key={subscription.id}>
+                  <TableCell className="font-medium">
+                    {subscription.name}
+                  </TableCell>
+                  <TableCell>
+                    {CURRENCY_SYMBOL}
+                    {(subscription.cost / 100).toFixed(2)}
+                  </TableCell>
+                  <TableCell>{subscription.billingCycle}</TableCell>
+                  <TableCell className="text-right">
+                    <Button
+                      variant="ghost"
+                      onClick={() =>
+                        handleDeleteSubscription.mutate({
+                          id: subscription.id,
+                        })
+                      }
+                    >
+                      Delete
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         )}
       </CardContent>
-      <CardFooter className="flex justify-end">
-        <Button variant="outline" onClick={() => router.push("/subscriptions")}>
-          View All
-        </Button>
-      </CardFooter>
       <AddSubscriptionDialog
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
