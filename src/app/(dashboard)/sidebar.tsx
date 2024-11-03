@@ -51,7 +51,7 @@ export function DashboardSidebar() {
   return (
     <aside
       className={clsx(
-        "flex flex-col border-r bg-background transition-all duration-300",
+        "flex flex-col h-screen border-r bg-background transition-all duration-300 sticky top-0",
         {
           "w-64": isSidebarExpanded,
           "w-14": !isSidebarExpanded,
