@@ -45,10 +45,10 @@ model Subscription {
     name                   String
     cost                   Int
     billingCycle           BillingCycle
-    firstDate              String?
-    lastDate               String?
+    firstDate              DateTime?
+    lastDate               DateTime?
     isActive               Boolean      @default(true)
-    plaidPredictedNextDate String?
+    plaidPredictedNextDate DateTime?
     plaidItem              PlaidItem?   @relation(fields: [plaidItemId], references: [id])
     plaidItemId            String?
     plaidAccountId         String?

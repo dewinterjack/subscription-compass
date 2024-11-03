@@ -1,7 +1,7 @@
 -- AlterTable
 ALTER TABLE "Subscription"
-    ADD COLUMN "firstDate" TEXT,
+    ADD COLUMN "firstDate" TIMESTAMP(3),
     ADD COLUMN "isActive" BOOLEAN NOT NULL DEFAULT TRUE,
-    ADD COLUMN "lastDate" TEXT,
-    ADD COLUMN "plaidPredictedNextDate" TEXT;
+    ADD COLUMN "lastDate" TIMESTAMP(3),
+    ADD COLUMN "plaidPredictedNextDate" TIMESTAMP(3);
 

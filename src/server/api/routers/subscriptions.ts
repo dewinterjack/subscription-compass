@@ -19,13 +19,6 @@ export const subscriptionRouter = createTRPCRouter({
         },
       });
     }),
-
-  // getAll: protectedProcedure.query(async ({ ctx }) => {
-  //   return ctx.db.subscription.findMany({
-  //     where: { createdBy: { id: ctx.user?.id } },
-  //     orderBy: { createdAt: "desc" },
-  //   });
-  // }),
   getAll: protectedProcedure.query(async ({ ctx }) => {
     const subscriptions = ctx.db.subscription.findMany({
       where: { createdBy: { id: ctx.user?.id } },
@@ -64,4 +57,32 @@ export const subscriptionRouter = createTRPCRouter({
         where: { id: input.id },
       });
     }),
+
+  getTotalMonthlyCost: protectedProcedure.query(async ({ ctx }) => {
+    const subscriptions = await ctx.db.subscription.findMany({
+      where: { createdBy: { id: ctx.user?.id } },
+      select: { cost: true },
+    });
+    
+    const totalCost = subscriptions.reduce((total, sub) => total + sub.cost, 0);
+    return totalCost / 100;
+  }),
+
+  getUpcomingRenewals: protectedProcedure.query(async ({ ctx }) => {
+    const sevenDaysFromNow = new Date();
+    sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7);
+
+    return ctx.db.subscription.findMany({
+      where: {
+        createdBy: { id: ctx.user?.id },
+        plaidPredictedNextDate: {
+          not: null,
+          lte: sevenDaysFromNow,
+          gte: new Date(),
+        },
+      },
+      orderBy: { plaidPredictedNextDate: 'asc' },
+      take: 5,
+    });
+  }),
 });

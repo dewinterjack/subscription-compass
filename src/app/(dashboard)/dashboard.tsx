@@ -15,17 +15,17 @@ import { Progress } from "@/components/ui/progress";
 import { SubscriptionsSection } from "./subscriptions";
 import { api } from "@/trpc/react";
 import { CURRENCY_SYMBOL } from "@/lib/constants";
+import { differenceInDays } from "date-fns";
 
 export default function Dashboard() {
   const {
-    data: subscriptions,
+    data: upcomingRenewals,
     isLoading,
     isError,
-  } = api.subscription.getAll.useQuery();
+  } = api.subscription.getUpcomingRenewals.useQuery();
 
-  const totalMonthlyCost = subscriptions
-    ? subscriptions.reduce((total, sub) => total + sub.cost, 0) / 100
-    : 0;
+  const { data: totalMonthlyCost = 0 } =
+    api.subscription.getTotalMonthlyCost.useQuery();
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error loading subscriptions.</div>;
@@ -40,7 +40,7 @@ export default function Dashboard() {
                 <CardHeader className="pb-2">
                   <CardDescription>Total Subscriptions</CardDescription>
                   <CardTitle className="text-4xl">
-                    {subscriptions?.length ?? 0}
+                    {upcomingRenewals?.length ?? 0}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -100,11 +100,24 @@ export default function Dashboard() {
           <div className="w-full space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Upcoming Renewals</CardTitle>
-                <CardDescription>Next 7 days</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Upcoming Renewals</CardTitle>
+                    <CardDescription>Next 7 days</CardDescription>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      toast.info("View all renewals not yet implemented")
+                    }
+                  >
+                    View More
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                {subscriptions?.slice(0, 3).map((sub) => (
+                {upcomingRenewals?.map((sub) => (
                   <div
                     key={sub.id}
                     className="flex items-center justify-between"
@@ -113,10 +126,16 @@ export default function Dashboard() {
                       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
                         <CreditCard className="h-5 w-5" />
                       </div>
+
                       <div>
                         <p className="font-medium">{sub.name}</p>
                         <p className="text-sm text-muted-foreground">
-                          Renews in 30 days
+                          Renews in{" "}
+                          {differenceInDays(
+                            new Date(sub.plaidPredictedNextDate!),
+                            new Date(),
+                          )}{" "}
+                          days
                         </p>
                       </div>
                     </div>
