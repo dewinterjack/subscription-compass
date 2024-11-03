@@ -16,6 +16,7 @@ import { SubscriptionsSection } from "./subscriptions";
 import { api } from "@/trpc/react";
 import { CURRENCY_SYMBOL } from "@/lib/constants";
 import { differenceInDays } from "date-fns";
+import LoadingDots from "@/components/icons/loading-dots";
 
 export default function Dashboard() {
   const {
@@ -24,32 +25,47 @@ export default function Dashboard() {
     isError,
   } = api.subscription.getUpcomingRenewals.useQuery();
 
+  const { data: subscriptionCount, isLoading: isSubscriptionCountLoading } =
+    api.subscription.count.useQuery();
+
   const { data: totalMonthlyCost = 0 } =
     api.subscription.getTotalMonthlyCost.useQuery();
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading)
+    return (
+      <div className="flex h-full items-center justify-center">
+        <LoadingDots />
+      </div>
+    );
   if (isError) return <div>Error loading subscriptions.</div>;
 
   return (
-    <div className="flex w-full flex-col h-[calc(100vh-4rem)]">
-      <main className="flex flex-1 flex-col gap-4 p-4 overflow-hidden">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-[repeat(auto-fit,minmax(550px,1fr))] xl:grid-cols-[2fr,1fr] h-full">
-          <div className="w-full space-y-4 flex flex-col">
+    <div className="flex h-[calc(100vh-4rem)] w-full flex-col">
+      <main className="flex flex-1 flex-col gap-4 overflow-hidden p-4">
+        <div className="grid h-full grid-cols-1 gap-4 md:grid-cols-[repeat(auto-fit,minmax(550px,1fr))] xl:grid-cols-[2fr,1fr]">
+          <div className="flex w-full flex-col space-y-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
               <Card>
-                <CardHeader className="pb-2">
-                  <CardDescription>Total Subscriptions</CardDescription>
-                  <CardTitle className="text-4xl">
-                    {upcomingRenewals?.length ?? 0}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-xs text-muted-foreground">
-                    +2 new this month
+                {isSubscriptionCountLoading ? (
+                  <div className="flex h-full items-center justify-center">
+                    <LoadingDots />
                   </div>
-                </CardContent>
+                ) : (
+                  <>
+                    <CardHeader className="pb-2">
+                      <CardDescription>Total Subscriptions</CardDescription>
+                      <CardTitle className="text-4xl">
+                        {subscriptionCount}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-xs text-muted-foreground">
+                        +2 new this month
+                      </div>
+                    </CardContent>
+                  </>
+                )}
               </Card>
-
               <Card>
                 <CardHeader className="pb-2">
                   <CardDescription>Monthly Spend</CardDescription>

@@ -71,12 +71,10 @@ export function SubscriptionsSection() {
     },
   });
 
-  // Placeholder for checking if user is pro
   const isProUser = false;
 
   const handleImport = () => {
     if (isProUser) {
-      // Implement import functionality for pro users
       toast.success("Not implemented yet.");
     } else {
       setIsProModalOpen(true);
@@ -145,28 +143,32 @@ export function SubscriptionsSection() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {subscriptions?.slice(0, getVisibleItems()).map((subscription) => (
-                <TableRow key={subscription.id}>
-                  <TableCell className="font-medium">
-                    {subscription.name}
-                  </TableCell>
-                  <TableCell>
-                    {CURRENCY_SYMBOL}
-                    {(subscription.cost / 100).toFixed(2)}
-                  </TableCell>
-                  <TableCell>{subscription.billingCycle}</TableCell>
-                  <TableCell className="text-right">
-                    <Button
-                      variant="ghost"
-                      onClick={() =>
-                        handleDeleteSubscription.mutate({ id: subscription.id })
-                      }
-                    >
-                      Delete
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {subscriptions
+                ?.slice(0, getVisibleItems())
+                .map((subscription) => (
+                  <TableRow key={subscription.id}>
+                    <TableCell className="font-medium">
+                      {subscription.name}
+                    </TableCell>
+                    <TableCell>
+                      {CURRENCY_SYMBOL}
+                      {(subscription.cost / 100).toFixed(2)}
+                    </TableCell>
+                    <TableCell>{subscription.billingCycle}</TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="ghost"
+                        onClick={() =>
+                          handleDeleteSubscription.mutate({
+                            id: subscription.id,
+                          })
+                        }
+                      >
+                        Delete
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
         )}
@@ -187,7 +189,6 @@ export function SubscriptionsSection() {
         isOpen={isProModalOpen}
         onClose={() => setIsProModalOpen(false)}
         onSubscribe={() => {
-          // Handle subscription logic here
           console.log("User subscribed to Pro plan");
         }}
       />

@@ -28,7 +28,6 @@ import {
   CardDescription,
   CardTitle,
 } from "@/components/ui/card";
-import { toast } from "sonner";
 import { api } from "@/trpc/react";
 import ProPlanModal from "./pro-plan-modal";
 
@@ -51,7 +50,7 @@ export function DashboardSidebar() {
   return (
     <aside
       className={clsx(
-        "flex flex-col h-screen border-r bg-background transition-all duration-300 sticky top-0",
+        "sticky top-0 flex h-screen flex-col border-r bg-background transition-all duration-300",
         {
           "w-64": isSidebarExpanded,
           "w-14": !isSidebarExpanded,
