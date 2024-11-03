@@ -1,12 +1,13 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import { BillingCycle } from "@prisma/client";
 
 export const subscriptionRouter = createTRPCRouter({
   create: protectedProcedure
     .input(z.object({
       name: z.string().min(1),
       cost: z.number().positive(),
-      billingCycle: z.enum(["Weekly", "Monthly", "Yearly"]),
+      billingCycle: z.nativeEnum(BillingCycle),
     }))
     .mutation(async ({ ctx, input }) => {
       return ctx.db.subscription.create({
@@ -36,7 +37,7 @@ export const subscriptionRouter = createTRPCRouter({
       id: z.string(),
       name: z.string().min(1).optional(),
       cost: z.number().positive().optional(),
-      billingCycle: z.enum(["Weekly", "Monthly", "Yearly"]).optional(),
+      billingCycle: z.nativeEnum(BillingCycle).optional(),
     }))
     .mutation(async ({ ctx, input }) => {
       return ctx.db.subscription.update({

@@ -220,6 +220,7 @@ export function AddSubscriptionDialog({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Weekly">Weekly</SelectItem>
+                  <SelectItem value="Biweekly">Biweekly</SelectItem>
                   <SelectItem value="Monthly">Monthly</SelectItem>
                   <SelectItem value="Yearly">Yearly</SelectItem>
                 </SelectContent>
