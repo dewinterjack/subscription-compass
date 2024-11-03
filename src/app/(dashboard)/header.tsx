@@ -16,7 +16,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 
@@ -28,7 +27,6 @@ type Notification = {
 };
 
 export default function DashboardHeader() {
-  const router = useRouter();
   const [notifications, setNotifications] = useState<Notification[]>([
     {
       id: 1,
