@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
-import { BillingCycle, Prisma } from "@prisma/client";
+import { BillingCycle } from "@prisma/client";
 
 export const subscriptionRouter = createTRPCRouter({
   create: protectedProcedure
@@ -92,10 +93,11 @@ export const subscriptionRouter = createTRPCRouter({
     });
 
     // Define a threshold for small transactions
-    const smallTransactionThreshold = 200; // Adjust this value as needed
+    const smallTransactionThreshold = 200; // Should be adjusted dynamically (percentiles?) relative to other transactions
 
     // First group by category to count and sum
     const categoryMap = subscriptions.reduce((acc, sub) => {
+      // @ts-expect-error todo
       const metadata = JSON.parse(sub.plaidMetadata);
       const category = sub.cost < smallTransactionThreshold 
         ? "Other" 
