@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
-import { BillingCycle } from "@prisma/client";
+import { BillingCycle, Prisma } from "@prisma/client";
 
 export const subscriptionRouter = createTRPCRouter({
   create: protectedProcedure
@@ -84,5 +84,32 @@ export const subscriptionRouter = createTRPCRouter({
       orderBy: { plaidPredictedNextDate: 'asc' },
       take: 5,
     });
+  }),
+
+  getByCategory: protectedProcedure.query(async ({ ctx }) => {
+    const subscriptions = await ctx.db.subscription.findMany({
+      where: { createdBy: { id: ctx.user?.id } },
+    });
+
+    // First group by category to count and sum
+    const categoryMap = subscriptions.reduce((acc, sub) => {
+      const metadata = JSON.parse(sub.plaidMetadata);
+      const category = metadata.personal_finance_category.primary;
+      
+      if (!acc[category]) {
+        acc[category] = { count: 0, total: 0 };
+      }
+      
+      acc[category].count += 1;
+      acc[category].total += sub.cost;
+      return acc;
+    }, {} as Record<string, { count: number; total: number }>);
+
+    // Convert to array of objects
+    return Object.entries(categoryMap).map(([category, stats]) => ({
+      category,
+      count: stats.count,
+      total: stats.total,
+    }));
   }),
 });

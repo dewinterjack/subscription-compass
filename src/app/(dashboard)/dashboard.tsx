@@ -12,11 +12,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { SubscriptionsSection } from "./subscriptions";
 import { api } from "@/trpc/react";
 import { CURRENCY_SYMBOL } from "@/lib/constants";
 import { differenceInDays } from "date-fns";
 import LoadingDots from "@/components/icons/loading-dots";
+import { SubscriptionPieChart } from "@/components/subscription-pie-chart";
 
 export default function Dashboard() {
   const {
@@ -111,7 +111,7 @@ export default function Dashboard() {
               </Card>
             </div>
             <div className="flex-grow overflow-hidden">
-              <SubscriptionsSection />
+              <SubscriptionPieChart />
             </div>
           </div>
 

@@ -2,21 +2,8 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { client } from "@/server/plaid";
 import { type CountryCode, RecurringTransactionFrequency } from "plaid";
-import type { Database } from "@/server/db";
 import type { BillingCycle } from "@prisma/client";
-
-async function getPlaidAccessToken(userId: string, db: Database) {
-  const plaidItem = await db.plaidItem.findFirst({
-    where: {
-      userId: userId,
-    },
-  });
-  const accessToken = plaidItem?.accessToken;
-  if (!accessToken) {
-    throw new Error("No access token found");
-  }
-  return { accessToken, itemId: plaidItem?.id };
-}
+import { getPlaidAccessToken } from "@/lib/utils";
 
 function mapPlaidFrequencyToBillingCycle(frequency: RecurringTransactionFrequency): BillingCycle {
   switch (frequency) {
