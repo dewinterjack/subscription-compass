@@ -27,36 +27,34 @@ model User {
 }
 
 model PlaidItem {
-    id              String   @id @default(cuid())
-    user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    id              String         @id @default(cuid())
+    user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId          String
     accessToken     String
     itemId          String
     institutionId   String?
     institutionName String?
-    createdAt       DateTime @default(now())
-    updatedAt       DateTime @updatedAt
+    createdAt       DateTime       @default(now())
+    updatedAt       DateTime       @updatedAt
+    Subscription    Subscription[]
 
     @@index([userId])
 }
 
-model VerificationToken {
-    identifier String
-    token      String   @unique
-    expires    DateTime
-
-    @@unique([identifier, token])
-}
-
 model Subscription {
-    id           String       @id @default(cuid())
-    name         String
-    cost         Float
-    billingCycle BillingCycle
-    createdBy    User         @relation(fields: [createdById], references: [id])
-    createdById  String
-    createdAt    DateTime     @default(now())
-    updatedAt    DateTime     @updatedAt
+    id             String       @id @default(cuid())
+    name           String
+    cost           Float
+    billingCycle   BillingCycle
+    plaidItem      PlaidItem?   @relation(fields: [plaidItemId], references: [id])
+    plaidItemId    String?
+    plaidAccountId String?
+    plaidStreamId  String?
+    plaidMetadata  Json?
+    createdBy      User         @relation(fields: [createdById], references: [id])
+    createdById    String
+    createdAt      DateTime     @default(now())
+    updatedAt      DateTime     @updatedAt
 
     @@index([name])
 }
