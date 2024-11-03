@@ -125,4 +125,9 @@ export const serviceRouter = createTRPCRouter({
   });
   return recurringTransactions.data.outflow_streams;
     }),
+  importTransactions: protectedProcedure
+    .input(z.object({ streamIds: z.array(z.string()) }))
+    .mutation(async ({ ctx, input }) => {
+      console.log(input.streamIds);
+    }),
 });

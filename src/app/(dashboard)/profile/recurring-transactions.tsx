@@ -15,7 +15,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface TransactionStream extends PlaidTransactionStream {
   predicted_next_date: string;
@@ -48,15 +49,27 @@ const getCategoryIcon = (category: string[]) => {
 
 type TransactionProps = {
   transaction: TransactionStream;
+  selectedTransactions: Set<string>;
+  toggleTransaction: (streamId: string) => void;
 };
 
-const TransactionCard = ({ transaction }: TransactionProps) => {
+const TransactionCard = ({
+  transaction,
+  selectedTransactions,
+  toggleTransaction,
+}: TransactionProps) => {
   return (
     <Card className="mb-4">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">
-          {transaction.merchant_name}
-        </CardTitle>
+        <div className="flex items-center gap-2">
+          <Checkbox
+            checked={selectedTransactions.has(transaction.stream_id)}
+            onCheckedChange={() => toggleTransaction(transaction.stream_id)}
+          />
+          <CardTitle className="text-sm font-medium">
+            {transaction.merchant_name}
+          </CardTitle>
+        </div>
         <Badge variant={transaction.is_active ? "default" : "secondary"}>
           {transaction.is_active ? "Active" : "Inactive"}
         </Badge>
@@ -143,14 +156,52 @@ const TransactionCard = ({ transaction }: TransactionProps) => {
 
 export default function RecurringTransactions() {
   const [viewMode, setViewMode] = useState<"detailed" | "simple">("detailed");
+  const [selectedTransactions, setSelectedTransactions] = useState<Set<string>>(
+    new Set(),
+  );
   const { data: transactions, isLoading } =
     api.service.getRecurringTransactions.useQuery<TransactionStream[]>();
+
+  const { mutate: importTransactions } =
+    api.service.importTransactions.useMutation();
+
+  useEffect(() => {
+    if (transactions) {
+      setSelectedTransactions(new Set(transactions.map((t) => t.stream_id)));
+    }
+  }, [transactions]);
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked && transactions) {
+      setSelectedTransactions(new Set(transactions.map((t) => t.stream_id)));
+    } else {
+      setSelectedTransactions(new Set());
+    }
+  };
+
+  const toggleTransaction = (streamId: string) => {
+    setSelectedTransactions((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(streamId)) {
+        newSet.delete(streamId);
+      } else {
+        newSet.add(streamId);
+      }
+      return newSet;
+    });
+  };
 
   const SimpleTableView = () => (
     <div className="relative">
       <Table>
         <TableHeader className="sticky top-0 z-10 border-b bg-background">
           <TableRow>
+            <TableHead className="w-[50px]">
+              <Checkbox
+                checked={transactions?.length === selectedTransactions.size}
+                onCheckedChange={handleSelectAll}
+              />
+            </TableHead>
             <TableHead>Merchant</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Category</TableHead>
@@ -162,6 +213,14 @@ export default function RecurringTransactions() {
         <TableBody>
           {transactions?.map((transaction) => (
             <TableRow key={transaction.stream_id}>
+              <TableCell>
+                <Checkbox
+                  checked={selectedTransactions.has(transaction.stream_id)}
+                  onCheckedChange={() =>
+                    toggleTransaction(transaction.stream_id)
+                  }
+                />
+              </TableCell>
               <TableCell>{transaction.merchant_name}</TableCell>
               <TableCell>
                 <Badge
@@ -192,15 +251,36 @@ export default function RecurringTransactions() {
   return (
     <div className="container mx-auto p-4">
       <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Recurring Transactions</h1>
-        <Button
-          variant="outline"
-          onClick={() =>
-            setViewMode(viewMode === "detailed" ? "simple" : "detailed")
-          }
-        >
-          {viewMode === "detailed" ? "Compact View" : "Detailed View"}
-        </Button>
+        <div className="flex items-center gap-4">
+          <h1 className="text-2xl font-bold">Recurring Transactions</h1>
+          <div className="flex items-center gap-2">
+            <Checkbox
+              checked={transactions?.length === selectedTransactions.size}
+              onCheckedChange={handleSelectAll}
+            />
+            <span className="text-sm text-muted-foreground">Select All</span>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={() =>
+              importTransactions({
+                streamIds: Array.from(selectedTransactions),
+              })
+            }
+            disabled={selectedTransactions.size === 0}
+          >
+            Import
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() =>
+              setViewMode(viewMode === "detailed" ? "simple" : "detailed")
+            }
+          >
+            {viewMode === "detailed" ? "Compact View" : "Detailed View"}
+          </Button>
+        </div>
       </div>
       <ScrollArea className="h-[600px] rounded-md border p-4">
         {isLoading && <div>Loading...</div>}
@@ -210,6 +290,8 @@ export default function RecurringTransactions() {
             <TransactionCard
               key={transaction.stream_id}
               transaction={transaction}
+              selectedTransactions={selectedTransactions}
+              toggleTransaction={toggleTransaction}
             />
           ))}
         {!isLoading && viewMode === "simple" && <SimpleTableView />}
