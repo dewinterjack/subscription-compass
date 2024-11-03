@@ -121,7 +121,7 @@ export default function Dashboard() {
                     </div>
                     <span className="font-medium">
                       {CURRENCY_SYMBOL}
-                      {sub.cost.toFixed(2)}
+                      {(sub.cost / 100).toFixed(2)}
                     </span>
                   </div>
                 ))}
