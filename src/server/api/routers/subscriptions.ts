@@ -91,17 +91,22 @@ export const subscriptionRouter = createTRPCRouter({
       where: { createdBy: { id: ctx.user?.id } },
     });
 
+    // Define a threshold for small transactions
+    const smallTransactionThreshold = 200; // Adjust this value as needed
+
     // First group by category to count and sum
     const categoryMap = subscriptions.reduce((acc, sub) => {
       const metadata = JSON.parse(sub.plaidMetadata);
-      const category = metadata.personal_finance_category.primary;
+      const category = sub.cost < smallTransactionThreshold 
+        ? "Other" 
+        : metadata.personal_finance_category.primary;
       
       if (!acc[category]) {
         acc[category] = { count: 0, total: 0 };
       }
       
       acc[category].count += 1;
-      acc[category].total += sub.cost;
+      acc[category].total += sub.cost / 100;
       return acc;
     }, {} as Record<string, { count: number; total: number }>);
 

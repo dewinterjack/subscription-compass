@@ -51,7 +51,6 @@ export function SubscriptionPieChart() {
     <Card className="w-full max-w-3xl">
       <CardHeader>
         <CardTitle>Subscription Spending by Category</CardTitle>
-        <CardDescription>Total spent: ${totalSpent.toFixed(2)}</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[300px]">
@@ -72,7 +71,6 @@ export function SubscriptionPieChart() {
                 ))}
               </Pie>
               <Tooltip content={<ChartTooltipContent />} />
-              <Legend />
             </PieChart>
           </ResponsiveContainer>
         </ChartContainer>
