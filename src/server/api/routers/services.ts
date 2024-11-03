@@ -129,8 +129,7 @@ export const serviceRouter = createTRPCRouter({
           firstDate: new Date(stream.first_date),
           lastDate: new Date(stream.last_date),
           isActive: true,
-          // library needs updating?
-          plaidPredictedNextDate: new Date(stream.predicted_next_date),
+          ...(stream.predicted_next_date && { plaidPredictedNextDate: new Date(stream.predicted_next_date) }),
           plaidItemId: itemId,
           plaidAccountId: stream.account_id,
           plaidStreamId: stream.stream_id,
