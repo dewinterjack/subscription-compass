@@ -72,7 +72,7 @@ export const subscriptionRouter = createTRPCRouter({
     const sevenDaysFromNow = new Date();
     sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7);
 
-    return ctx.db.subscription.findMany({
+    return await ctx.db.subscription.findMany({
       where: {
         createdBy: { id: ctx.user?.id },
         plaidPredictedNextDate: {

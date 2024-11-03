@@ -150,6 +150,7 @@ export default function Dashboard() {
                         <p className="text-sm text-muted-foreground">
                           Renews in{" "}
                           {differenceInDays(
+                            // @ts-expect-error plaidPredictedNextDate is nullable TODO: fix
                             sub.plaidPredictedNextDate,
                             new Date(),
                           )}{" "}
