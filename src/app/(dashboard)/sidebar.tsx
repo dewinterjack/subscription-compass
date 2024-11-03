@@ -57,7 +57,7 @@ export function DashboardSidebar() {
       <div className="flex items-center justify-between p-4">
         {isSidebarExpanded ? (
           <>
-            <Link href="/" className="text-lg font-semibold">
+            <Link href="/dashboard" className="text-lg font-semibold">
               SubsCompass
             </Link>
             <Button variant="ghost" size="icon" onClick={handleToggleSidebar}>
