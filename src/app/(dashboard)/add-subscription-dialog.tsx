@@ -100,6 +100,7 @@ export function AddSubscriptionDialog({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (newSubscription.name && newSubscription.cost > 0) {
+      newSubscription.cost = newSubscription.cost * 100;
       onAddSubscription(newSubscription);
       setNewSubscription({ name: "", cost: 0, billingCycle: "Monthly" });
       setUserInput("");

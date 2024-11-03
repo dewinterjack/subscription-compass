@@ -43,7 +43,7 @@ model PlaidItem {
 model Subscription {
     id             String       @id @default(cuid())
     name           String
-    cost           Float
+    cost           Int
     billingCycle   BillingCycle
     plaidItem      PlaidItem?   @relation(fields: [plaidItemId], references: [id])
     plaidItemId    String?
