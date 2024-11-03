@@ -29,10 +29,15 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import ProPlanModal from "./pro-plan-modal";
+import LoadingDots from "@/components/icons/loading-dots";
 
 export function SubscriptionsSection() {
   const [isProModalOpen, setIsProModalOpen] = useState(false);
-  const { data: subscriptions, refetch } = api.subscription.getAll.useQuery();
+  const {
+    data: subscriptions,
+    refetch,
+    isLoading,
+  } = api.subscription.getAll.useQuery();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleAddSubscription = api.subscription.create.useMutation({
@@ -128,30 +133,40 @@ export function SubscriptionsSection() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {subscriptions?.map((subscription) => (
-                <TableRow key={subscription.id}>
-                  <TableCell className="font-medium">
-                    {subscription.name}
-                  </TableCell>
-                  <TableCell>
-                    {CURRENCY_SYMBOL}
-                    {(subscription.cost / 100).toFixed(2)}
-                  </TableCell>
-                  <TableCell>{subscription.billingCycle}</TableCell>
-                  <TableCell className="text-right">
-                    <Button
-                      variant="ghost"
-                      onClick={() =>
-                        handleDeleteSubscription.mutate({
-                          id: subscription.id,
-                        })
-                      }
-                    >
-                      Delete
-                    </Button>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="h-24 text-center">
+                    <div className="flex h-full items-center justify-center">
+                      <LoadingDots />
+                    </div>
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : (
+                subscriptions?.map((subscription) => (
+                  <TableRow key={subscription.id}>
+                    <TableCell className="font-medium">
+                      {subscription.name}
+                    </TableCell>
+                    <TableCell>
+                      {CURRENCY_SYMBOL}
+                      {(subscription.cost / 100).toFixed(2)}
+                    </TableCell>
+                    <TableCell>{subscription.billingCycle}</TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="ghost"
+                        onClick={() =>
+                          handleDeleteSubscription.mutate({
+                            id: subscription.id,
+                          })
+                        }
+                      >
+                        Delete
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         )}
