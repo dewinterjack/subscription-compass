@@ -5,6 +5,17 @@ import { Badge } from "@/components/ui/badge";
 import { DollarSignIcon, LightbulbIcon, ShoppingCartIcon } from "lucide-react";
 import { api } from "@/trpc/react";
 import type { TransactionStream as PlaidTransactionStream } from "plaid";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { useState } from "react";
 
 interface TransactionStream extends PlaidTransactionStream {
   predicted_next_date: string;
@@ -131,19 +142,78 @@ const TransactionCard = ({ transaction }: TransactionProps) => {
 };
 
 export default function RecurringTransactions() {
+  const [viewMode, setViewMode] = useState<"detailed" | "simple">("detailed");
   const { data: transactions, isLoading } =
     api.service.getRecurringTransactions.useQuery<TransactionStream[]>();
 
+  const SimpleTableView = () => (
+    <div className="relative">
+      <Table>
+        <TableHeader className="sticky top-0 z-10 border-b bg-background">
+          <TableRow>
+            <TableHead>Merchant</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Category</TableHead>
+            <TableHead>Amount</TableHead>
+            <TableHead>Frequency</TableHead>
+            <TableHead>Next Date</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {transactions?.map((transaction) => (
+            <TableRow key={transaction.stream_id}>
+              <TableCell>{transaction.merchant_name}</TableCell>
+              <TableCell>
+                <Badge
+                  variant={transaction.is_active ? "default" : "secondary"}
+                >
+                  {transaction.is_active ? "Active" : "Inactive"}
+                </Badge>
+              </TableCell>
+              <TableCell>{transaction.category.join(" > ")}</TableCell>
+              <TableCell>
+                {transaction.last_amount?.amount &&
+                  formatCurrency(
+                    transaction.last_amount.amount / 100,
+                    transaction.last_amount.iso_currency_code ?? "GBP",
+                  )}
+              </TableCell>
+              <TableCell>{transaction.frequency.toLowerCase()}</TableCell>
+              <TableCell>
+                {formatDate(transaction.predicted_next_date)}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+
   return (
     <div className="container mx-auto p-4">
-      <h1 className="mb-4 text-2xl font-bold">Recurring Transactions</h1>
-      {isLoading && <div>Loading...</div>}
-      {transactions?.map((transaction) => (
-        <TransactionCard
-          key={transaction.stream_id}
-          transaction={transaction}
-        />
-      ))}
+      <div className="mb-4 flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Recurring Transactions</h1>
+        <Button
+          variant="outline"
+          onClick={() =>
+            setViewMode(viewMode === "detailed" ? "simple" : "detailed")
+          }
+        >
+          {viewMode === "detailed" ? "Compact View" : "Detailed View"}
+        </Button>
+      </div>
+      <ScrollArea className="h-[600px] rounded-md border p-4">
+        {isLoading && <div>Loading...</div>}
+        {!isLoading &&
+          viewMode === "detailed" &&
+          transactions?.map((transaction) => (
+            <TransactionCard
+              key={transaction.stream_id}
+              transaction={transaction}
+            />
+          ))}
+        {!isLoading && viewMode === "simple" && <SimpleTableView />}
+      </ScrollArea>
     </div>
   );
 }
