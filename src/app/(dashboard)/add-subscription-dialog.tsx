@@ -78,6 +78,7 @@ export function AddSubscriptionDialog({
   const [isSearching, setIsSearching] = useState(false);
   const [userInput, setUserInput] = useState("");
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [isTrial, setIsTrial] = useState(false);
 
   useEffect(() => {
     if (userInput) {
@@ -184,48 +185,86 @@ export function AddSubscriptionDialog({
               </div>
             </div>
             <div className="grid grid-cols-6 items-center gap-4">
-              <Label htmlFor="cost" className="col-span-2 text-right">
-                Cost
-              </Label>
-              <Input
-                id="cost"
-                type="number"
-                step="0.01"
-                min="0"
-                value={newSubscription.cost}
-                onChange={(e) =>
-                  setNewSubscription({
-                    ...newSubscription,
-                    cost: parseFloat(e.target.value),
-                  })
-                }
-                className="col-span-4"
-                required
-              />
+              {!isTrial && (
+                <>
+                  <Label htmlFor="cost" className="col-span-2 text-right">
+                    Cost
+                  </Label>
+                  <Input
+                    id="cost"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={newSubscription.cost}
+                    onChange={(e) =>
+                      setNewSubscription({
+                        ...newSubscription,
+                        cost: parseFloat(e.target.value),
+                      })
+                    }
+                    className="col-span-3"
+                    required
+                  />
+                </>
+              )}
+              {isTrial && <div className="col-span-5" />}
+              <div className="col-span-1 flex items-center justify-end">
+                <input
+                  type="checkbox"
+                  id="trial"
+                  checked={isTrial}
+                  onChange={(e) => setIsTrial(e.target.checked)}
+                  className="mr-2"
+                />
+                <Label htmlFor="trial">Trial</Label>
+              </div>
             </div>
             <div className="grid grid-cols-6 items-center gap-4">
-              <Label htmlFor="billingCycle" className="col-span-2 text-right">
-                Billing Cycle
-              </Label>
-              <Select
-                value={newSubscription.billingCycle}
-                onValueChange={(value) =>
-                  setNewSubscription({
-                    ...newSubscription,
-                    billingCycle: value as BillingCycle,
-                  })
-                }
-              >
-                <SelectTrigger className="col-span-4">
-                  <SelectValue placeholder="Select billing cycle" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Weekly">Weekly</SelectItem>
-                  <SelectItem value="Biweekly">Biweekly</SelectItem>
-                  <SelectItem value="Monthly">Monthly</SelectItem>
-                  <SelectItem value="Yearly">Yearly</SelectItem>
-                </SelectContent>
-              </Select>
+              {!isTrial ? (
+                <>
+                  <Label htmlFor="billingCycle" className="col-span-2 text-right">
+                    Billing Cycle
+                  </Label>
+                  <Select
+                    value={newSubscription.billingCycle}
+                    onValueChange={(value) =>
+                      setNewSubscription({
+                        ...newSubscription,
+                        billingCycle: value as BillingCycle,
+                      })
+                    }
+                  >
+                    <SelectTrigger className="col-span-4">
+                      <SelectValue placeholder="Select billing cycle" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Weekly">Weekly</SelectItem>
+                      <SelectItem value="Biweekly">Biweekly</SelectItem>
+                      <SelectItem value="Monthly">Monthly</SelectItem>
+                      <SelectItem value="Yearly">Yearly</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </>
+              ) : (
+                <>
+                  <Label htmlFor="trialEndDate" className="col-span-2 text-right">
+                    Trial End Date
+                  </Label>
+                  <Input
+                    type="date"
+                    id="trialEndDate"
+                    value={newSubscription.trialEndDate}
+                    onChange={(e) =>
+                      setNewSubscription({
+                        ...newSubscription,
+                        trialEndDate: e.target.value,
+                      })
+                    }
+                    className="col-span-4"
+                    required
+                  />
+                </>
+              )}
             </div>
           </div>
           <DialogFooter>

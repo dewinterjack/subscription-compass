@@ -2,70 +2,81 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider  = "postgresql"
-    // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
-    url       = env("DATABASE_URL")
-    directUrl = env("DIRECT_URL")
+  provider  = "postgresql"
+  // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
+  // Further reading:
+  // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
+  // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
-    id            String         @id @default(cuid())
-    clerkId       String         @unique
-    firstName     String?
-    lastName      String?
-    email         String?        @unique
-    image         String?
-    Subscriptions Subscription[]
-    PlaidItems    PlaidItem[]
+  id            String         @id @default(cuid())
+  clerkId       String         @unique
+  firstName     String?
+  lastName      String?
+  email         String?        @unique
+  image         String?
+  Subscriptions Subscription[]
+  PlaidItems    PlaidItem[]
+  Trial         Trial[]
 }
 
 model PlaidItem {
-    id              String         @id
-    user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId          String
-    accessToken     String
-    institutionId   String?
-    institutionName String?
-    createdAt       DateTime       @default(now())
-    updatedAt       DateTime       @updatedAt
-    Subscription    Subscription[]
+  id              String         @id
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          String
+  accessToken     String
+  institutionId   String?
+  institutionName String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  Subscription    Subscription[]
 
-    @@index([userId])
+  @@index([userId])
 }
 
 model Subscription {
-    id                     String       @id @default(cuid())
-    name                   String
-    cost                   Int
-    billingCycle           BillingCycle
-    firstDate              DateTime?
-    lastDate               DateTime?
-    isActive               Boolean      @default(true)
-    plaidPredictedNextDate DateTime?
-    plaidItem              PlaidItem?   @relation(fields: [plaidItemId], references: [id])
-    plaidItemId            String?
-    plaidAccountId         String?
-    plaidStreamId          String?
-    plaidMetadata          Json?
-    createdBy              User         @relation(fields: [createdById], references: [id])
-    createdById            String
-    createdAt              DateTime     @default(now())
-    updatedAt              DateTime     @updatedAt
+  id                     String       @id @default(cuid())
+  name                   String
+  cost                   Int
+  billingCycle           BillingCycle
+  firstDate              DateTime?
+  lastDate               DateTime?
+  isActive               Boolean      @default(true)
+  plaidPredictedNextDate DateTime?
+  plaidItem              PlaidItem?   @relation(fields: [plaidItemId], references: [id])
+  plaidItemId            String?
+  plaidAccountId         String?
+  plaidStreamId          String?
+  plaidMetadata          Json?
+  createdBy              User         @relation(fields: [createdById], references: [id])
+  createdById            String
+  createdAt              DateTime     @default(now())
+  updatedAt              DateTime     @updatedAt
 
-    @@index([name])
+  @@index([name])
+}
+
+model Trial {
+  id          String   @id @default(cuid())
+  name        String
+  endAt       DateTime
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  createdById String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 enum BillingCycle {
-    Weekly
-    Biweekly
-    Monthly
-    Yearly
-    Unknown
+  Weekly
+  Biweekly
+  Monthly
+  Yearly
+  Unknown
 }
