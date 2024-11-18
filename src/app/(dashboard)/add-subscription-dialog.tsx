@@ -73,6 +73,12 @@ export function AddSubscriptionDialog({
     cost: 0,
     billingCycle: "Monthly",
   });
+  const [newTrial, setNewTrial] = useState<
+    InputType["trial"]["create"]
+  >({
+    name: "",
+    endDate: ""
+  });
 
   const [searchResults, setSearchResults] = useState<typeof mockServices>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -253,11 +259,11 @@ export function AddSubscriptionDialog({
                   <Input
                     type="date"
                     id="trialEndDate"
-                    value={newSubscription.trialEndDate}
+                    value={newTrial.endDate}
                     onChange={(e) =>
-                      setNewSubscription({
-                        ...newSubscription,
-                        trialEndDate: e.target.value,
+                      setNewTrial({
+                        name:
+                        endDate: e.target.value,
                       })
                     }
                     className="col-span-4"
