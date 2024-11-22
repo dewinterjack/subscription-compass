@@ -38,6 +38,7 @@ export function SubscriptionsSection() {
     refetch,
     isLoading,
   } = api.subscription.getAll.useQuery();
+  const { data: trials, refetch: refetchTrials } = api.trial.getAll.useQuery();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleAddSubscription = api.subscription.create.useMutation({
@@ -51,6 +52,14 @@ export function SubscriptionsSection() {
     },
   });
 
+  const handleAddTrial = api.trial.create.useMutation({
+    onSuccess: () => {
+      toast.success("Trial added successfully.");
+      setIsDialogOpen(false);
+      void refetchTrials();
+    },
+  });
+
   const handleDeleteSubscription = api.subscription.delete.useMutation({
     onSuccess: () => {
       toast.success("Subscription deleted.");
@@ -58,6 +67,16 @@ export function SubscriptionsSection() {
     },
     onError: () => {
       toast.error("Failed to delete subscription.");
+    },
+  });
+
+  const handleDeleteTrial = api.trial.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Trial deleted.");
+      void refetchTrials();
+    },
+    onError: () => {
+      toast.error("Failed to delete trial.");
     },
   });
 
@@ -70,6 +89,23 @@ export function SubscriptionsSection() {
       setIsProModalOpen(true);
     }
   };
+
+  const tableItems = [
+    ...(subscriptions?.map((sub) => ({
+      id: sub.id,
+      name: sub.name,
+      cost: sub.cost,
+      billingCycle: sub.billingCycle,
+      type: "subscription" as const,
+    })) ?? []),
+    ...(trials?.map((trial) => ({
+      id: trial.id,
+      name: trial.name,
+      cost: 0,
+      billingCycle: "Trial ends " + new Date(trial.endAt).toLocaleDateString(),
+      type: "trial" as const,
+    })) ?? []),
+  ];
 
   return (
     <Card>
@@ -108,7 +144,7 @@ export function SubscriptionsSection() {
         </div>
       </CardHeader>
       <CardContent className="pb-0">
-        {subscriptions && subscriptions.length === 0 ? (
+        {tableItems.length === 0 ? (
           <div className="flex flex-col items-center justify-center space-y-3 py-12">
             <div className="rounded-full bg-muted p-3">
               <ShoppingBasket className="h-6 w-6" />
@@ -129,37 +165,51 @@ export function SubscriptionsSection() {
                 <TableHead className="w-[200px]">Name</TableHead>
                 <TableHead>Cost</TableHead>
                 <TableHead>Billing Cycle</TableHead>
+                <TableHead>Type</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="h-24 text-center">
+                  <TableCell colSpan={5} className="h-24 text-center">
                     <div className="flex h-full items-center justify-center">
                       <LoadingDots />
                     </div>
                   </TableCell>
                 </TableRow>
               ) : (
-                subscriptions?.map((subscription) => (
-                  <TableRow key={subscription.id}>
-                    <TableCell className="font-medium">
-                      {subscription.name}
-                    </TableCell>
+                tableItems.map((item) => (
+                  <TableRow key={item.id}>
+                    <TableCell className="font-medium">{item.name}</TableCell>
                     <TableCell>
-                      {CURRENCY_SYMBOL}
-                      {(subscription.cost / 100).toFixed(2)}
+                      {item.type === "subscription" ? (
+                        <>
+                          {CURRENCY_SYMBOL}
+                          {(item.cost / 100).toFixed(2)}
+                        </>
+                      ) : (
+                        "Free"
+                      )}
                     </TableCell>
-                    <TableCell>{subscription.billingCycle}</TableCell>
+                    <TableCell>{item.billingCycle}</TableCell>
+                    <TableCell>
+                      <span
+                        className={`capitalize ${item.type === "trial" ? "text-blue-500" : "text-green-500"}`}
+                      >
+                        {item.type}
+                      </span>
+                    </TableCell>
                     <TableCell className="text-right">
                       <Button
                         variant="ghost"
-                        onClick={() =>
-                          handleDeleteSubscription.mutate({
-                            id: subscription.id,
-                          })
-                        }
+                        onClick={() => {
+                          if (item.type === "subscription") {
+                            handleDeleteSubscription.mutate({ id: item.id });
+                          } else {
+                            handleDeleteTrial.mutate({ id: item.id });
+                          }
+                        }}
                       >
                         Delete
                       </Button>
@@ -177,6 +227,7 @@ export function SubscriptionsSection() {
         onAddSubscription={(subscription) =>
           handleAddSubscription.mutate(subscription)
         }
+        onAddTrial={(trial) => handleAddTrial.mutate(trial)}
       />
       <ProPlanModal
         isOpen={isProModalOpen}

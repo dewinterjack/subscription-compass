@@ -37,6 +37,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ChevronDownIcon, Loader2 } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type AddSubscriptionDialogProps = {
   isOpen: boolean;
@@ -44,6 +48,7 @@ type AddSubscriptionDialogProps = {
   onAddSubscription: (
     subscription: InputType["subscription"]["create"],
   ) => void;
+  onAddTrial: (trial: InputType["trial"]["create"]) => void;
 };
 
 const mockServices = [
@@ -65,6 +70,7 @@ export function AddSubscriptionDialog({
   isOpen,
   onClose,
   onAddSubscription,
+  onAddTrial,
 }: AddSubscriptionDialogProps) {
   const [newSubscription, setNewSubscription] = useState<
     InputType["subscription"]["create"]
@@ -73,12 +79,9 @@ export function AddSubscriptionDialog({
     cost: 0,
     billingCycle: "Monthly",
   });
-  const [newTrial, setNewTrial] = useState<
-    InputType["trial"]["create"]
-  >({
-    name: "",
-    endDate: ""
-  });
+  const [newTrial, setNewTrial] = useState<InputType["trial"]["create"] | null>(
+    null,
+  );
 
   const [searchResults, setSearchResults] = useState<typeof mockServices>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -106,7 +109,10 @@ export function AddSubscriptionDialog({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (newSubscription.name && newSubscription.cost > 0) {
+    if (isTrial && newTrial?.name && newTrial?.trialEndAt) {
+      onAddTrial(newTrial);
+      setNewTrial(null);
+    } else if (newSubscription.name && newSubscription.cost > 0) {
       newSubscription.cost = newSubscription.cost * 100;
       onAddSubscription(newSubscription);
       setNewSubscription({ name: "", cost: 0, billingCycle: "Monthly" });
@@ -228,7 +234,10 @@ export function AddSubscriptionDialog({
             <div className="grid grid-cols-6 items-center gap-4">
               {!isTrial ? (
                 <>
-                  <Label htmlFor="billingCycle" className="col-span-2 text-right">
+                  <Label
+                    htmlFor="billingCycle"
+                    className="col-span-2 text-right"
+                  >
                     Billing Cycle
                   </Label>
                   <Select
@@ -253,22 +262,47 @@ export function AddSubscriptionDialog({
                 </>
               ) : (
                 <>
-                  <Label htmlFor="trialEndDate" className="col-span-2 text-right">
+                  <Label
+                    htmlFor="trialEndDate"
+                    className="col-span-2 text-right"
+                  >
                     Trial End Date
                   </Label>
-                  <Input
-                    type="date"
-                    id="trialEndDate"
-                    value={newTrial.endDate}
-                    onChange={(e) =>
-                      setNewTrial({
-                        name:
-                        endDate: e.target.value,
-                      })
-                    }
-                    className="col-span-4"
-                    required
-                  />
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "col-span-4 justify-start text-left font-normal",
+                          !newTrial?.trialEndAt && "text-muted-foreground",
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {newTrial?.trialEndAt ? (
+                          format(newTrial.trialEndAt, "PPP")
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={newTrial?.trialEndAt}
+                        onSelect={(date) =>
+                          setNewTrial(
+                            date
+                              ? {
+                                  name: newSubscription.name,
+                                  trialEndAt: date,
+                                }
+                              : null,
+                          )
+                        }
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </>
               )}
             </div>
