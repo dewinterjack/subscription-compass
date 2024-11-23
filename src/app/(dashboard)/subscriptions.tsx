@@ -41,21 +41,19 @@ import {
 
 export function SubscriptionsSection() {
   const [isProModalOpen, setIsProModalOpen] = useState(false);
-  const {
-    data: subscriptions,
-    refetch,
-    isLoading,
-  } = api.subscription.getAll.useQuery();
+  const { data: subscriptions, isLoading } = api.subscription.getAll.useQuery();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingSubscription, setEditingSubscription] = useState<
     InputType["subscription"]["update"] | undefined
   >();
 
+  const utils = api.useUtils();
+
   const handleAddSubscription = api.subscription.create.useMutation({
     onSuccess: () => {
       toast.success("Subscription added successfully.");
       setIsDialogOpen(false);
-      void refetch();
+      void utils.subscription.invalidate();
     },
     onError: () => {
       toast.error("Failed to add subscription.");
@@ -65,7 +63,7 @@ export function SubscriptionsSection() {
   const handleDeleteSubscription = api.subscription.delete.useMutation({
     onSuccess: () => {
       toast.success("Subscription deleted.");
-      void refetch();
+      void utils.subscription.invalidate();
     },
     onError: () => {
       toast.error("Failed to delete subscription.");
@@ -77,7 +75,7 @@ export function SubscriptionsSection() {
       toast.success("Subscription updated successfully.");
       setIsDialogOpen(false);
       setEditingSubscription(undefined);
-      void refetch();
+      void utils.subscription.invalidate();
     },
     onError: () => {
       toast.error("Failed to update subscription.");
