@@ -1,7 +1,8 @@
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
-import { subscriptionRouter } from "./routers/subscriptions";
+import { plaidSubscriptionRouter } from "./routers/plaidSubscriptions";
 import { serviceRouter } from "./routers/services";
 import type { inferRouterOutputs, inferRouterInputs } from "@trpc/server";
+import { subscriptionRouter } from "./routers/subscriptions";
 
 
 /**
@@ -10,6 +11,7 @@ import type { inferRouterOutputs, inferRouterInputs } from "@trpc/server";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
+  plaidSubscription: plaidSubscriptionRouter,
   subscription: subscriptionRouter,
   service: serviceRouter,
 });

@@ -18,8 +18,13 @@ const getLinkToken = async (userId: string) => {
     country_codes: ["GB"] as CountryCode[],
   };
 
-  const { data } = await client.linkTokenCreate(request);
-  return data.link_token;
+  try {
+    const { data } = await client.linkTokenCreate(request);
+    return data.link_token;
+  } catch (error) {
+    console.error("Error creating link token:", error);
+    return null;
+  }
 };
 
 export default async function ProfilePage() {
@@ -45,10 +50,12 @@ export default async function ProfilePage() {
           email={user.email ?? ""}
         />
       </div>
-      <div className="mx-auto w-full max-w-2xl">
-        <AccountList linkToken={linkToken} />
-        <RecurringTransactions />
-      </div>
+      {linkToken && (
+        <div className="mx-auto w-full max-w-2xl">
+          <AccountList linkToken={linkToken} />
+          <RecurringTransactions />
+        </div>
+      )}
     </div>
   );
 }

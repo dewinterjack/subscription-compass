@@ -16,7 +16,6 @@ import { api } from "@/trpc/react";
 import { CURRENCY_SYMBOL } from "@/lib/constants";
 import { differenceInDays } from "date-fns";
 import LoadingDots from "@/components/icons/loading-dots";
-import { SubscriptionPieChart } from "@/components/subscription-pie-chart";
 
 export default function Dashboard() {
   const {
@@ -71,7 +70,7 @@ export default function Dashboard() {
                   <CardDescription>Monthly Spend</CardDescription>
                   <CardTitle className="text-4xl">
                     {CURRENCY_SYMBOL}
-                    {totalMonthlyCost.toFixed(2)}
+                    {(totalMonthlyCost / 100).toFixed(2)}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -109,9 +108,6 @@ export default function Dashboard() {
                   </div>
                 </CardContent>
               </Card>
-            </div>
-            <div className="flex-grow overflow-hidden">
-              <SubscriptionPieChart />
             </div>
           </div>
 
@@ -160,7 +156,7 @@ export default function Dashboard() {
                     </div>
                     <span className="font-medium">
                       {CURRENCY_SYMBOL}
-                      {(sub.cost / 100).toFixed(2)}
+                      {(Number(sub.latestPeriod?.price ?? 0) / 100).toFixed(2)}
                     </span>
                   </div>
                 ))}
