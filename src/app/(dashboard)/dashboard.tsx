@@ -162,6 +162,11 @@ export default function Dashboard() {
                     </span>
                   </div>
                 ))}
+                {upcomingRenewals?.length === 0 && (
+                  <p className="text-sm text-muted-foreground">
+                    No upcoming renewals
+                  </p>
+                )}
               </CardContent>
             </Card>
 
