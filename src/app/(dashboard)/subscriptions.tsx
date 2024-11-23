@@ -149,7 +149,9 @@ export function SubscriptionsSection() {
                     </TableCell>
                     <TableCell>
                       {CURRENCY_SYMBOL}
-                      {(subscription.cost / 100).toFixed(2)}
+                      {(Number(subscription.latestPeriod.price) / 100).toFixed(
+                        2,
+                      )}
                     </TableCell>
                     <TableCell>{subscription.billingCycle}</TableCell>
                     <TableCell className="text-right">

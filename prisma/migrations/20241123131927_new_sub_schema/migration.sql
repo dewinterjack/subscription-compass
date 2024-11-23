@@ -72,6 +72,9 @@ CREATE INDEX "PlaidSubscription_name_idx" ON "PlaidSubscription"("name");
 -- CreateIndex
 CREATE INDEX "SubscriptionPeriod_subscriptionId_idx" ON "SubscriptionPeriod"("subscriptionId");
 
+-- CreateIndex
+CREATE INDEX "SubscriptionPeriod_periodEnd_idx" ON "SubscriptionPeriod"("periodEnd");
+
 -- AddForeignKey
 ALTER TABLE "PlaidSubscription" ADD CONSTRAINT "PlaidSubscription_plaidItemId_fkey" FOREIGN KEY ("plaidItemId") REFERENCES "PlaidItem"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 

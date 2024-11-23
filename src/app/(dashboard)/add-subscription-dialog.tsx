@@ -47,18 +47,62 @@ type AddSubscriptionDialogProps = {
 };
 
 const mockServices = [
-  { name: "Netflix", defaultCost: 15.99, defaultBillingCycle: "Monthly" },
-  { name: "Spotify", defaultCost: 9.99, defaultBillingCycle: "Monthly" },
-  { name: "Amazon Prime", defaultCost: 119, defaultBillingCycle: "Yearly" },
-  { name: "Disney+", defaultCost: 7.99, defaultBillingCycle: "Monthly" },
-  { name: "HBO Max", defaultCost: 14.99, defaultBillingCycle: "Monthly" },
-  { name: "Apple Music", defaultCost: 9.99, defaultBillingCycle: "Monthly" },
+  {
+    name: "Netflix",
+    defaultCost: 15.99,
+    defaultBillingCycle: "Monthly",
+    isTrial: false,
+    startDate: new Date(),
+  },
+  {
+    name: "Spotify",
+    defaultCost: 9.99,
+    defaultBillingCycle: "Monthly",
+    isTrial: false,
+    startDate: new Date(),
+  },
+  {
+    name: "Amazon Prime",
+    defaultCost: 119,
+    defaultBillingCycle: "Yearly",
+    isTrial: false,
+    startDate: new Date(),
+  },
+  {
+    name: "Disney+",
+    defaultCost: 7.99,
+    defaultBillingCycle: "Monthly",
+    isTrial: false,
+    startDate: new Date(),
+  },
+  {
+    name: "HBO Max",
+    defaultCost: 14.99,
+    defaultBillingCycle: "Monthly",
+    isTrial: false,
+    startDate: new Date(),
+  },
+  {
+    name: "Apple Music",
+    defaultCost: 9.99,
+    defaultBillingCycle: "Monthly",
+    isTrial: false,
+    startDate: new Date(),
+  },
   {
     name: "YouTube Premium",
     defaultCost: 11.99,
     defaultBillingCycle: "Monthly",
+    isTrial: false,
+    startDate: new Date(),
   },
-  { name: "Hulu", defaultCost: 5.99, defaultBillingCycle: "Monthly" },
+  {
+    name: "Hulu",
+    defaultCost: 5.99,
+    defaultBillingCycle: "Monthly",
+    isTrial: false,
+    startDate: new Date(),
+  },
 ];
 
 export function AddSubscriptionDialog({
@@ -70,7 +114,10 @@ export function AddSubscriptionDialog({
     InputType["subscription"]["create"]
   >({
     name: "",
-    cost: 0,
+    price: 0,
+    autoRenew: true,
+    isTrial: false,
+    startDate: new Date(),
     billingCycle: "Monthly",
   });
 
@@ -99,10 +146,16 @@ export function AddSubscriptionDialog({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (newSubscription.name && newSubscription.cost > 0) {
-      newSubscription.cost = newSubscription.cost * 100;
+    if (newSubscription.name && newSubscription.price > 0) {
+      newSubscription.price = newSubscription.price * 100;
       onAddSubscription(newSubscription);
-      setNewSubscription({ name: "", cost: 0, billingCycle: "Monthly" });
+      setNewSubscription({
+        name: "",
+        price: 0,
+        billingCycle: "Monthly",
+        isTrial: false,
+        startDate: new Date(),
+      });
       setUserInput("");
     } else {
       toast.error("Please fill in all fields correctly.");
@@ -112,8 +165,10 @@ export function AddSubscriptionDialog({
   const handleServiceSelect = (service: (typeof mockServices)[0]) => {
     setNewSubscription({
       name: service.name,
-      cost: service.defaultCost,
+      price: service.defaultCost,
       billingCycle: service.defaultBillingCycle as BillingCycle,
+      isTrial: false,
+      startDate: service.startDate,
     });
     setUserInput(service.name);
     setSearchResults([]);
@@ -192,11 +247,11 @@ export function AddSubscriptionDialog({
                 type="number"
                 step="0.01"
                 min="0"
-                value={newSubscription.cost}
+                value={newSubscription.price}
                 onChange={(e) =>
                   setNewSubscription({
                     ...newSubscription,
-                    cost: parseFloat(e.target.value),
+                    price: parseFloat(e.target.value),
                   })
                 }
                 className="col-span-4"

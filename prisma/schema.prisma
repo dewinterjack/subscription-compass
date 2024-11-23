@@ -87,6 +87,7 @@ model SubscriptionPeriod {
     isTrial        Boolean      @default(false)
 
     @@index([subscriptionId])
+    @@index([periodEnd])
 }
 
 enum BillingCycle {

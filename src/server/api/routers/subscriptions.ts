@@ -1,7 +1,9 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { BillingCycle } from "@prisma/client";
-import { addDays } from "date-fns";
+import { addDays, endOfDay, startOfDay } from "date-fns";
+import { toSubscriptionWithLatestPeriod, type SubscriptionWithLatestPeriod } from "@/types";
+import type { SubscriptionPeriod } from "@prisma/client";
 
 const BILLING_CYCLE_DAYS: Record<BillingCycle, number> = {
   Weekly: 7,
@@ -44,32 +46,175 @@ export const subscriptionRouter = createTRPCRouter({
             startDate: input.startDate,
             endDate: input.isTrial ? input.endDate : undefined,
             createdBy: { connect: { id: ctx.user?.id } },
+            periods: {
+              create: {
+                price: input.price,
+                isTrial: input.isTrial,
+                periodStart: input.startDate,
+                periodEnd,
+              }
+            }
           },
+          include: {
+            periods: {
+              orderBy: { periodEnd: 'desc' },
+              take: 1,
+            }
+          }
         });
 
-        await tx.subscriptionPeriod.create({
-          data: {
-            subscriptionId: subscription.id,
-            price: input.price,
-            isTrial: input.isTrial,
-            periodStart: input.startDate,
-            periodEnd,
-          },
-        });
-
-        return subscription;
+        return toSubscriptionWithLatestPeriod(subscription);
       });
     }),
   getAll: protectedProcedure.query(async ({ ctx }) => {
-    const subscriptions = ctx.db.subscription.findMany({
+    const subscriptions = await ctx.db.subscription.findMany({
       where: { createdBy: { id: ctx.user?.id } },
       orderBy: { createdAt: "desc" },
+      include: {
+        periods: {
+          orderBy: { periodEnd: 'desc' },
+          take: 1,
+        },
+      },
     });
-    return subscriptions;
+    return subscriptions
+      .map(toSubscriptionWithLatestPeriod)
+      .filter((sub): sub is SubscriptionWithLatestPeriod & { latestPeriod: SubscriptionPeriod } => 
+        sub.latestPeriod !== null
+      );
   }),
   count: protectedProcedure.query(async ({ ctx }) => {
     return ctx.db.subscription.count({
       where: { createdBy: { id: ctx.user?.id } },
     });
   }),
+  getUpcomingRenewals: protectedProcedure.query(async ({ ctx }) => {
+    const today = startOfDay(new Date());
+    const nextWeek = endOfDay(addDays(today, 7));
+
+    const subscriptions = await ctx.db.subscription.findMany({
+      where: {
+        createdById: ctx.user?.id,
+        autoRenew: true,
+        endDate: null,
+        periods: {
+          some: {
+            periodEnd: {
+              gte: today,
+              lte: nextWeek,
+            },
+            isTrial: false,
+          }
+        }
+      },
+      include: {
+        periods: {
+          orderBy: { periodEnd: 'desc' },
+          take: 1,
+          where: {
+            periodEnd: {
+              gte: today,
+              lte: nextWeek,
+            },
+            isTrial: false,
+          },
+        },
+      },
+    });
+
+    return subscriptions
+      .map(toSubscriptionWithLatestPeriod)
+      .filter((sub): sub is SubscriptionWithLatestPeriod & { latestPeriod: SubscriptionPeriod } => 
+        sub.latestPeriod !== null
+      );
+  }),
+  getEndingTrials: protectedProcedure.query(async ({ ctx }) => {
+    const today = startOfDay(new Date());
+    const nextWeek = endOfDay(addDays(today, 7));
+
+    return ctx.db.subscription.findMany({
+      where: {
+        createdById: ctx.user?.id,
+        endDate: {
+          gte: today,
+          lte: nextWeek,
+        },
+        periods: {
+          some: {
+            isTrial: true,
+          }
+        },
+      },
+      include: {
+        periods: {
+          where: {
+            isTrial: true,
+          },
+        },
+      },
+      orderBy: {
+        endDate: 'asc',
+      },
+    });
+  }),
+  getTotalMonthlyCost: protectedProcedure.query(async ({ ctx }) => {
+    const activeSubscriptions = await ctx.db.subscription.findMany({
+      where: {
+        createdById: ctx.user?.id,
+        OR: [
+          { endDate: null },
+          { endDate: { gt: new Date() } }
+        ],
+      },
+      include: {
+        periods: {
+          where: {
+            isTrial: false,
+          },
+          orderBy: {
+            periodEnd: 'desc',
+          },
+          take: 1,
+        },
+      },
+    });
+
+    const subscriptionsWithPeriod = activeSubscriptions
+      .map(toSubscriptionWithLatestPeriod)
+      .filter((sub): sub is SubscriptionWithLatestPeriod & { latestPeriod: SubscriptionPeriod } => 
+        sub.latestPeriod !== null
+      );
+
+    const monthlyCosts = subscriptionsWithPeriod.map(subscription => {
+      const period = subscription.latestPeriod;
+      const pricePerMonth = Number(period.price) * (30 / BILLING_CYCLE_DAYS[subscription.billingCycle]);
+      return pricePerMonth;
+    });
+
+    return monthlyCosts.reduce((sum, cost) => sum + cost, 0);
+  }),
+  delete: protectedProcedure
+    .input(z.object({
+      id: z.string(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.$transaction(async (tx) => {
+        const subscription = await tx.subscription.findFirst({
+          where: {
+            id: input.id,
+            createdById: ctx.user?.id,
+          },
+        });
+
+        if (!subscription) {
+          throw new Error("Subscription not found or unauthorized");
+        }
+
+        return tx.subscription.delete({
+          where: {
+            id: input.id,
+          },
+        });
+      });
+    }),
 });
