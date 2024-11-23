@@ -217,4 +217,65 @@ export const subscriptionRouter = createTRPCRouter({
         });
       });
     }),
+  update: protectedProcedure
+    .input(z.discriminatedUnion('isTrial', [
+      baseSubscriptionSchema.extend({
+        id: z.string(),
+        isTrial: z.literal(true),
+        endDate: z.date(),
+      }),
+      baseSubscriptionSchema.extend({
+        id: z.string(),
+        isTrial: z.literal(false),
+      })
+    ]))
+    .mutation(async ({ ctx, input }) => {
+      const periodEnd = input.isTrial 
+        ? input.endDate
+        : addDays(input.startDate, BILLING_CYCLE_DAYS[input.billingCycle]);
+
+      return ctx.db.$transaction(async (tx) => {
+        const latestPeriod = await tx.subscriptionPeriod.findFirst({
+          where: { subscriptionId: input.id },
+          orderBy: { periodEnd: 'desc' }
+        });
+
+        if (!latestPeriod) {
+          throw new Error("No period found for subscription");
+        }
+
+        const subscription = await tx.subscription.update({
+          where: {
+            id: input.id,
+            createdById: ctx.user?.id,
+          },
+          data: {
+            name: input.name,
+            autoRenew: input.autoRenew,
+            billingCycle: input.billingCycle,
+            startDate: input.startDate,
+            endDate: input.isTrial ? input.endDate : null,
+            periods: {
+              update: {
+                where: { id: latestPeriod.id },
+                data: {
+                  price: input.price,
+                  isTrial: input.isTrial,
+                  periodStart: input.startDate,
+                  periodEnd,
+                }
+              }
+            }
+          },
+          include: {
+            periods: {
+              orderBy: { periodEnd: 'desc' },
+              take: 1,
+            }
+          }
+        });
+
+        return toSubscriptionWithLatestPeriod(subscription);
+      });
+    }),
 });

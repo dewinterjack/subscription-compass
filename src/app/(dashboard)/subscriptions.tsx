@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, ShoppingBasket, Upload } from "lucide-react";
+import { Plus, ShoppingBasket, Upload, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/table";
 import { AddSubscriptionDialog } from "./add-subscription-dialog";
 import { toast } from "sonner";
-import { api } from "@/trpc/react";
+import { api, RouterOutputs } from "@/trpc/react";
 import { CURRENCY_SYMBOL } from "@/lib/constants";
 import {
   Tooltip,
@@ -30,6 +30,14 @@ import {
 } from "@/components/ui/tooltip";
 import ProPlanModal from "./pro-plan-modal";
 import LoadingDots from "@/components/icons/loading-dots";
+import type { SubscriptionWithLatestPeriod } from "@/types";
+import type { InputType } from "@/server/api/root";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function SubscriptionsSection() {
   const [isProModalOpen, setIsProModalOpen] = useState(false);
@@ -39,6 +47,9 @@ export function SubscriptionsSection() {
     isLoading,
   } = api.subscription.getAll.useQuery();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingSubscription, setEditingSubscription] = useState<
+    InputType["subscription"]["update"] | undefined
+  >();
 
   const handleAddSubscription = api.subscription.create.useMutation({
     onSuccess: () => {
@@ -61,6 +72,18 @@ export function SubscriptionsSection() {
     },
   });
 
+  const handleUpdateSubscription = api.subscription.update.useMutation({
+    onSuccess: () => {
+      toast.success("Subscription updated successfully.");
+      setIsDialogOpen(false);
+      setEditingSubscription(undefined);
+      void refetch();
+    },
+    onError: () => {
+      toast.error("Failed to update subscription.");
+    },
+  });
+
   const isProUser = false;
 
   const handleImport = () => {
@@ -69,6 +92,34 @@ export function SubscriptionsSection() {
     } else {
       setIsProModalOpen(true);
     }
+  };
+
+  const handleEdit = (
+    subscription: RouterOutputs["subscription"]["getAll"][number],
+  ) => {
+    const baseSubscription = {
+      id: subscription.id,
+      name: subscription.name,
+      price: subscription.latestPeriod.price,
+      billingCycle: subscription.billingCycle,
+      autoRenew: subscription.autoRenew,
+      startDate: subscription.startDate,
+    };
+
+    const editData =
+      subscription.latestPeriod?.isTrial && subscription.endDate
+        ? {
+            ...baseSubscription,
+            isTrial: true as const,
+            endDate: subscription.endDate,
+          }
+        : {
+            ...baseSubscription,
+            isTrial: false as const,
+          };
+
+    setEditingSubscription(editData);
+    setIsDialogOpen(true);
   };
 
   return (
@@ -155,16 +206,30 @@ export function SubscriptionsSection() {
                     </TableCell>
                     <TableCell>{subscription.billingCycle}</TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        onClick={() =>
-                          handleDeleteSubscription.mutate({
-                            id: subscription.id,
-                          })
-                        }
-                      >
-                        Delete
-                      </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onClick={() => handleEdit(subscription)}
+                          >
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              handleDeleteSubscription.mutate({
+                                id: subscription.id,
+                              })
+                            }
+                            className="text-destructive"
+                          >
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </TableCell>
                   </TableRow>
                 ))
@@ -175,10 +240,17 @@ export function SubscriptionsSection() {
       </CardContent>
       <AddSubscriptionDialog
         isOpen={isDialogOpen}
-        onClose={() => setIsDialogOpen(false)}
+        onClose={() => {
+          setIsDialogOpen(false);
+          setEditingSubscription(undefined);
+        }}
         onAddSubscription={(subscription) =>
           handleAddSubscription.mutate(subscription)
         }
+        onUpdateSubscription={(subscription) =>
+          handleUpdateSubscription.mutate(subscription)
+        }
+        initialData={editingSubscription}
       />
       <ProPlanModal
         isOpen={isProModalOpen}

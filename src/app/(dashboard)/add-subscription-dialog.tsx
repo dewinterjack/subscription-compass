@@ -48,6 +48,10 @@ type AddSubscriptionDialogProps = {
   onAddSubscription: (
     subscription: InputType["subscription"]["create"],
   ) => void;
+  onUpdateSubscription?: (
+    subscription: InputType["subscription"]["update"],
+  ) => void;
+  initialData?: InputType["subscription"]["update"];
 };
 
 const mockServices = [
@@ -113,6 +117,8 @@ export function AddSubscriptionDialog({
   isOpen,
   onClose,
   onAddSubscription,
+  onUpdateSubscription,
+  initialData,
 }: AddSubscriptionDialogProps) {
   const [newSubscription, setNewSubscription] = useState<
     InputType["subscription"]["create"]
@@ -133,6 +139,19 @@ export function AddSubscriptionDialog({
   const [isSearching, setIsSearching] = useState(false);
   const [userInput, setUserInput] = useState("");
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+
+  useEffect(() => {
+    if (initialData && isOpen) {
+      setNewSubscription({
+        ...initialData,
+        price: initialData.price / 100,
+      });
+      setUserInput(initialData.name);
+      if (initialData.isTrial && initialData.endDate) {
+        setTrialEndDate(initialData.endDate);
+      }
+    }
+  }, [initialData, isOpen]);
 
   useEffect(() => {
     if (userInput) {
@@ -160,7 +179,13 @@ export function AddSubscriptionDialog({
         price: newSubscription.price * 100,
         ...(newSubscription.isTrial && { endDate: trialEndDate }),
       };
-      onAddSubscription(subscriptionData);
+
+      if (initialData?.id) {
+        onUpdateSubscription?.({ ...subscriptionData, id: initialData.id });
+      } else {
+        onAddSubscription(subscriptionData);
+      }
+
       setNewSubscription({
         name: "",
         price: 0,
@@ -207,9 +232,13 @@ export function AddSubscriptionDialog({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Add New Subscription</DialogTitle>
+          <DialogTitle>
+            {initialData ? "Edit Subscription" : "Add New Subscription"}
+          </DialogTitle>
           <DialogDescription>
-            Enter the details of your new subscription here.
+            {initialData
+              ? "Enter the details of your subscription. This will not affect historical data - only the most recent period will be updated."
+              : "Enter the details of your new subscription"}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
@@ -389,7 +418,9 @@ export function AddSubscriptionDialog({
             )}
           </div>
           <DialogFooter>
-            <Button type="submit">Add Subscription</Button>
+            <Button type="submit">
+              {initialData ? "Update Subscription" : "Add Subscription"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
