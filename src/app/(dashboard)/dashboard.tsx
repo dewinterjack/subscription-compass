@@ -70,7 +70,7 @@ export default function Dashboard() {
                   <CardDescription>Monthly Spend</CardDescription>
                   <CardTitle className="text-4xl">
                     {CURRENCY_SYMBOL}
-                    {totalMonthlyCost.toFixed(2)}
+                    {(totalMonthlyCost / 100).toFixed(2)}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>

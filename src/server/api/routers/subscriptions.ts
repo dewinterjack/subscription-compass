@@ -187,7 +187,7 @@ export const subscriptionRouter = createTRPCRouter({
 
     const monthlyCosts = subscriptionsWithPeriod.map(subscription => {
       const period = subscription.latestPeriod;
-      const pricePerMonth = Number(period.price) * (30 / BILLING_CYCLE_DAYS[subscription.billingCycle]);
+      const pricePerMonth = period.price * (30 / BILLING_CYCLE_DAYS[subscription.billingCycle]);
       return pricePerMonth;
     });
 

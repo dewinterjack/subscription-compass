@@ -81,7 +81,7 @@ model SubscriptionPeriod {
     id             String       @id @default(cuid())
     subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
     subscriptionId String
-    price          Decimal      @db.Decimal(10, 2)
+    price          Int
     periodStart    DateTime
     periodEnd      DateTime
     isTrial        Boolean      @default(false)
