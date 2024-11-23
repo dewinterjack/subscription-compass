@@ -30,6 +30,8 @@ export default function Dashboard() {
   const { data: totalMonthlyCost = 0 } =
     api.subscription.getTotalMonthlyCost.useQuery();
 
+  const { data: endingTrials } = api.subscription.getEndingTrials.useQuery();
+
   const getRenewalText = (date: Date) => {
     const days = differenceInDays(startOfDay(date), startOfDay(new Date()));
     if (days === 0) return "Today";
@@ -223,20 +225,9 @@ export default function Dashboard() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {[
-                  {
-                    title: "Price Increase",
-                    description: "Netflix raising prices next month",
-                    action: "Review",
-                  },
-                  {
-                    title: "Trial Ending Soon",
-                    description: "3 days left on your Audible trial",
-                    action: "Manage",
-                  },
-                ].map((alert, index) => (
+                {endingTrials?.map((trial) => (
                   <div
-                    key={index}
+                    key={trial.id}
                     className="flex items-center justify-between"
                   >
                     <div className="flex items-center gap-3">
@@ -244,9 +235,10 @@ export default function Dashboard() {
                         <AlertCircle className="h-5 w-5 text-yellow-600" />
                       </div>
                       <div>
-                        <p className="font-medium">{alert.title}</p>
+                        <p className="font-medium">Trial Ending Soon</p>
                         <p className="text-sm text-muted-foreground">
-                          {alert.description}
+                          {trial.name} trial ends{" "}
+                          {getRenewalText(trial.endDate!)}
                         </p>
                       </div>
                     </div>
@@ -254,13 +246,18 @@ export default function Dashboard() {
                       variant="outline"
                       size="sm"
                       onClick={() =>
-                        toast.info("This feature is not yet implemented.")
+                        toast.info("Trial management not yet implemented.")
                       }
                     >
-                      {alert.action}
+                      Manage
                     </Button>
                   </div>
                 ))}
+                {endingTrials?.length === 0 && (
+                  <p className="text-sm text-muted-foreground">
+                    No active alerts
+                  </p>
+                )}
               </CardContent>
             </Card>
           </div>
