@@ -86,9 +86,20 @@ export default function Dashboard() {
                     -$50 from last month
                   </div>
                 </CardContent>
-                <CardFooter>
-                  <Progress value={65} aria-label="65% of budget" />
-                </CardFooter>
+              </Card>
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardDescription>Yearly Spend</CardDescription>
+                  <CardTitle className="text-4xl">
+                    {CURRENCY_SYMBOL}
+                    {((totalMonthlyCost * 12) / 100).toFixed(2)}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-xs text-muted-foreground">
+                    Projected based on current spend
+                  </div>
+                </CardContent>
               </Card>
             </div>
           </div>
