@@ -37,6 +37,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ChevronDownIcon, Loader2 } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { addDays } from "date-fns";
 
 type AddSubscriptionDialogProps = {
   isOpen: boolean;
@@ -116,10 +120,14 @@ export function AddSubscriptionDialog({
     name: "",
     price: 0,
     autoRenew: true,
-    isTrial: false,
+    isTrial: false as const,
     startDate: new Date(),
     billingCycle: "Monthly",
   });
+
+  const [trialEndDate, setTrialEndDate] = useState<Date>(
+    addDays(new Date(), 30),
+  );
 
   const [searchResults, setSearchResults] = useState<typeof mockServices>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -147,15 +155,20 @@ export function AddSubscriptionDialog({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (newSubscription.name && newSubscription.price > 0) {
-      newSubscription.price = newSubscription.price * 100;
-      onAddSubscription(newSubscription);
+      const subscriptionData = {
+        ...newSubscription,
+        price: newSubscription.price * 100,
+        ...(newSubscription.isTrial && { endDate: trialEndDate }),
+      };
+      onAddSubscription(subscriptionData);
       setNewSubscription({
         name: "",
         price: 0,
         billingCycle: "Monthly",
-        isTrial: false,
+        isTrial: false as const,
         startDate: new Date(),
       });
+      setTrialEndDate(addDays(new Date(), 30));
       setUserInput("");
     } else {
       toast.error("Please fill in all fields correctly.");
@@ -167,12 +180,27 @@ export function AddSubscriptionDialog({
       name: service.name,
       price: service.defaultCost,
       billingCycle: service.defaultBillingCycle as BillingCycle,
-      isTrial: false,
+      isTrial: false as const,
       startDate: service.startDate,
     });
     setUserInput(service.name);
     setSearchResults([]);
     setIsPopoverOpen(false);
+  };
+
+  const handleTrialToggle = (checked: boolean) => {
+    if (checked) {
+      setNewSubscription({
+        ...newSubscription,
+        isTrial: true as const,
+        endDate: trialEndDate,
+      });
+    } else {
+      setNewSubscription({
+        ...newSubscription,
+        isTrial: false as const,
+      });
+    }
   };
 
   return (
@@ -259,6 +287,39 @@ export function AddSubscriptionDialog({
               />
             </div>
             <div className="grid grid-cols-6 items-center gap-4">
+              <Label htmlFor="startDate" className="col-span-2 text-right">
+                Start Date
+              </Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="col-span-4 w-full justify-start text-left font-normal"
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {newSubscription.startDate ? (
+                      format(newSubscription.startDate, "PPP")
+                    ) : (
+                      <span>Pick a date</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={newSubscription.startDate}
+                    onSelect={(date) =>
+                      setNewSubscription({
+                        ...newSubscription,
+                        startDate: date ?? new Date(),
+                      })
+                    }
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+            <div className="grid grid-cols-6 items-center gap-4">
               <Label htmlFor="billingCycle" className="col-span-2 text-right">
                 Billing Cycle
               </Label>
@@ -282,6 +343,50 @@ export function AddSubscriptionDialog({
                 </SelectContent>
               </Select>
             </div>
+            <div className="grid grid-cols-6 items-center gap-4">
+              <Label htmlFor="isTrial" className="col-span-2 text-right">
+                Trial Period
+              </Label>
+              <div className="col-span-4">
+                <input
+                  type="checkbox"
+                  id="isTrial"
+                  checked={newSubscription.isTrial}
+                  onChange={(e) => handleTrialToggle(e.target.checked)}
+                  className="mr-2"
+                />
+                <Label htmlFor="isTrial">This is a trial subscription</Label>
+              </div>
+            </div>
+
+            {newSubscription.isTrial && (
+              <div className="grid grid-cols-6 items-center gap-4">
+                <Label htmlFor="trialEndDate" className="col-span-2 text-right">
+                  Trial End Date
+                </Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="col-span-4 w-full justify-start text-left font-normal"
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {format(trialEndDate, "PPP")}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={trialEndDate}
+                      onSelect={(date) =>
+                        setTrialEndDate(date ?? addDays(new Date(), 30))
+                      }
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            )}
           </div>
           <DialogFooter>
             <Button type="submit">Add Subscription</Button>
