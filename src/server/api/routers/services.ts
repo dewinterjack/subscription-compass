@@ -83,7 +83,7 @@ export const serviceRouter = createTRPCRouter({
     .query(async ({ ctx }) => {
       const { accessToken } = await getPlaidAccessToken(ctx.user?.id, ctx.db);
       
-      const existingSubscriptions = await ctx.db.subscription.findMany({
+      const existingSubscriptions = await ctx.db.plaidSubscription.findMany({
         where: { createdById: ctx.user?.id },
         select: { plaidStreamId: true }
       });
@@ -108,7 +108,7 @@ export const serviceRouter = createTRPCRouter({
       const transactionsToImport = recurringTransactions.data.outflow_streams.filter((stream) => 
         input.streamIds.includes(stream.stream_id)
       );
-      return await ctx.db.subscription.createMany({
+      return await ctx.db.plaidSubscription.createMany({
         data: transactionsToImport.map((stream) => ({
           name: stream.merchant_name!, 
           cost: stream.average_amount.amount!,
