@@ -36,7 +36,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ChevronDownIcon, Loader2 } from "lucide-react";
+import { ChevronDownIcon, Loader2, PlusCircle } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
@@ -139,6 +139,7 @@ export function AddSubscriptionDialog({
   const [isSearching, setIsSearching] = useState(false);
   const [userInput, setUserInput] = useState("");
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [isCustomService, setIsCustomService] = useState(false);
 
   useEffect(() => {
     if (initialData && isOpen) {
@@ -195,6 +196,7 @@ export function AddSubscriptionDialog({
       });
       setTrialEndDate(addDays(new Date(), 30));
       setUserInput("");
+      setIsCustomService(false);
     } else {
       toast.error("Please fill in all fields correctly.");
     }
@@ -211,6 +213,18 @@ export function AddSubscriptionDialog({
     setUserInput(service.name);
     setSearchResults([]);
     setIsPopoverOpen(false);
+    setIsCustomService(false);
+  };
+
+  const handleCustomServiceToggle = () => {
+    setIsCustomService(true);
+    setIsPopoverOpen(false);
+    setNewSubscription({
+      ...newSubscription,
+      name: "",
+      price: 0,
+    });
+    setUserInput("");
   };
 
   const handleTrialToggle = (checked: boolean) => {
@@ -251,48 +265,69 @@ export function AddSubscriptionDialog({
                 Service Name
               </Label>
               <div className="col-span-4">
-                <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      aria-expanded={isPopoverOpen}
-                      className="w-full justify-between"
-                    >
-                      {newSubscription.name || "Select a service..."}
-                      <ChevronDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-                    <Command>
-                      <CommandInput
-                        placeholder="Search for a service..."
-                        value={userInput}
-                        onValueChange={setUserInput}
-                      />
-                      <CommandList>
-                        {isSearching && (
-                          <CommandLoading>
-                            <div className="flex items-center justify-center p-2">
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                            </div>
-                          </CommandLoading>
-                        )}
-                        <CommandEmpty>No results found.</CommandEmpty>
-                        <CommandGroup heading="Services">
-                          {searchResults.map((service) => (
-                            <CommandItem
-                              key={service.name}
-                              onSelect={() => handleServiceSelect(service)}
-                            >
-                              {service.name}
+                {isCustomService ? (
+                  <Input
+                    id="subscription-name"
+                    value={newSubscription.name}
+                    onChange={(e) =>
+                      setNewSubscription({
+                        ...newSubscription,
+                        name: e.target.value,
+                      })
+                    }
+                    className="w-full"
+                    placeholder="Enter custom service name"
+                  />
+                ) : (
+                  <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={isPopoverOpen}
+                        className="w-full justify-between"
+                      >
+                        {newSubscription.name || "Select a service..."}
+                        <ChevronDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                      <Command>
+                        <CommandInput
+                          placeholder="Search for a service..."
+                          value={userInput}
+                          onValueChange={setUserInput}
+                        />
+                        <CommandList>
+                          {isSearching && (
+                            <CommandLoading>
+                              <div className="flex items-center justify-center p-2">
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              </div>
+                            </CommandLoading>
+                          )}
+                          <CommandEmpty>No results found.</CommandEmpty>
+                          <CommandGroup heading="Services">
+                            {searchResults.map((service) => (
+                              <CommandItem
+                                key={service.name}
+                                onSelect={() => handleServiceSelect(service)}
+                              >
+                                {service.name}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                          <CommandGroup>
+                            <CommandItem onSelect={handleCustomServiceToggle}>
+                              <PlusCircle className="mr-2 h-4 w-4" />
+                              Add custom service
                             </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                )}
               </div>
             </div>
             <div className="grid grid-cols-6 items-center gap-4">
