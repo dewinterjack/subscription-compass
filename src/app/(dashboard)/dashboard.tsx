@@ -90,32 +90,6 @@ export default function Dashboard() {
                   <Progress value={65} aria-label="65% of budget" />
                 </CardFooter>
               </Card>
-
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardDescription>Potential Savings</CardDescription>
-                  <CardTitle className="text-4xl">
-                    {CURRENCY_SYMBOL}75
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-xs text-muted-foreground">
-                    Based on 3 recommendations
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardDescription>Placeholder</CardDescription>
-                  <CardTitle className="text-4xl">3</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-xs text-muted-foreground">
-                    Next 7 days
-                  </div>
-                </CardContent>
-              </Card>
             </div>
           </div>
 
@@ -167,58 +141,6 @@ export default function Dashboard() {
                     No upcoming renewals
                   </p>
                 )}
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Savings Opportunities</CardTitle>
-                <CardDescription>Optimize your subscriptions</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {[
-                  {
-                    title: "Switch to Annual Plan",
-                    description: "Save $24/year on Spotify",
-                    action: "Apply",
-                  },
-                  {
-                    title: "Student Discount Available",
-                    description: "Save 50% on Adobe CC",
-                    action: "Verify",
-                  },
-                  {
-                    title: "Bundle Opportunity",
-                    description: "Save $5/month on streaming",
-                    action: "View",
-                  },
-                ].map((opportunity, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100">
-                        <DollarSign className="h-5 w-5 text-green-600" />
-                      </div>
-                      <div>
-                        <p className="font-medium">{opportunity.title}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {opportunity.description}
-                        </p>
-                      </div>
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() =>
-                        toast.info("This feature is not yet implemented.")
-                      }
-                    >
-                      {opportunity.action}
-                    </Button>
-                  </div>
-                ))}
               </CardContent>
             </Card>
 
