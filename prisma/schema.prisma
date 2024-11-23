@@ -16,31 +16,32 @@ datasource db {
 }
 
 model User {
-    id            String         @id @default(cuid())
-    clerkId       String         @unique
-    firstName     String?
-    lastName      String?
-    email         String?        @unique
-    image         String?
-    Subscriptions Subscription[]
-    PlaidItems    PlaidItem[]
+    id                 String              @id @default(cuid())
+    clerkId            String              @unique
+    firstName          String?
+    lastName           String?
+    email              String?             @unique
+    image              String?
+    PlaidSubscriptions PlaidSubscription[]
+    PlaidItems         PlaidItem[]
+    Subscription       Subscription[]
 }
 
 model PlaidItem {
-    id              String         @id
-    user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId          String
-    accessToken     String
-    institutionId   String?
-    institutionName String?
-    createdAt       DateTime       @default(now())
-    updatedAt       DateTime       @updatedAt
-    Subscription    Subscription[]
+    id                 String              @id
+    user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId             String
+    accessToken        String
+    institutionId      String?
+    institutionName    String?
+    createdAt          DateTime            @default(now())
+    updatedAt          DateTime            @updatedAt
+    PlaidSubscriptions PlaidSubscription[]
 
     @@index([userId])
 }
 
-model Subscription {
+model PlaidSubscription {
     id                     String       @id @default(cuid())
     name                   String
     cost                   Int
@@ -60,6 +61,32 @@ model Subscription {
     updatedAt              DateTime     @updatedAt
 
     @@index([name])
+}
+
+model Subscription {
+    id           String               @id @default(cuid())
+    name         String
+    autoRenew    Boolean              @default(true)
+    billingCycle BillingCycle
+    startDate    DateTime
+    endDate      DateTime?
+    periods      SubscriptionPeriod[]
+    createdBy    User                 @relation(fields: [createdById], references: [id])
+    createdById  String
+    createdAt    DateTime             @default(now())
+    updatedAt    DateTime             @updatedAt
+}
+
+model SubscriptionPeriod {
+    id             String       @id @default(cuid())
+    subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+    subscriptionId String
+    price          Decimal      @db.Decimal(10, 2)
+    periodStart    DateTime
+    periodEnd      DateTime
+    isTrial        Boolean      @default(false)
+
+    @@index([subscriptionId])
 }
 
 enum BillingCycle {
