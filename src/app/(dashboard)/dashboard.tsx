@@ -14,7 +14,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { api } from "@/trpc/react";
 import { CURRENCY_SYMBOL } from "@/lib/constants";
-import { differenceInDays } from "date-fns";
+import { differenceInDays, startOfDay } from "date-fns";
 import LoadingDots from "@/components/icons/loading-dots";
 
 export default function Dashboard() {
@@ -29,6 +29,12 @@ export default function Dashboard() {
 
   const { data: totalMonthlyCost = 0 } =
     api.subscription.getTotalMonthlyCost.useQuery();
+
+  const getRenewalText = (date: Date) => {
+    const days = differenceInDays(startOfDay(date), startOfDay(new Date()));
+    if (days === 0) return "Today";
+    return `in ${days} ${days === 1 ? "day" : "days"}`;
+  };
 
   if (isLoading)
     return (
@@ -144,13 +150,7 @@ export default function Dashboard() {
                       <div>
                         <p className="font-medium">{sub.name}</p>
                         <p className="text-sm text-muted-foreground">
-                          Renews in{" "}
-                          {differenceInDays(
-                            // @ts-expect-error plaidPredictedNextDate is nullable TODO: fix
-                            sub.plaidPredictedNextDate,
-                            new Date(),
-                          )}{" "}
-                          days
+                          Renews {getRenewalText(sub.latestPeriod.periodEnd)}
                         </p>
                       </div>
                     </div>

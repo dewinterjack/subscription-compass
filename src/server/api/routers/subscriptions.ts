@@ -34,8 +34,8 @@ export const subscriptionRouter = createTRPCRouter({
     ]))
     .mutation(async ({ ctx, input }) => {
       const periodEnd = input.isTrial 
-        ? input.endDate
-        : addDays(input.startDate, BILLING_CYCLE_DAYS[input.billingCycle]);
+        ? endOfDay(input.endDate)
+        : endOfDay(addDays(input.startDate, BILLING_CYCLE_DAYS[input.billingCycle]));
 
       return ctx.db.$transaction(async (tx) => {
         const subscription = await tx.subscription.create({
@@ -43,15 +43,15 @@ export const subscriptionRouter = createTRPCRouter({
             name: input.name,
             autoRenew: input.autoRenew,
             billingCycle: input.billingCycle,
-            startDate: input.startDate,
-            endDate: input.isTrial ? input.endDate : undefined,
+            startDate: startOfDay(input.startDate),
+            endDate: input.isTrial ? startOfDay(input.endDate) : undefined,
             createdBy: { connect: { id: ctx.user?.id } },
             periods: {
               create: {
                 price: input.price,
                 isTrial: input.isTrial,
-                periodStart: input.startDate,
-                periodEnd,
+                periodStart: startOfDay(input.startDate),
+                periodEnd: endOfDay(periodEnd),
               }
             }
           },
@@ -253,16 +253,16 @@ export const subscriptionRouter = createTRPCRouter({
             name: input.name,
             autoRenew: input.autoRenew,
             billingCycle: input.billingCycle,
-            startDate: input.startDate,
-            endDate: input.isTrial ? input.endDate : null,
+            startDate: startOfDay(input.startDate),
+            endDate: input.isTrial ? endOfDay(input.endDate) : null,
             periods: {
               update: {
                 where: { id: latestPeriod.id },
                 data: {
                   price: input.price,
                   isTrial: input.isTrial,
-                  periodStart: input.startDate,
-                  periodEnd,
+                  periodStart: startOfDay(input.startDate),
+                  periodEnd: endOfDay(periodEnd),
                 }
               }
             }
