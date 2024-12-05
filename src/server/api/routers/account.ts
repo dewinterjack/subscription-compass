@@ -17,12 +17,30 @@ export const accountRouter = createTRPCRouter({
   create: protectedProcedure
     .input(accountFormSchema)
     .mutation(async ({ ctx, input }) => {
-      return ctx.db.account.create({
+      const existingAccounts = await ctx.db.account.count({
+        where: { userId: ctx.user.id }
+      });
+
+      const account = await ctx.db.account.create({
         data: {
           ...input,
-          userId: ctx.user.id,
-        },
-      })
+          user: {
+            connect: { id: ctx.user.id }
+          }
+        }
+      });
+
+      // If this is the first account, set it as default
+      if (existingAccounts === 0) {
+        await ctx.db.user.update({
+          where: { id: ctx.user.id },
+          data: {
+            defaultPaymentMethodId: account.id
+          }
+        });
+      }
+
+      return account;
     }),
 
   update: protectedProcedure
@@ -65,5 +83,14 @@ export const accountRouter = createTRPCRouter({
       return ctx.db.account.delete({
         where: { id: input.id },
       })
+    }),
+
+  setAsDefault: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.user.update({
+        where: { id: ctx.user.id },
+        data: { defaultPaymentMethodId: input.id }
+      });
     }),
 }) 

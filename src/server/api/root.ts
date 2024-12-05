@@ -4,6 +4,7 @@ import { serviceRouter } from "./routers/services";
 import type { inferRouterOutputs, inferRouterInputs } from "@trpc/server";
 import { subscriptionRouter } from "./routers/subscriptions";
 import { accountRouter } from "./routers/account";
+import { userRouter } from "./routers/user";
 
 
 /**
@@ -16,6 +17,7 @@ export const appRouter = createTRPCRouter({
   subscription: subscriptionRouter,
   service: serviceRouter,
   account: accountRouter,
+  user: userRouter,
 });
 
 // export type definition of API
