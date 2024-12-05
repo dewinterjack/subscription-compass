@@ -7,15 +7,14 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { api } from "@/trpc/react";
 import { CURRENCY_SYMBOL } from "@/lib/constants";
 import { differenceInDays, startOfDay } from "date-fns";
 import LoadingDots from "@/components/icons/loading-dots";
+import { SubscriptionsSection } from "./subscriptions";
 
 export default function Dashboard() {
   const {
@@ -198,6 +197,7 @@ export default function Dashboard() {
                 )}
               </CardContent>
             </Card>
+            <SubscriptionsSection />
           </div>
         </div>
       </main>
