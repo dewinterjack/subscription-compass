@@ -16,30 +16,34 @@ datasource db {
 }
 
 model User {
-    id                     String         @id @default(cuid())
-    clerkId                String         @unique
+    id                     String          @id @default(cuid())
+    clerkId                String          @unique
     firstName              String?
     lastName               String?
-    email                  String?        @unique
+    email                  String?         @unique
     image                  String?
     Subscription           Subscription[]
     paymentMethods         PaymentMethod[]
-    defaultPaymentMethod   PaymentMethod? @relation("defaultPaymentMethod", fields: [defaultPaymentMethodId], references: [id])
-    defaultPaymentMethodId String?        @unique
+    defaultPaymentMethod   PaymentMethod?  @relation("defaultPaymentMethod", fields: [defaultPaymentMethodId], references: [id])
+    defaultPaymentMethodId String?         @unique
 }
 
 model Subscription {
-    id           String               @id @default(cuid())
-    name         String
-    autoRenew    Boolean              @default(true)
-    billingCycle BillingCycle
-    startDate    DateTime
-    endDate      DateTime?
-    periods      SubscriptionPeriod[]
-    createdBy    User                 @relation(fields: [createdById], references: [id])
-    createdById  String
-    createdAt    DateTime             @default(now())
-    updatedAt    DateTime             @updatedAt
+    id              String               @id @default(cuid())
+    name            String
+    autoRenew       Boolean              @default(true)
+    billingCycle    BillingCycle
+    startDate       DateTime
+    endDate         DateTime?
+    periods         SubscriptionPeriod[]
+    createdBy       User                 @relation(fields: [createdById], references: [id])
+    createdById     String
+    paymentMethod   PaymentMethod?       @relation(fields: [paymentMethodId], references: [id])
+    paymentMethodId String?
+    createdAt       DateTime             @default(now())
+    updatedAt       DateTime             @updatedAt
+
+    @@index([paymentMethodId])
 }
 
 model SubscriptionPeriod {
@@ -64,15 +68,16 @@ enum BillingCycle {
 }
 
 model PaymentMethod {
-    id                      String   @id @default(cuid())
-    type                    String   @default("bank")
+    id                      String         @id @default(cuid())
+    type                    String         @default("bank")
     name                    String
     number                  String
-    user                    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    user                    User           @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId                  String
-    createdAt               DateTime @default(now())
-    updatedAt               DateTime @updatedAt
-    defaultPaymentMethodFor User?    @relation("defaultPaymentMethod")
+    subscriptions           Subscription[]
+    createdAt               DateTime       @default(now())
+    updatedAt               DateTime       @updatedAt
+    defaultPaymentMethodFor User?          @relation("defaultPaymentMethod")
 
     @@index([userId])
 }

@@ -19,6 +19,7 @@ const baseSubscriptionSchema = z.object({
   billingCycle: z.nativeEnum(BillingCycle),
   autoRenew: z.boolean().default(true),
   startDate: z.date(),
+  paymentMethodId: z.string().optional(),
 });
 
 export const subscriptionRouter = createTRPCRouter({
@@ -37,6 +38,8 @@ export const subscriptionRouter = createTRPCRouter({
         ? endOfDay(input.endDate)
         : endOfDay(addDays(input.startDate, BILLING_CYCLE_DAYS[input.billingCycle]));
 
+      const paymentMethodId = input.paymentMethodId ?? ctx.user.defaultPaymentMethodId;
+
       return ctx.db.$transaction(async (tx) => {
         const subscription = await tx.subscription.create({
           data: {
@@ -53,7 +56,8 @@ export const subscriptionRouter = createTRPCRouter({
                 periodStart: startOfDay(input.startDate),
                 periodEnd: endOfDay(periodEnd),
               }
-            }
+            },
+            paymentMethod: paymentMethodId ? { connect: { id: paymentMethodId } } : undefined,
           },
           include: {
             periods: {
