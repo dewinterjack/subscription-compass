@@ -23,8 +23,8 @@ model User {
     email                  String?        @unique
     image                  String?
     Subscription           Subscription[]
-    accounts               Account[]
-    defaultPaymentMethod   Account?       @relation("defaultPaymentMethod", fields: [defaultPaymentMethodId], references: [id])
+    paymentMethods         PaymentMethod[]
+    defaultPaymentMethod   PaymentMethod? @relation("defaultPaymentMethod", fields: [defaultPaymentMethodId], references: [id])
     defaultPaymentMethodId String?        @unique
 }
 
@@ -63,7 +63,7 @@ enum BillingCycle {
     Unknown
 }
 
-model Account {
+model PaymentMethod {
     id                      String   @id @default(cuid())
     type                    String   @default("bank")
     name                    String

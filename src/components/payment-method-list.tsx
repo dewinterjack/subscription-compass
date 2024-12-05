@@ -21,50 +21,50 @@ import {
 } from "@/components/ui/form";
 import { toast } from "sonner";
 import {
-  type AccountFormValues,
-  accountFormSchema,
-} from "@/lib/schema/account";
+  type PaymentMethodFormValues,
+  paymentMethodFormSchema,
+} from "@/lib/schema/paymentMethod";
 import { api } from "@/trpc/react";
-import type { Account } from "@prisma/client";
+import type { PaymentMethod } from "@prisma/client";
 import { Badge } from "@/components/ui/badge";
 
-export function AccountsList() {
+export function PaymentMethodList() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const utils = api.useUtils();
 
-  const { data: accounts, isLoading } = api.account.getAll.useQuery();
+  const { data: accounts, isLoading } = api.paymentMethod.getAll.useQuery();
   const { data: user } = api.user.getCurrent.useQuery();
 
   const isDefaultAccount = (accountId: string) => {
     return user?.defaultPaymentMethodId === accountId;
   };
 
-  const { mutate: updateAccount } = api.account.update.useMutation({
+  const { mutate: updatePaymentMethod } = api.paymentMethod.update.useMutation({
     onSuccess: () => {
       toast.success("Account updated successfully");
       setEditingId(null);
       void utils.user.getCurrent.invalidate();
-      void utils.account.getAll.invalidate();
+      void utils.paymentMethod.getAll.invalidate();
     },
     onError: (error) => {
       toast.error(error.message || "Failed to update account");
     },
   });
 
-  const { mutate: deleteAccount } = api.account.delete.useMutation({
+  const { mutate: deletePaymentMethod } = api.paymentMethod.delete.useMutation({
     onSuccess: () => {
       toast.success("Account removed successfully");
-      void utils.account.getAll.invalidate();
+      void utils.paymentMethod.getAll.invalidate();
     },
     onError: (error) => {
       toast.error(error.message || "Failed to remove account");
     },
   });
 
-  const { mutate: setAsDefault } = api.account.setAsDefault.useMutation({
+  const { mutate: setAsDefault } = api.paymentMethod.setAsDefault.useMutation({
     onSuccess: () => {
       toast.success("Default payment method updated");
-      void utils.account.getAll.invalidate();
+      void utils.paymentMethod.getAll.invalidate();
       void utils.user.getCurrent.invalidate();
     },
     onError: (error) => {
@@ -72,25 +72,25 @@ export function AccountsList() {
     },
   });
 
-  const form = useForm<AccountFormValues>({
-    resolver: zodResolver(accountFormSchema),
+  const form = useForm<PaymentMethodFormValues>({
+    resolver: zodResolver(paymentMethodFormSchema),
   });
 
-  const handleEdit = (account: Account) => {
+  const handleEdit = (paymentMethod: PaymentMethod) => {
     form.reset({
-      type: account.type as "bank" | "card",
-      name: account.name,
-      number: account.number,
+      type: paymentMethod.type as "bank" | "card",
+      name: paymentMethod.name,
+      number: paymentMethod.number,
     });
-    setEditingId(account.id);
+    setEditingId(paymentMethod.id);
   };
 
-  const handleSave = async (id: string, data: AccountFormValues) => {
-    updateAccount({ id, data });
+  const handleSave = async (id: string, data: PaymentMethodFormValues) => {
+    updatePaymentMethod({ id, data });
   };
 
   const handleDelete = async (id: string) => {
-    deleteAccount({ id });
+    deletePaymentMethod({ id });
   };
 
   if (isLoading) {
@@ -98,7 +98,7 @@ export function AccountsList() {
   }
 
   if (!accounts?.length) {
-    return <div>No accounts found. Add your first account above.</div>;
+    return <div>No payment methods found. Add a payment method above.</div>;
   }
 
   return (

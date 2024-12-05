@@ -1,7 +1,7 @@
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
 import type { inferRouterOutputs, inferRouterInputs } from "@trpc/server";
 import { subscriptionRouter } from "./routers/subscriptions";
-import { accountRouter } from "./routers/account";
+import { paymentMethodRouter } from "./routers/paymentMethod";
 import { userRouter } from "./routers/user";
 
 
@@ -12,7 +12,7 @@ import { userRouter } from "./routers/user";
  */
 export const appRouter = createTRPCRouter({
   subscription: subscriptionRouter,
-  account: accountRouter,
+  paymentMethod: paymentMethodRouter,
   user: userRouter,
 });
 

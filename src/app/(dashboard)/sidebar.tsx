@@ -90,7 +90,7 @@ export function DashboardSidebar() {
               href: "/subscriptions",
               badge: subscriptionCount,
             },
-            { icon: CreditCard, label: "Accounts", href: "/accounts" },
+            { icon: CreditCard, label: "Payment Methods", href: "/payment-methods" },
             { icon: Zap, label: "Discover", href: "#" },
           ].map((item, index) => (
             <Tooltip key={index}>

@@ -16,23 +16,22 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import {
-  type AccountFormValues,
-  accountFormSchema,
-} from "@/lib/schema/account";
+  type PaymentMethodFormValues,
+  paymentMethodFormSchema,
+} from "@/lib/schema/paymentMethod";
 import { api } from "@/trpc/react";
-import type { Account } from "@prisma/client";
 
-export function AddAccountForm() {
+export function AddPaymentMethodForm() {
   const utils = api.useUtils();
 
-  const { mutate: createAccount, isPending } =
-    api.account.create.useMutation<Account>({
+  const { mutate: createPaymentMethod, isPending } =
+    api.paymentMethod.create.useMutation({
       onSuccess: (data) => {
         toast.success(
           `${data.type.charAt(0).toUpperCase() + data.type.slice(1)} account "${data.name}" has been added.`,
         );
         form.reset();
-        void utils.account.getAll.invalidate();
+        void utils.paymentMethod.getAll.invalidate();
         void utils.user.getCurrent.invalidate();
       },
       onError: (error) => {
@@ -42,8 +41,8 @@ export function AddAccountForm() {
       },
     });
 
-  const form = useForm<AccountFormValues>({
-    resolver: zodResolver(accountFormSchema),
+  const form = useForm<PaymentMethodFormValues>({
+    resolver: zodResolver(paymentMethodFormSchema),
     defaultValues: {
       type: "bank" as const,
       name: "",
@@ -51,8 +50,8 @@ export function AddAccountForm() {
     },
   });
 
-  const onSubmit = (data: AccountFormValues) => {
-    createAccount(data);
+  const onSubmit = (data: PaymentMethodFormValues) => {
+    createPaymentMethod(data);
   };
 
   return (

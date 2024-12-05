@@ -1,10 +1,10 @@
 import { z } from "zod"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
-import { accountFormSchema } from "@/lib/schema/account"
+import { paymentMethodFormSchema } from "@/lib/schema/paymentMethod"
 
-export const accountRouter = createTRPCRouter({
+export const paymentMethodRouter = createTRPCRouter({
   getAll: protectedProcedure.query(async ({ ctx }) => {
-    return ctx.db.account.findMany({
+    return ctx.db.paymentMethod.findMany({
       where: {
         userId: ctx.user.id,
       },
@@ -15,13 +15,13 @@ export const accountRouter = createTRPCRouter({
   }),
 
   create: protectedProcedure
-    .input(accountFormSchema)
+    .input(paymentMethodFormSchema)
     .mutation(async ({ ctx, input }) => {
-      const existingAccounts = await ctx.db.account.count({
+      const existingAccounts = await ctx.db.paymentMethod.count({
         where: { userId: ctx.user.id }
       });
 
-      const account = await ctx.db.account.create({
+      const paymentMethod = await ctx.db.paymentMethod.create({
         data: {
           ...input,
           user: {
@@ -35,32 +35,32 @@ export const accountRouter = createTRPCRouter({
         await ctx.db.user.update({
           where: { id: ctx.user.id },
           data: {
-            defaultPaymentMethodId: account.id
+            defaultPaymentMethodId: paymentMethod.id
           }
         });
       }
 
-      return account;
+      return paymentMethod;
     }),
 
   update: protectedProcedure
     .input(z.object({
       id: z.string(),
-      data: accountFormSchema,
+      data: paymentMethodFormSchema,
     }))
     .mutation(async ({ ctx, input }) => {
-      const account = await ctx.db.account.findFirst({
+      const paymentMethod = await ctx.db.paymentMethod.findFirst({
         where: {
           id: input.id,
           userId: ctx.user.id,
         },
       })
 
-      if (!account) {
-        throw new Error("Account not found")
+      if (!paymentMethod) {
+        throw new Error("Payment method not found")
       }
 
-      return ctx.db.account.update({
+      return ctx.db.paymentMethod.update({
         where: { id: input.id },
         data: input.data,
       })
@@ -69,18 +69,18 @@ export const accountRouter = createTRPCRouter({
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const account = await ctx.db.account.findFirst({
+      const paymentMethod = await ctx.db.paymentMethod.findFirst({
         where: {
           id: input.id,
           userId: ctx.user.id,
         },
       })
 
-      if (!account) {
-        throw new Error("Account not found")
+      if (!paymentMethod) {
+        throw new Error("Payment method not found")
       }
 
-      return ctx.db.account.delete({
+      return ctx.db.paymentMethod.delete({
         where: { id: input.id },
       })
     }),

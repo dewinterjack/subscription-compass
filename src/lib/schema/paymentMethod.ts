@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-export const accountFormSchema = z.object({
+export const paymentMethodFormSchema = z.object({
   type: z.enum(["bank", "card"]),
   name: z.string().min(1, "Account name is required"),
   number: z.string()
@@ -12,4 +12,4 @@ export const accountFormSchema = z.object({
     ),
 })
 
-export type AccountFormValues = z.infer<typeof accountFormSchema> 
+export type PaymentMethodFormValues = z.infer<typeof paymentMethodFormSchema> 
