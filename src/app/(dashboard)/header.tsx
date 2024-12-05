@@ -71,12 +71,7 @@ export default function DashboardHeader() {
           onClick={() => toast.info("Not implemented yet")}
         >
           <Sparkles className="h-5 w-5 transition-all hover:scale-110" />
-        </Button>
-        <Link href="/profile">
-          <Button variant="ghost" size="icon">
-            <UserIcon className="h-5 w-5" />
-          </Button>
-        </Link>
+        </Button> 
         <form className="flex-1" onSubmit={handleSearch}>
           <div className="relative">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />

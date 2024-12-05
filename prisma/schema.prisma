@@ -16,54 +16,16 @@ datasource db {
 }
 
 model User {
-    id                 String              @id @default(cuid())
-    clerkId            String              @unique
-    firstName          String?
-    lastName           String?
-    email              String?             @unique
-    image              String?
-    PlaidSubscriptions PlaidSubscription[]
-    PlaidItems         PlaidItem[]
-    Subscription       Subscription[]
-    accounts           Account[]
-    defaultPaymentMethod Account?  @relation("defaultPaymentMethod", fields: [defaultPaymentMethodId], references: [id])
-    defaultPaymentMethodId String? @unique
-}
-
-model PlaidItem {
-    id                 String              @id
-    user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId             String
-    accessToken        String
-    institutionId      String?
-    institutionName    String?
-    createdAt          DateTime            @default(now())
-    updatedAt          DateTime            @updatedAt
-    PlaidSubscriptions PlaidSubscription[]
-
-    @@index([userId])
-}
-
-model PlaidSubscription {
-    id                     String       @id @default(cuid())
-    name                   String
-    cost                   Int
-    billingCycle           BillingCycle
-    firstDate              DateTime?
-    lastDate               DateTime?
-    isActive               Boolean      @default(true)
-    plaidPredictedNextDate DateTime?
-    plaidItem              PlaidItem?   @relation(fields: [plaidItemId], references: [id])
-    plaidItemId            String?
-    plaidAccountId         String?
-    plaidStreamId          String?
-    plaidMetadata          Json?
-    createdBy              User         @relation(fields: [createdById], references: [id])
-    createdById            String
-    createdAt              DateTime     @default(now())
-    updatedAt              DateTime     @updatedAt
-
-    @@index([name])
+    id                     String         @id @default(cuid())
+    clerkId                String         @unique
+    firstName              String?
+    lastName               String?
+    email                  String?        @unique
+    image                  String?
+    Subscription           Subscription[]
+    accounts               Account[]
+    defaultPaymentMethod   Account?       @relation("defaultPaymentMethod", fields: [defaultPaymentMethodId], references: [id])
+    defaultPaymentMethodId String?        @unique
 }
 
 model Subscription {
@@ -102,15 +64,15 @@ enum BillingCycle {
 }
 
 model Account {
-    id        String   @id @default(cuid())
-    type      String   @default("bank")
-    name      String
-    number    String
-    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId    String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    defaultPaymentMethodFor User? @relation("defaultPaymentMethod")
+    id                      String   @id @default(cuid())
+    type                    String   @default("bank")
+    name                    String
+    number                  String
+    user                    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId                  String
+    createdAt               DateTime @default(now())
+    updatedAt               DateTime @updatedAt
+    defaultPaymentMethodFor User?    @relation("defaultPaymentMethod")
 
     @@index([userId])
 }
