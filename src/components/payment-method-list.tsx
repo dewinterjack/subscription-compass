@@ -32,32 +32,32 @@ export function PaymentMethodList() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const utils = api.useUtils();
 
-  const { data: accounts, isLoading } = api.paymentMethod.getAll.useQuery();
+  const { data: paymentMethods, isLoading } = api.paymentMethod.getAll.useQuery();
   const { data: user } = api.user.getCurrent.useQuery();
 
-  const isDefaultAccount = (accountId: string) => {
-    return user?.defaultPaymentMethodId === accountId;
+  const isDefaultPaymentMethod = (paymentMethodId: string) => {
+    return user?.defaultPaymentMethodId === paymentMethodId;
   };
 
   const { mutate: updatePaymentMethod } = api.paymentMethod.update.useMutation({
     onSuccess: () => {
-      toast.success("Account updated successfully");
+      toast.success("Payment method updated successfully");
       setEditingId(null);
       void utils.user.getCurrent.invalidate();
       void utils.paymentMethod.getAll.invalidate();
     },
     onError: (error) => {
-      toast.error(error.message || "Failed to update account");
+      toast.error(error.message || "Failed to update payment method");
     },
   });
 
   const { mutate: deletePaymentMethod } = api.paymentMethod.delete.useMutation({
     onSuccess: () => {
-      toast.success("Account removed successfully");
+      toast.success("Payment method removed successfully");
       void utils.paymentMethod.getAll.invalidate();
     },
     onError: (error) => {
-      toast.error(error.message || "Failed to remove account");
+      toast.error(error.message || "Failed to remove payment method");
     },
   });
 
@@ -94,31 +94,31 @@ export function PaymentMethodList() {
   };
 
   if (isLoading) {
-    return <div>Loading accounts...</div>;
+    return <div>Loading payment methods...</div>;
   }
 
-  if (!accounts?.length) {
+  if (!paymentMethods?.length) {
     return <div>No payment methods found. Add a payment method above.</div>;
   }
 
   return (
     <div className="space-y-4">
-      {accounts.map((account) => (
-        <Card key={account.id}>
+      {paymentMethods.map((paymentMethod) => (
+        <Card key={paymentMethod.id}>
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
-              {account.type === "bank" ? "Bank Account" : "Card"}
-              {isDefaultAccount(account.id) && (
+              {paymentMethod.type === "bank" ? "Bank Account" : "Card"}
+              {isDefaultPaymentMethod(paymentMethod.id) && (
                 <Badge variant="secondary">Default</Badge>
               )}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {editingId === account.id ? (
+            {editingId === paymentMethod.id ? (
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit((data) =>
-                    handleSave(account.id, data),
+                    handleSave(paymentMethod.id, data),
                   )}
                   className="space-y-4"
                 >
@@ -161,25 +161,25 @@ export function PaymentMethodList() {
             ) : (
               <div>
                 <p>
-                  <strong>Name:</strong> {account.name}
+                  <strong>Name:</strong> {paymentMethod.name}
                 </p>
                 <p>
                   <strong>Number:</strong>{" "}
-                  {"*".repeat(account.number.length - 4) +
-                    account.number.slice(-4)}
+                  {"*".repeat(paymentMethod.number.length - 4) +
+                    paymentMethod.number.slice(-4)}
                 </p>
               </div>
             )}
           </CardContent>
           <CardFooter className="justify-between">
             <div className="flex gap-2">
-              <Button variant="outline" onClick={() => handleEdit(account)}>
+              <Button variant="outline" onClick={() => handleEdit(paymentMethod)}>
                 Edit
               </Button>
-              {!isDefaultAccount(account.id) && (
+              {!isDefaultPaymentMethod(paymentMethod.id) && (
                 <Button
                   variant="outline"
-                  onClick={() => setAsDefault({ id: account.id })}
+                  onClick={() => setAsDefault({ id: paymentMethod.id })}
                 >
                   Make Default
                 </Button>
@@ -187,7 +187,7 @@ export function PaymentMethodList() {
             </div>
             <Button
               variant="destructive"
-              onClick={() => handleDelete(account.id)}
+              onClick={() => handleDelete(paymentMethod.id)}
             >
               Delete
             </Button>
