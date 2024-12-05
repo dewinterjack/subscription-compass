@@ -8,6 +8,7 @@ import { Toaster } from "sonner";
 import { PHProvider } from "./providers";
 import dynamic from "next/dynamic";
 import { ClerkProvider } from '@clerk/nextjs'
+import { ThemeProvider } from "@/components/theme-provider"
 
 const PostHogPageView = dynamic(() => import("./PostHogPageView"), {
   ssr: false,
@@ -39,15 +40,22 @@ export default function RootLayout({
           />
         </head>
         <body>
-          <TRPCReactProvider>
-            <PHProvider>
-              <PostHogPageView />
-              {children}
-            </PHProvider>
-            <ReactQueryDevtools initialIsOpen={false} />
-            <Toaster className="dark:hidden" />
-            <Toaster theme="dark" className="hidden dark:block" />
-          </TRPCReactProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <TRPCReactProvider>
+              <PHProvider>
+                <PostHogPageView />
+                {children}
+              </PHProvider>
+              <ReactQueryDevtools initialIsOpen={false} />
+              <Toaster className="dark:hidden" />
+              <Toaster theme="dark" className="hidden dark:block" />
+            </TRPCReactProvider>
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>

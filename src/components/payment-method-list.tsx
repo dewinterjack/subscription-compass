@@ -104,7 +104,7 @@ export function PaymentMethodList() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="rounded-lg border bg-white p-4 dark:bg-gray-800 dark:border-gray-700">
       {paymentMethods.map((paymentMethod) => (
         <Card key={paymentMethod.id}>
           <CardHeader>

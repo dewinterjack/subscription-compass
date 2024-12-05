@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/card";
 import { api } from "@/trpc/react";
 import ProPlanModal from "./pro-plan-modal";
+import { ThemeToggle } from "@/components/theme-toggle"
 
 export function DashboardSidebar() {
   const [isProModalOpen, setIsProModalOpen] = useState(false);
@@ -156,12 +157,14 @@ export function DashboardSidebar() {
               isOpen={isProModalOpen}
               onClose={() => setIsProModalOpen(false)}
               onSubscribe={() => {
-                // Handle subscription logic here
                 console.log("User subscribed to Pro plan");
               }}
             />
           )}
         </Card>
+        <div className="mt-4 flex justify-center">
+          <ThemeToggle />
+        </div>
       </div>
     </aside>
   );
