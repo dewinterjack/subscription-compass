@@ -26,12 +26,14 @@ import {
 } from "@/lib/schema/account";
 import { api } from "@/trpc/react";
 import type { Account } from "@prisma/client";
+import { Badge } from "@/components/ui/badge";
 
 export function AccountsList() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const utils = api.useUtils();
 
   const { data: accounts, isLoading } = api.account.getAll.useQuery();
+  const { data: user } = api.user.getCurrent.useQuery();
 
   const { mutate: updateAccount } = api.account.update.useMutation({
     onSuccess: () => {
@@ -51,6 +53,17 @@ export function AccountsList() {
     },
     onError: (error) => {
       toast.error(error.message || "Failed to remove account");
+    },
+  });
+
+  const { mutate: setAsDefault } = api.account.setAsDefault.useMutation({
+    onSuccess: () => {
+      toast.success("Default payment method updated");
+      void utils.account.getAll.invalidate();
+      void utils.user.getCurrent.invalidate();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to update default payment method");
     },
   });
 
@@ -88,8 +101,11 @@ export function AccountsList() {
       {accounts.map((account) => (
         <Card key={account.id}>
           <CardHeader>
-            <CardTitle>
+            <CardTitle className="flex items-center justify-between">
               {account.type === "bank" ? "Bank Account" : "Card"}
+              {account.id === user?.defaultPaymentMethodId && (
+                <Badge variant="secondary">Default</Badge>
+              )}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -150,19 +166,27 @@ export function AccountsList() {
               </div>
             )}
           </CardContent>
-          {!editingId && (
-            <CardFooter className="justify-between">
+          <CardFooter className="justify-between">
+            <div className="flex gap-2">
               <Button variant="outline" onClick={() => handleEdit(account)}>
                 Edit
               </Button>
-              <Button
-                variant="destructive"
-                onClick={() => handleDelete(account.id)}
-              >
-                Delete
-              </Button>
-            </CardFooter>
-          )}
+              {account.id !== user?.defaultPaymentMethodId && (
+                <Button 
+                  variant="outline" 
+                  onClick={() => setAsDefault({ id: account.id })}
+                >
+                  Make Default
+                </Button>
+              )}
+            </div>
+            <Button
+              variant="destructive"
+              onClick={() => handleDelete(account.id)}
+            >
+              Delete
+            </Button>
+          </CardFooter>
         </Card>
       ))}
     </div>
