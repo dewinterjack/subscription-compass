@@ -31,10 +31,9 @@ export function AccountsList() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const utils = api.useUtils();
 
-  const { data: accounts, isLoading } =
-    api.account.getAll.useQuery<Account[]>();
+  const { data: accounts, isLoading } = api.account.getAll.useQuery();
 
-  const { mutate: updateAccount } = api.account.update.useMutation<Account>({
+  const { mutate: updateAccount } = api.account.update.useMutation({
     onSuccess: () => {
       toast.success("Account updated successfully");
       setEditingId(null);
@@ -45,7 +44,7 @@ export function AccountsList() {
     },
   });
 
-  const { mutate: deleteAccount } = api.account.delete.useMutation<Account>({
+  const { mutate: deleteAccount } = api.account.delete.useMutation({
     onSuccess: () => {
       toast.success("Account removed successfully");
       void utils.account.getAll.invalidate();
