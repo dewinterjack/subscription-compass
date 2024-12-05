@@ -88,7 +88,11 @@ export function AddPaymentMethodForm() {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Account Name</FormLabel>
+              <FormLabel>
+                {form.watch("type") === "bank"
+                  ? "Account Name"
+                  : "Card Name"}
+              </FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>

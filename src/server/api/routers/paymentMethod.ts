@@ -17,7 +17,7 @@ export const paymentMethodRouter = createTRPCRouter({
   create: protectedProcedure
     .input(paymentMethodFormSchema)
     .mutation(async ({ ctx, input }) => {
-      const existingAccounts = await ctx.db.paymentMethod.count({
+      const existingPaymentMethods = await ctx.db.paymentMethod.count({
         where: { userId: ctx.user.id }
       });
 
@@ -30,8 +30,8 @@ export const paymentMethodRouter = createTRPCRouter({
         }
       });
 
-      // If this is the first account, set it as default
-      if (existingAccounts === 0) {
+      // If this is the first payment method, set it as default
+      if (existingPaymentMethods === 0) {
         await ctx.db.user.update({
           where: { id: ctx.user.id },
           data: {
