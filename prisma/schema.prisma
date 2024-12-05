@@ -25,6 +25,7 @@ model User {
     PlaidSubscriptions PlaidSubscription[]
     PlaidItems         PlaidItem[]
     Subscription       Subscription[]
+    accounts           Account[]
 }
 
 model PlaidItem {
@@ -96,4 +97,17 @@ enum BillingCycle {
     Monthly
     Yearly
     Unknown
+}
+
+model Account {
+    id        String   @id @default(cuid())
+    type      String   @default("bank")
+    name      String
+    number    String
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId    String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([userId])
 }

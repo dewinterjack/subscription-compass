@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import {
   Home,
   ShoppingBasket,
-  LineChart,
+  CreditCard,
   Zap,
   ChevronsLeft,
   ChevronsRight,
@@ -90,7 +90,7 @@ export function DashboardSidebar() {
               href: "/subscriptions",
               badge: subscriptionCount,
             },
-            { icon: LineChart, label: "Analytics", href: "#" },
+            { icon: CreditCard, label: "Accounts", href: "/accounts" },
             { icon: Zap, label: "Discover", href: "#" },
           ].map((item, index) => (
             <Tooltip key={index}>
