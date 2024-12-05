@@ -27,12 +27,14 @@ import {
 import { api } from "@/trpc/react";
 import type { PaymentMethod } from "@prisma/client";
 import { Badge } from "@/components/ui/badge";
+import LoadingDots from "./icons/loading-dots";
 
 export function PaymentMethodList() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const utils = api.useUtils();
 
-  const { data: paymentMethods, isLoading } = api.paymentMethod.getAll.useQuery();
+  const { data: paymentMethods, isLoading } =
+    api.paymentMethod.getAll.useQuery();
   const { data: user } = api.user.getCurrent.useQuery();
 
   const isDefaultPaymentMethod = (paymentMethodId: string) => {
@@ -94,7 +96,7 @@ export function PaymentMethodList() {
   };
 
   if (isLoading) {
-    return <div>Loading payment methods...</div>;
+    return <LoadingDots />;
   }
 
   if (!paymentMethods?.length) {
@@ -173,7 +175,10 @@ export function PaymentMethodList() {
           </CardContent>
           <CardFooter className="justify-between">
             <div className="flex gap-2">
-              <Button variant="outline" onClick={() => handleEdit(paymentMethod)}>
+              <Button
+                variant="outline"
+                onClick={() => handleEdit(paymentMethod)}
+              >
                 Edit
               </Button>
               {!isDefaultPaymentMethod(paymentMethod.id) && (
