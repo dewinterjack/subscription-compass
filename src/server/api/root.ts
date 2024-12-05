@@ -3,6 +3,7 @@ import { plaidSubscriptionRouter } from "./routers/plaidSubscriptions";
 import { serviceRouter } from "./routers/services";
 import type { inferRouterOutputs, inferRouterInputs } from "@trpc/server";
 import { subscriptionRouter } from "./routers/subscriptions";
+import { accountRouter } from "./routers/account";
 
 
 /**
@@ -14,6 +15,7 @@ export const appRouter = createTRPCRouter({
   plaidSubscription: plaidSubscriptionRouter,
   subscription: subscriptionRouter,
   service: serviceRouter,
+  account: accountRouter,
 });
 
 // export type definition of API
