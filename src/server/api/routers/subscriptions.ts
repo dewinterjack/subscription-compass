@@ -63,7 +63,8 @@ export const subscriptionRouter = createTRPCRouter({
             periods: {
               orderBy: { periodEnd: 'desc' },
               take: 1,
-            }
+            },
+            paymentMethod: true,
           }
         });
 
@@ -124,6 +125,7 @@ export const subscriptionRouter = createTRPCRouter({
             isTrial: false,
           },
         },
+        paymentMethod: true,
       },
     });
 
@@ -181,6 +183,7 @@ export const subscriptionRouter = createTRPCRouter({
           },
           take: 1,
         },
+        paymentMethod: true,
       },
     });
 
@@ -276,7 +279,8 @@ export const subscriptionRouter = createTRPCRouter({
             periods: {
               orderBy: { periodEnd: 'desc' },
               take: 1,
-            }
+            },
+            paymentMethod: true,
           }
         });
 
