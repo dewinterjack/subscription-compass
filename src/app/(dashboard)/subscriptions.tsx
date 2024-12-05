@@ -1,7 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, ShoppingBasket, Upload, MoreHorizontal } from "lucide-react";
+import {
+  Plus,
+  ShoppingBasket,
+  Upload,
+  MoreHorizontal,
+  Building,
+  CreditCard,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -177,6 +184,7 @@ export function SubscriptionsSection() {
               <TableRow>
                 <TableHead className="w-[200px]">Name</TableHead>
                 <TableHead>Cost</TableHead>
+                <TableHead>Payment Method</TableHead>
                 <TableHead>Billing Cycle</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -184,7 +192,7 @@ export function SubscriptionsSection() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="h-24 text-center">
+                  <TableCell colSpan={5} className="h-24 text-center">
                     <div className="flex h-full items-center justify-center">
                       <LoadingDots />
                     </div>
@@ -200,6 +208,22 @@ export function SubscriptionsSection() {
                       {CURRENCY_SYMBOL}
                       {(Number(subscription.latestPeriod.price) / 100).toFixed(
                         2,
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {subscription.paymentMethod ? (
+                        <div className="flex items-center gap-2">
+                          {subscription.paymentMethod.type === "bank" ? (
+                            <Building className="h-4 w-4" />
+                          ) : (
+                            <CreditCard className="h-4 w-4" />
+                          )}
+                          <span>{subscription.paymentMethod.name}</span>
+                        </div>
+                      ) : (
+                        <span className="text-muted-foreground">
+                          No payment method
+                        </span>
                       )}
                     </TableCell>
                     <TableCell>{subscription.billingCycle}</TableCell>

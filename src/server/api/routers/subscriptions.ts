@@ -79,6 +79,7 @@ export const subscriptionRouter = createTRPCRouter({
           orderBy: { periodEnd: 'desc' },
           take: 1,
         },
+        paymentMethod: true,
       },
     });
     return subscriptions
