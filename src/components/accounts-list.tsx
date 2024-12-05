@@ -35,10 +35,15 @@ export function AccountsList() {
   const { data: accounts, isLoading } = api.account.getAll.useQuery();
   const { data: user } = api.user.getCurrent.useQuery();
 
+  const isDefaultAccount = (accountId: string) => {
+    return user?.defaultPaymentMethodId === accountId;
+  };
+
   const { mutate: updateAccount } = api.account.update.useMutation({
     onSuccess: () => {
       toast.success("Account updated successfully");
       setEditingId(null);
+      void utils.user.getCurrent.invalidate();
       void utils.account.getAll.invalidate();
     },
     onError: (error) => {
@@ -103,7 +108,7 @@ export function AccountsList() {
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               {account.type === "bank" ? "Bank Account" : "Card"}
-              {account.id === user?.defaultPaymentMethodId && (
+              {isDefaultAccount(account.id) && (
                 <Badge variant="secondary">Default</Badge>
               )}
             </CardTitle>
@@ -171,9 +176,9 @@ export function AccountsList() {
               <Button variant="outline" onClick={() => handleEdit(account)}>
                 Edit
               </Button>
-              {account.id !== user?.defaultPaymentMethodId && (
-                <Button 
-                  variant="outline" 
+              {!isDefaultAccount(account.id) && (
+                <Button
+                  variant="outline"
                   onClick={() => setAsDefault({ id: account.id })}
                 >
                   Make Default

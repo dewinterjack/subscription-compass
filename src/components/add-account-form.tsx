@@ -2,7 +2,6 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,7 +23,6 @@ import { api } from "@/trpc/react";
 import type { Account } from "@prisma/client";
 
 export function AddAccountForm() {
-  const router = useRouter();
   const utils = api.useUtils();
 
   const { mutate: createAccount, isPending } =
@@ -34,9 +32,8 @@ export function AddAccountForm() {
           `${data.type.charAt(0).toUpperCase() + data.type.slice(1)} account "${data.name}" has been added.`,
         );
         form.reset();
-        router.refresh();
-        // Invalidate the accounts query to refetch the list
         void utils.account.getAll.invalidate();
+        void utils.user.getCurrent.invalidate();
       },
       onError: (error) => {
         toast.error(
