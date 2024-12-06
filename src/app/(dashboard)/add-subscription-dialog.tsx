@@ -41,6 +41,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { addDays } from "date-fns";
+import { api } from "@/trpc/react";
 
 type AddSubscriptionDialogProps = {
   isOpen: boolean;
@@ -129,6 +130,7 @@ export function AddSubscriptionDialog({
     isTrial: false as const,
     startDate: new Date(),
     billingCycle: "Monthly",
+    paymentMethodId: null,
   });
 
   const [trialEndDate, setTrialEndDate] = useState<Date>(
@@ -141,18 +143,27 @@ export function AddSubscriptionDialog({
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [isCustomService, setIsCustomService] = useState(false);
 
+  const { data: paymentMethods } = api.paymentMethod.getAll.useQuery();
+  const { data: user } = api.user.getCurrent.useQuery();
+
   useEffect(() => {
     if (initialData && isOpen) {
       setNewSubscription({
         ...initialData,
         price: initialData.price / 100,
+        paymentMethodId: initialData.paymentMethodId ?? null,
       });
       setUserInput(initialData.name);
       if (initialData.isTrial && initialData.endDate) {
         setTrialEndDate(initialData.endDate);
       }
+    } else if (isOpen && user?.defaultPaymentMethodId) {
+      setNewSubscription(prev => ({
+        ...prev,
+        paymentMethodId: user.defaultPaymentMethodId,
+      }));
     }
-  }, [initialData, isOpen]);
+  }, [initialData, isOpen, user?.defaultPaymentMethodId]);
 
   useEffect(() => {
     if (userInput) {
@@ -193,6 +204,7 @@ export function AddSubscriptionDialog({
         billingCycle: "Monthly",
         isTrial: false as const,
         startDate: new Date(),
+        paymentMethodId: null,
       });
       setTrialEndDate(addDays(new Date(), 30));
       setUserInput("");
@@ -204,6 +216,7 @@ export function AddSubscriptionDialog({
 
   const handleServiceSelect = (service: (typeof mockServices)[0]) => {
     setNewSubscription({
+      ...newSubscription,
       name: service.name,
       price: service.defaultCost,
       billingCycle: service.defaultBillingCycle as BillingCycle,
@@ -451,6 +464,35 @@ export function AddSubscriptionDialog({
                 </Popover>
               </div>
             )}
+            <div className="grid grid-cols-6 items-center gap-4">
+              <Label htmlFor="paymentMethod" className="col-span-2 text-right">
+                Payment Method
+              </Label>
+              <Select
+                value={newSubscription.paymentMethodId ?? "none"}
+                onValueChange={(value) =>
+                  setNewSubscription({
+                    ...newSubscription,
+                    paymentMethodId: value === "none" ? null : value,
+                  })
+                }
+              >
+                <SelectTrigger className="col-span-4">
+                  <SelectValue placeholder="Select payment method" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">No Payment Method</SelectItem>
+                  {paymentMethods?.map((method) => (
+                    <SelectItem 
+                      key={method.id} 
+                      value={method.id}
+                    >
+                      {method.name} {method.id === user?.defaultPaymentMethodId ? "(Default)" : ""}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           <DialogFooter>
             <Button type="submit">
