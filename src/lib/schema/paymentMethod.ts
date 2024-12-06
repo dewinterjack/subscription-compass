@@ -10,6 +10,25 @@ export const paymentMethodFormSchema = z.object({
       (val) => /^\d+$/.test(val),
       "Payment method number must contain only digits"
     ),
+  expiryMonth: z.string().optional(),
+  expiryYear: z.string().optional(),
 })
+  .refine(
+    (data) => {
+      if (data.type === "card") {
+        return (
+          data.expiryMonth &&
+          data.expiryYear &&
+          /^(0[1-9]|1[0-2])$/.test(data.expiryMonth) &&
+          /^\d{4}$/.test(data.expiryYear)
+        )
+      }
+      return true
+    },
+    {
+      message: "Valid expiry month (MM) and year (YYYY) are required for cards",
+      path: ["expiryMonth"],
+    }
+  )
 
 export type PaymentMethodFormValues = z.infer<typeof paymentMethodFormSchema> 

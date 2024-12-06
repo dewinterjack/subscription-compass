@@ -18,6 +18,7 @@ import {
   FormField,
   FormItem,
   FormMessage,
+  FormLabel,
 } from "@/components/ui/form";
 import { toast } from "sonner";
 import {
@@ -28,6 +29,7 @@ import { api } from "@/trpc/react";
 import type { PaymentMethod } from "@prisma/client";
 import { Badge } from "@/components/ui/badge";
 import LoadingDots from "./icons/loading-dots";
+import { format } from "date-fns";
 
 export function PaymentMethodList() {
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -79,10 +81,15 @@ export function PaymentMethodList() {
   });
 
   const handleEdit = (paymentMethod: PaymentMethod) => {
+    const expiryDate = paymentMethod.expiresAt 
+      ? new Date(paymentMethod.expiresAt) 
+      : null;
+
     form.reset({
-      type: paymentMethod.type as "bank" | "card",
       name: paymentMethod.name,
       number: paymentMethod.number,
+      expiryMonth: expiryDate ? String(expiryDate.getMonth() + 1).padStart(2, '0') : '',
+      expiryYear: expiryDate ? String(expiryDate.getFullYear()) : '',
     });
     setEditingId(paymentMethod.id);
   };
@@ -148,6 +155,44 @@ export function PaymentMethodList() {
                       </FormItem>
                     )}
                   />
+                  {paymentMethod.type === "card" && (
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="expiryMonth"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Expiry Month (MM)</FormLabel>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                placeholder="MM"
+                                maxLength={2}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="expiryYear"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Expiry Year (YYYY)</FormLabel>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                placeholder="YYYY"
+                                maxLength={4}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  )}
                   <div className="flex space-x-2">
                     <Button type="submit">Save</Button>
                     <Button
@@ -162,23 +207,22 @@ export function PaymentMethodList() {
               </Form>
             ) : (
               <div>
-                <p>
-                  <strong>Name:</strong> {paymentMethod.name}
-                </p>
+                <p><strong>Name:</strong> {paymentMethod.name}</p>
                 <p>
                   <strong>Number:</strong>{" "}
-                  {"*".repeat(paymentMethod.number.length - 4) +
-                    paymentMethod.number.slice(-4)}
+                  {"*".repeat(paymentMethod.number.length - 4) + paymentMethod.number.slice(-4)}
+                  {paymentMethod.type === "card" && paymentMethod.expiresAt && (
+                    <span className="ml-2">
+                      • Expires {format(paymentMethod.expiresAt, "MM/yyyy")}
+                    </span>
+                  )}
                 </p>
               </div>
             )}
           </CardContent>
           <CardFooter className="justify-between">
             <div className="flex gap-2">
-              <Button
-                variant="outline"
-                onClick={() => handleEdit(paymentMethod)}
-              >
+              <Button variant="outline" onClick={() => handleEdit(paymentMethod)}>
                 Edit
               </Button>
               {!isDefaultPaymentMethod(paymentMethod.id) && (
