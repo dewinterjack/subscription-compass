@@ -8,6 +8,8 @@ import {
   MoreHorizontal,
   Building,
   CreditCard,
+  ChevronUp,
+  ChevronDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,7 +29,7 @@ import {
 } from "@/components/ui/table";
 import { AddSubscriptionDialog } from "./add-subscription-dialog";
 import { toast } from "sonner";
-import { api, RouterOutputs } from "@/trpc/react";
+import { api } from "@/trpc/react";
 import { CURRENCY_SYMBOL } from "@/lib/constants";
 import {
   Tooltip,
@@ -46,6 +48,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+type SortField = "name" | "price" | "paymentMethod" | "billingCycle";
+type SortDirection = "asc" | "desc";
+
 export function SubscriptionsSection() {
   const [isProModalOpen, setIsProModalOpen] = useState(false);
   const { data: subscriptions, isLoading } = api.subscription.getAll.useQuery();
@@ -53,6 +58,8 @@ export function SubscriptionsSection() {
   const [editingSubscription, setEditingSubscription] = useState<
     InputType["subscription"]["update"] | undefined
   >();
+  const [sortField, setSortField] = useState<SortField>("name");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
   const utils = api.useUtils();
 
@@ -99,9 +106,12 @@ export function SubscriptionsSection() {
     }
   };
 
-  const handleEdit = (
-    subscription: RouterOutputs["subscription"]["getAll"][number],
-  ) => {
+  const handleEdit = (subscription: SubscriptionWithLatestPeriod) => {
+    if (!subscription.latestPeriod) {
+      toast.error("Cannot edit subscription without period information");
+      return;
+    }
+
     const baseSubscription = {
       id: subscription.id,
       name: subscription.name,
@@ -126,6 +136,47 @@ export function SubscriptionsSection() {
 
     setEditingSubscription(editData);
     setIsDialogOpen(true);
+  };
+
+  const getSortedSubscriptions = (subscriptions: SubscriptionWithLatestPeriod[]) => {
+    if (!subscriptions) return [];
+    
+    return [...subscriptions].sort((a, b) => {
+      let compareA, compareB;
+      
+      switch (sortField) {
+        case "name":
+          compareA = a.name.toLowerCase();
+          compareB = b.name.toLowerCase();
+          break;
+        case "price":
+          compareA = Number(a.latestPeriod?.price ?? 0);
+          compareB = Number(b.latestPeriod?.price ?? 0);
+          break;
+        case "paymentMethod":
+          compareA = a.paymentMethod?.name?.toLowerCase() ?? "";
+          compareB = b.paymentMethod?.name?.toLowerCase() ?? "";
+          break;
+        case "billingCycle":
+          compareA = a.billingCycle.toLowerCase();
+          compareB = b.billingCycle.toLowerCase();
+          break;
+        default:
+          return 0;
+      }
+      
+      const sortResult = compareA < compareB ? -1 : compareA > compareB ? 1 : 0;
+      return sortDirection === "asc" ? sortResult : -sortResult;
+    });
+  };
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
   };
 
   return (
@@ -183,10 +234,50 @@ export function SubscriptionsSection() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[200px]">Name</TableHead>
-                <TableHead>Cost</TableHead>
-                <TableHead>Payment Method</TableHead>
-                <TableHead>Billing Cycle</TableHead>
+                <TableHead 
+                  className="w-[200px] cursor-pointer"
+                  onClick={() => handleSort("name")}
+                >
+                  <div className="flex items-center">
+                    Name
+                    {sortField === "name" && (
+                      sortDirection === "asc" ? <ChevronUp className="ml-1 h-4 w-4" /> : <ChevronDown className="ml-1 h-4 w-4" />
+                    )}
+                  </div>
+                </TableHead>
+                <TableHead 
+                  className="cursor-pointer"
+                  onClick={() => handleSort("price")}
+                >
+                  <div className="flex items-center">
+                    Cost
+                    {sortField === "price" && (
+                      sortDirection === "asc" ? <ChevronUp className="ml-1 h-4 w-4" /> : <ChevronDown className="ml-1 h-4 w-4" />
+                    )}
+                  </div>
+                </TableHead>
+                <TableHead 
+                  className="cursor-pointer"
+                  onClick={() => handleSort("paymentMethod")}
+                >
+                  <div className="flex items-center">
+                    Payment Method
+                    {sortField === "paymentMethod" && (
+                      sortDirection === "asc" ? <ChevronUp className="ml-1 h-4 w-4" /> : <ChevronDown className="ml-1 h-4 w-4" />
+                    )}
+                  </div>
+                </TableHead>
+                <TableHead 
+                  className="cursor-pointer"
+                  onClick={() => handleSort("billingCycle")}
+                >
+                  <div className="flex items-center">
+                    Billing Cycle
+                    {sortField === "billingCycle" && (
+                      sortDirection === "asc" ? <ChevronUp className="ml-1 h-4 w-4" /> : <ChevronDown className="ml-1 h-4 w-4" />
+                    )}
+                  </div>
+                </TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -200,16 +291,14 @@ export function SubscriptionsSection() {
                   </TableCell>
                 </TableRow>
               ) : (
-                subscriptions?.map((subscription) => (
+                subscriptions && subscriptions.length > 0 && getSortedSubscriptions(subscriptions).map((subscription) => (
                   <TableRow key={subscription.id}>
                     <TableCell className="font-medium">
                       {subscription.name}
                     </TableCell>
                     <TableCell>
                       {CURRENCY_SYMBOL}
-                      {(Number(subscription.latestPeriod.price) / 100).toFixed(
-                        2,
-                      )}
+                      {(Number(subscription.latestPeriod?.price ?? 0) / 100).toFixed(2)}
                     </TableCell>
                     <TableCell>
                       {subscription.paymentMethod ? (
