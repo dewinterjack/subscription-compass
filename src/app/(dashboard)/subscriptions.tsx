@@ -109,6 +109,7 @@ export function SubscriptionsSection() {
       billingCycle: subscription.billingCycle,
       autoRenew: subscription.autoRenew,
       startDate: subscription.startDate,
+      paymentMethodId: subscription.paymentMethodId,
     };
 
     const editData =
