@@ -17,6 +17,11 @@ export const paymentMethodRouter = createTRPCRouter({
   create: protectedProcedure
     .input(paymentMethodFormSchema)
     .mutation(async ({ ctx, input }) => {
+      // Check if this is the first payment method
+      const existingPaymentMethods = await ctx.db.paymentMethod.findMany({
+        where: { userId: ctx.user.id },
+      });
+
       const expiresAt = input.type === "card" && input.expiryMonth && input.expiryYear
         ? new Date(
             parseInt(input.expiryYear),
@@ -25,7 +30,7 @@ export const paymentMethodRouter = createTRPCRouter({
           )
         : null;
 
-      return ctx.db.paymentMethod.create({
+      const paymentMethod = await ctx.db.paymentMethod.create({
         data: {
           type: input.type,
           name: input.name,
@@ -38,6 +43,16 @@ export const paymentMethodRouter = createTRPCRouter({
           },
         },
       });
+
+      // If this is the first payment method, set it as default
+      if (existingPaymentMethods.length === 0) {
+        await ctx.db.user.update({
+          where: { id: ctx.user.id },
+          data: { defaultPaymentMethodId: paymentMethod.id },
+        });
+      }
+
+      return paymentMethod;
     }),
 
   update: protectedProcedure

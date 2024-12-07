@@ -16,17 +16,27 @@ export const paymentMethodFormSchema = z.object({
   .refine(
     (data) => {
       if (data.type === "card") {
-        return (
+        const isValidFormat = (
           data.expiryMonth &&
           data.expiryYear &&
           /^(0[1-9]|1[0-2])$/.test(data.expiryMonth) &&
           /^\d{4}$/.test(data.expiryYear)
-        )
+        );
+
+        if (!isValidFormat) return false;
+
+        // Check if date is in the future
+        const expiryDate = new Date(
+          parseInt(data.expiryYear!),
+          parseInt(data.expiryMonth!) - 1,
+          1
+        );
+        return expiryDate > new Date();
       }
-      return true
+      return true;
     },
     {
-      message: "Valid expiry month (MM) and year (YYYY) are required for cards",
+      message: "Card expiration date must be valid and in the future",
       path: ["expiryMonth"],
     }
   )

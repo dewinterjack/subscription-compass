@@ -111,138 +111,140 @@ export function PaymentMethodList() {
   }
 
   return (
-    <div className="rounded-lg border bg-white p-4 dark:bg-gray-800 dark:border-gray-700">
-      {paymentMethods.map((paymentMethod) => (
-        <Card key={paymentMethod.id}>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              {paymentMethod.type === "bank" ? "Bank Account" : "Card"}
-              {isDefaultPaymentMethod(paymentMethod.id) && (
-                <Badge variant="secondary">Default</Badge>
-              )}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {editingId === paymentMethod.id ? (
-              <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit((data) =>
-                    handleSave(paymentMethod.id, data),
-                  )}
-                  className="space-y-4"
-                >
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
+    <div className="rounded-lg border bg-white p-4 dark:bg-background dark:border-gray-700">
+      <div className="space-y-4">
+        {paymentMethods.map((paymentMethod) => (
+          <Card key={paymentMethod.id}>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                {paymentMethod.type === "bank" ? "Bank Account" : "Card"}
+                {isDefaultPaymentMethod(paymentMethod.id) && (
+                  <Badge variant="secondary">Default</Badge>
+                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {editingId === paymentMethod.id ? (
+                <Form {...form}>
+                  <form
+                    onSubmit={form.handleSubmit((data) =>
+                      handleSave(paymentMethod.id, data),
                     )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="number"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
+                    className="space-y-4"
+                  >
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="number"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    {paymentMethod.type === "card" && (
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="expiryMonth"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Expiry Month (MM)</FormLabel>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  placeholder="MM"
+                                  maxLength={2}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="expiryYear"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Expiry Year (YYYY)</FormLabel>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  placeholder="YYYY"
+                                  maxLength={4}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
                     )}
-                  />
-                  {paymentMethod.type === "card" && (
-                    <div className="grid grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="expiryMonth"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Expiry Month (MM)</FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="MM"
-                                maxLength={2}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="expiryYear"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Expiry Year (YYYY)</FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="YYYY"
-                                maxLength={4}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                    <div className="flex space-x-2">
+                      <Button type="submit">Save</Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setEditingId(null)}
+                      >
+                        Cancel
+                      </Button>
                     </div>
-                  )}
-                  <div className="flex space-x-2">
-                    <Button type="submit">Save</Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setEditingId(null)}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                </form>
-              </Form>
-            ) : (
-              <div>
-                <p><strong>Name:</strong> {paymentMethod.name}</p>
-                <p>
-                  <strong>Number:</strong>{" "}
-                  {"*".repeat(paymentMethod.number.length - 4) + paymentMethod.number.slice(-4)}
-                  {paymentMethod.type === "card" && paymentMethod.expiresAt && (
-                    <span className="ml-2">
-                      • Expires {format(paymentMethod.expiresAt, "MM/yyyy")}
-                    </span>
-                  )}
-                </p>
-              </div>
-            )}
-          </CardContent>
-          <CardFooter className="justify-between">
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={() => handleEdit(paymentMethod)}>
-                Edit
-              </Button>
-              {!isDefaultPaymentMethod(paymentMethod.id) && (
-                <Button
-                  variant="outline"
-                  onClick={() => setAsDefault({ id: paymentMethod.id })}
-                >
-                  Make Default
-                </Button>
+                  </form>
+                </Form>
+              ) : (
+                <div>
+                  <p><strong>Name:</strong> {paymentMethod.name}</p>
+                  <p>
+                    <strong>Number:</strong>{" "}
+                    {"*".repeat(paymentMethod.number.length - 4) + paymentMethod.number.slice(-4)}
+                    {paymentMethod.type === "card" && paymentMethod.expiresAt && (
+                      <span className="ml-2">
+                        • Expires {format(paymentMethod.expiresAt, "MM/yyyy")}
+                      </span>
+                    )}
+                  </p>
+                </div>
               )}
-            </div>
-            <Button
-              variant="destructive"
-              onClick={() => handleDelete(paymentMethod.id)}
-            >
-              Delete
-            </Button>
-          </CardFooter>
-        </Card>
-      ))}
+            </CardContent>
+            <CardFooter className="justify-between">
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => handleEdit(paymentMethod)}>
+                  Edit
+                </Button>
+                {!isDefaultPaymentMethod(paymentMethod.id) && (
+                  <Button
+                    variant="outline"
+                    onClick={() => setAsDefault({ id: paymentMethod.id })}
+                  >
+                    Make Default
+                  </Button>
+                )}
+              </div>
+              <Button
+                variant="destructive"
+                onClick={() => handleDelete(paymentMethod.id)}
+              >
+                Delete
+              </Button>
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }
