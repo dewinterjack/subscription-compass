@@ -208,9 +208,11 @@ export function PaymentMethodList() {
             </CardContent>
             <CardFooter className="justify-between">
               <div className="flex gap-2">
-                <Button variant="outline" onClick={() => handleEdit(paymentMethod)}>
-                  Edit
-                </Button>
+                {editingId !== paymentMethod.id && (
+                  <Button variant="outline" onClick={() => handleEdit(paymentMethod)}>
+                    Edit
+                  </Button>
+                )}
                 {!isDefaultPaymentMethod(paymentMethod.id) && (
                   <Button
                     variant="outline"
