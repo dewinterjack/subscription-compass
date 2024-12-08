@@ -96,16 +96,6 @@ export function SubscriptionsSection() {
     },
   });
 
-  const isProUser = false;
-
-  const handleImport = () => {
-    if (isProUser) {
-      toast.success("Not implemented yet.");
-    } else {
-      setIsProModalOpen(true);
-    }
-  };
-
   const handleEdit = (subscription: SubscriptionWithLatestPeriod) => {
     if (!subscription.latestPeriod) {
       toast.error("Cannot edit subscription without period information");
@@ -189,26 +179,6 @@ export function SubscriptionsSection() {
           </CardDescription>
         </div>
         <div className="flex w-full flex-col space-y-2 sm:w-auto sm:flex-row sm:space-x-2 sm:space-y-0">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  size="sm"
-                  variant={isProUser ? "default" : "outline"}
-                  onClick={handleImport}
-                  className={`w-full sm:w-auto ${isProUser ? "" : "opacity-50"}`}
-                >
-                  <Upload className="mr-2 h-4 w-4" />
-                  Import
-                </Button>
-              </TooltipTrigger>
-              {!isProUser && (
-                <TooltipContent>
-                  <p>Pro feature. Upgrade to use.</p>
-                </TooltipContent>
-              )}
-            </Tooltip>
-          </TooltipProvider>
           <Button size="sm" onClick={() => setIsDialogOpen(true)} className="w-full sm:w-auto">
             <Plus className="mr-2 h-4 w-4" />
             Add New
