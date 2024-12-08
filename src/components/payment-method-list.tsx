@@ -59,6 +59,7 @@ export function PaymentMethodList() {
     onSuccess: () => {
       toast.success("Payment method removed successfully");
       void utils.paymentMethod.getAll.invalidate();
+      void utils.user.getCurrent.invalidate();
     },
     onError: (error) => {
       toast.error(error.message || "Failed to remove payment method");

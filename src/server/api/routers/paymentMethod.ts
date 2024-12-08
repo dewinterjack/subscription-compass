@@ -83,20 +83,46 @@ export const paymentMethodRouter = createTRPCRouter({
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
+      const user = await ctx.db.user.findUnique({
+        where: { id: ctx.user.id },
+        select: { defaultPaymentMethodId: true },
+      });
+
       const paymentMethod = await ctx.db.paymentMethod.findFirst({
         where: {
           id: input.id,
           userId: ctx.user.id,
         },
-      })
+      });
 
       if (!paymentMethod) {
-        throw new Error("Payment method not found")
+        throw new Error("Payment method not found");
+      }
+      if (user?.defaultPaymentMethodId === input.id) {
+        const alternativePaymentMethod = await ctx.db.paymentMethod.findFirst({
+          where: {
+            userId: ctx.user.id,
+            id: { not: input.id },
+          },
+          orderBy: { createdAt: 'desc' },
+        });
+
+        if (alternativePaymentMethod) {
+          await ctx.db.user.update({
+            where: { id: ctx.user.id },
+            data: { defaultPaymentMethodId: alternativePaymentMethod.id },
+          });
+        } else {
+          await ctx.db.user.update({
+            where: { id: ctx.user.id },
+            data: { defaultPaymentMethodId: null },
+          });
+        }
       }
 
       return ctx.db.paymentMethod.delete({
         where: { id: input.id },
-      })
+      });
     }),
 
   setAsDefault: protectedProcedure
