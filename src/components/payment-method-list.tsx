@@ -81,8 +81,8 @@ export function PaymentMethodList() {
   });
 
   const handleEdit = (paymentMethod: PaymentMethod) => {
-    const expiryDate = paymentMethod.expiresAt 
-      ? new Date(paymentMethod.expiresAt) 
+    const expiryDate = paymentMethod.expiresAt
+      ? new Date(paymentMethod.expiresAt)
       : null;
 
     form.reset({
