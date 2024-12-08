@@ -4,7 +4,6 @@ import { useState } from "react";
 import {
   Plus,
   ShoppingBasket,
-  Upload,
   MoreHorizontal,
   Building,
   CreditCard,
@@ -31,12 +30,6 @@ import { AddSubscriptionDialog } from "./add-subscription-dialog";
 import { toast } from "sonner";
 import { api } from "@/trpc/react";
 import { CURRENCY_SYMBOL } from "@/lib/constants";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import ProPlanModal from "./pro-plan-modal";
 import LoadingDots from "@/components/icons/loading-dots";
 import type { SubscriptionWithLatestPeriod } from "@/types";
