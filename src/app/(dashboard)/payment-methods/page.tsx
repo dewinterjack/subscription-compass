@@ -6,7 +6,7 @@ export default function PaymentMethodsPage() {
     <div className="container mx-auto py-10">
       <h1 className="text-3xl font-bold mb-6">Manage Payment Methods</h1>
       <p className="text-gray-600 mb-8">
-        Your payment information is used solely for tracking purposes to help you identify the source of payments. 
+        Your payment information is used solely to help you identify the source of payments. 
         We will never charge your payment methods without your explicit consent or use this information for any other purpose.
       </p>
       <div className="grid gap-6 md:grid-cols-2">
