@@ -47,20 +47,20 @@ export default function Dashboard() {
 
   return (
     <div className="flex w-full flex-col">
-      <main className="flex flex-1 flex-col gap-4 p-4">
-        <div className="grid h-full grid-cols-1 gap-4 md:grid-cols-[repeat(auto-fit,minmax(550px,1fr))] xl:grid-cols-[2fr,1fr]">
+      <main className="flex flex-1 flex-col gap-4 p-2 sm:p-4">
+        <div className="grid h-full grid-cols-1 gap-4 lg:grid-cols-[repeat(auto-fit,minmax(400px,1fr))] xl:grid-cols-[2fr,1fr]">
           <div className="flex w-full flex-col space-y-4">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-              <Card>
+            <div className="grid grid-cols-1 gap-4 xs:grid-cols-2 md:grid-cols-3">
+              <Card className="min-w-[200px]">
                 {isSubscriptionCountLoading ? (
                   <div className="flex h-full items-center justify-center">
                     <LoadingDots />
                   </div>
                 ) : (
                   <>
-                    <CardHeader className="pb-2">
+                    <CardHeader className="pb-2 p-4 sm:p-6">
                       <CardDescription>Total Subscriptions</CardDescription>
-                      <CardTitle className="text-4xl">
+                      <CardTitle className="text-2xl sm:text-4xl">
                         {subscriptionCount}
                       </CardTitle>
                     </CardHeader>
@@ -72,10 +72,10 @@ export default function Dashboard() {
                   </>
                 )}
               </Card>
-              <Card>
-                <CardHeader className="pb-2">
+              <Card className="min-w-[200px]">
+                <CardHeader className="pb-2 p-4 sm:p-6">
                   <CardDescription>Monthly Spend</CardDescription>
-                  <CardTitle className="text-4xl">
+                  <CardTitle className="text-2xl sm:text-4xl">
                     {CURRENCY_SYMBOL}
                     {(totalMonthlyCost / 100).toFixed(2)}
                   </CardTitle>
@@ -86,10 +86,10 @@ export default function Dashboard() {
                   </div>
                 </CardContent>
               </Card>
-              <Card>
-                <CardHeader className="pb-2">
+              <Card className="min-w-[200px]">
+                <CardHeader className="pb-2 p-4 sm:p-6">
                   <CardDescription>Yearly Spend</CardDescription>
-                  <CardTitle className="text-4xl">
+                  <CardTitle className="text-2xl sm:text-4xl">
                     {CURRENCY_SYMBOL}
                     {((totalMonthlyCost * 12) / 100).toFixed(2)}
                   </CardTitle>
@@ -106,7 +106,7 @@ export default function Dashboard() {
           <div className="w-full space-y-4">
             <Card>
               <CardHeader>
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div>
                     <CardTitle>Upcoming Renewals</CardTitle>
                     <CardDescription>Next 7 days</CardDescription>
@@ -114,6 +114,7 @@ export default function Dashboard() {
                   <Button
                     variant="outline"
                     size="sm"
+                    className="w-full sm:w-auto"
                     onClick={() =>
                       toast.info("View all renewals not yet implemented")
                     }
@@ -122,14 +123,14 @@ export default function Dashboard() {
                   </Button>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 p-4 sm:p-6">
                 {upcomingRenewals?.map((sub) => (
                   <div
                     key={sub.id}
-                    className="flex items-center justify-between"
+                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-2"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+                      <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-muted flex-shrink-0">
                         <CreditCard className="h-5 w-5" />
                       </div>
 
@@ -155,20 +156,20 @@ export default function Dashboard() {
             </Card>
 
             <Card>
-              <CardHeader>
+              <CardHeader className="p-4 sm:p-6">
                 <CardTitle>Alerts</CardTitle>
                 <CardDescription>
                   Stay informed about your subscriptions
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 p-4 sm:p-6">
                 {endingTrials?.map((trial) => (
                   <div
                     key={trial.id}
-                    className="flex items-center justify-between"
+                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-2"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-100">
+                      <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-yellow-100 flex-shrink-0">
                         <AlertCircle className="h-5 w-5 text-yellow-600" />
                       </div>
                       <div>

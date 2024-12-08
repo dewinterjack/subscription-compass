@@ -181,14 +181,14 @@ export function SubscriptionsSection() {
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
+      <CardHeader className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
         <div>
           <CardTitle className="text-2xl">Your Subscriptions</CardTitle>
           <CardDescription>
             Manage and track your active subscriptions
           </CardDescription>
         </div>
-        <div className="flex space-x-2">
+        <div className="flex w-full flex-col space-y-2 sm:w-auto sm:flex-row sm:space-x-2 sm:space-y-0">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -196,7 +196,7 @@ export function SubscriptionsSection() {
                   size="sm"
                   variant={isProUser ? "default" : "outline"}
                   onClick={handleImport}
-                  className={isProUser ? "" : "opacity-50"}
+                  className={`w-full sm:w-auto ${isProUser ? "" : "opacity-50"}`}
                 >
                   <Upload className="mr-2 h-4 w-4" />
                   Import
@@ -209,7 +209,7 @@ export function SubscriptionsSection() {
               )}
             </Tooltip>
           </TooltipProvider>
-          <Button size="sm" onClick={() => setIsDialogOpen(true)}>
+          <Button size="sm" onClick={() => setIsDialogOpen(true)} className="w-full sm:w-auto">
             <Plus className="mr-2 h-4 w-4" />
             Add New
           </Button>
