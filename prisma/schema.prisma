@@ -78,6 +78,7 @@ model PaymentMethod {
     createdAt               DateTime       @default(now())
     updatedAt               DateTime       @updatedAt
     defaultPaymentMethodFor User?          @relation("defaultPaymentMethod")
+    expiresAt               DateTime?
 
     @@index([userId])
 }

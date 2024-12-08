@@ -17,26 +17,38 @@ export const paymentMethodRouter = createTRPCRouter({
   create: protectedProcedure
     .input(paymentMethodFormSchema)
     .mutation(async ({ ctx, input }) => {
-      const existingPaymentMethods = await ctx.db.paymentMethod.count({
-        where: { userId: ctx.user.id }
+      // Check if this is the first payment method
+      const existingPaymentMethods = await ctx.db.paymentMethod.findMany({
+        where: { userId: ctx.user.id },
       });
+
+      const expiresAt = input.type === "card" && input.expiryMonth && input.expiryYear
+        ? new Date(
+            parseInt(input.expiryYear),
+            parseInt(input.expiryMonth) - 1,
+            1
+          )
+        : null;
 
       const paymentMethod = await ctx.db.paymentMethod.create({
         data: {
-          ...input,
+          type: input.type,
+          name: input.name,
+          number: input.number,
+          expiresAt,
           user: {
-            connect: { id: ctx.user.id }
-          }
-        }
+            connect: {
+              id: ctx.user.id,
+            },
+          },
+        },
       });
 
       // If this is the first payment method, set it as default
-      if (existingPaymentMethods === 0) {
+      if (existingPaymentMethods.length === 0) {
         await ctx.db.user.update({
           where: { id: ctx.user.id },
-          data: {
-            defaultPaymentMethodId: paymentMethod.id
-          }
+          data: { defaultPaymentMethodId: paymentMethod.id },
         });
       }
 
@@ -49,21 +61,25 @@ export const paymentMethodRouter = createTRPCRouter({
       data: paymentMethodFormSchema,
     }))
     .mutation(async ({ ctx, input }) => {
-      const paymentMethod = await ctx.db.paymentMethod.findFirst({
+      const expiresAt = input.data.type === "card" && input.data.expiryMonth && input.data.expiryYear
+        ? new Date(
+            parseInt(input.data.expiryYear),
+            parseInt(input.data.expiryMonth) - 1,
+            1
+          )
+        : null;
+
+      return ctx.db.paymentMethod.update({
         where: {
           id: input.id,
           userId: ctx.user.id,
         },
-      })
-
-      if (!paymentMethod) {
-        throw new Error("Payment method not found")
-      }
-
-      return ctx.db.paymentMethod.update({
-        where: { id: input.id },
-        data: input.data,
-      })
+        data: {
+          name: input.data.name,
+          number: input.data.number,
+          expiresAt,
+        },
+      });
     }),
 
   delete: protectedProcedure

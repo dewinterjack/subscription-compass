@@ -47,12 +47,26 @@ export function AddPaymentMethodForm() {
       type: "bank" as const,
       name: "",
       number: "",
+      expiryMonth: "",
+      expiryYear: "",
     },
   });
 
   const onSubmit = (data: PaymentMethodFormValues) => {
-    createPaymentMethod(data);
+    const formData = {
+      ...data,
+      expiresAt: data.type === "card" && data.expiryMonth && data.expiryYear
+        ? new Date(
+            parseInt(data.expiryYear),
+            parseInt(data.expiryMonth) - 1,
+            1
+          )
+        : undefined,
+    };
+    createPaymentMethod(formData);
   };
+
+  const isCardType = form.watch("type") === "card";
 
   return (
     <Form {...form}>
@@ -118,6 +132,45 @@ export function AddPaymentMethodForm() {
             </FormItem>
           )}
         />
+
+        {isCardType && (
+          <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="expiryMonth"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Expiry Month (MM)</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="MM"
+                      maxLength={2}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="expiryYear"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Expiry Year (YYYY)</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="YYYY"
+                      maxLength={4}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        )}
 
         <Button type="submit" disabled={isPending}>
           {isPending ? "Adding..." : "Add Account"}
