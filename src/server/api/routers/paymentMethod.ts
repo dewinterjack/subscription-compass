@@ -34,7 +34,6 @@ export const paymentMethodRouter = createTRPCRouter({
         data: {
           type: input.type,
           name: input.name,
-          number: input.number,
           expiresAt,
           user: {
             connect: {
@@ -76,7 +75,6 @@ export const paymentMethodRouter = createTRPCRouter({
         },
         data: {
           name: input.data.name,
-          number: input.data.number,
           expiresAt,
         },
       });

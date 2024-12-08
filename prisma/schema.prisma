@@ -71,7 +71,7 @@ model PaymentMethod {
     id                      String         @id @default(cuid())
     type                    String         @default("bank")
     name                    String
-    number                  String
+    number                  String?
     user                    User           @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId                  String
     subscriptions           Subscription[]

@@ -87,7 +87,6 @@ export function PaymentMethodList() {
 
     form.reset({
       name: paymentMethod.name,
-      number: paymentMethod.number,
       expiryMonth: expiryDate ? String(expiryDate.getMonth() + 1).padStart(2, '0') : '',
       expiryYear: expiryDate ? String(expiryDate.getFullYear()) : '',
     });
@@ -135,18 +134,6 @@ export function PaymentMethodList() {
                     <FormField
                       control={form.control}
                       name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Input {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="number"
                       render={({ field }) => (
                         <FormItem>
                           <FormControl>
@@ -209,15 +196,12 @@ export function PaymentMethodList() {
               ) : (
                 <div>
                   <p><strong>Name:</strong> {paymentMethod.name}</p>
-                  <p>
-                    <strong>Number:</strong>{" "}
-                    {"*".repeat(paymentMethod.number.length - 4) + paymentMethod.number.slice(-4)}
-                    {paymentMethod.type === "card" && paymentMethod.expiresAt && (
-                      <span className="ml-2">
-                        • Expires {format(paymentMethod.expiresAt, "MM/yyyy")}
-                      </span>
-                    )}
-                  </p>
+                  {paymentMethod.type === "card" && paymentMethod.expiresAt && (
+                    <p>
+                      <strong>Expires:</strong>{" "}
+                      {format(paymentMethod.expiresAt, "MM/yyyy")}
+                    </p>
+                  )}
                 </div>
               )}
             </CardContent>

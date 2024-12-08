@@ -46,7 +46,6 @@ export function AddPaymentMethodForm() {
     defaultValues: {
       type: "bank" as const,
       name: "",
-      number: "",
       expiryMonth: "",
       expiryYear: "",
     },
@@ -106,24 +105,6 @@ export function AddPaymentMethodForm() {
                 {form.watch("type") === "bank"
                   ? "Account Name"
                   : "Card Name"}
-              </FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="number"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                {form.watch("type") === "bank"
-                  ? "Account Number"
-                  : "Card Number"}
               </FormLabel>
               <FormControl>
                 <Input {...field} />
