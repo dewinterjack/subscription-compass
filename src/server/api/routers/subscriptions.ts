@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { BillingCycle } from "@prisma/client";
-import { addDays, endOfDay, startOfDay } from "date-fns";
+import { addDays, endOfDay, startOfDay, startOfMonth } from "date-fns";
 import { toSubscriptionWithLatestPeriod, type SubscriptionWithLatestPeriod } from "@/types";
 import type { SubscriptionPeriod } from "@prisma/client";
 
@@ -288,4 +288,16 @@ export const subscriptionRouter = createTRPCRouter({
         return toSubscriptionWithLatestPeriod(subscription);
       });
     }),
+  getNewThisMonth: protectedProcedure.query(async ({ ctx }) => {
+    const startOfThisMonth = startOfMonth(new Date());
+    
+    return ctx.db.subscription.count({
+      where: {
+        createdById: ctx.user?.id,
+        createdAt: {
+          gte: startOfThisMonth,
+        },
+      },
+    });
+  }),
 });

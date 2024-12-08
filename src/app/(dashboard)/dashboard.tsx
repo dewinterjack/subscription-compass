@@ -31,6 +31,8 @@ export default function Dashboard() {
 
   const { data: endingTrials } = api.subscription.getEndingTrials.useQuery();
 
+  const { data: newThisMonth = 0 } = api.subscription.getNewThisMonth.useQuery();
+
   const getRenewalText = (date: Date) => {
     const days = differenceInDays(startOfDay(date), startOfDay(new Date()));
     if (days === 0) return "Today";
@@ -66,7 +68,7 @@ export default function Dashboard() {
                     </CardHeader>
                     <CardContent>
                       <div className="text-xs text-muted-foreground">
-                        +2 new this month
+                        +{newThisMonth} new this month
                       </div>
                     </CardContent>
                   </>
