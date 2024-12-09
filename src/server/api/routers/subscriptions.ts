@@ -162,43 +162,86 @@ export const subscriptionRouter = createTRPCRouter({
       },
     });
   }),
-  getTotalMonthlyCost: protectedProcedure.query(async ({ ctx }) => {
-    const activeSubscriptions = await ctx.db.subscription.findMany({
-      where: {
-        createdById: ctx.user?.id,
-        OR: [
-          { endDate: null },
-          { endDate: { gt: new Date() } }
-        ],
-      },
-      include: {
-        periods: {
-          where: {
-            isTrial: false,
-          },
-          orderBy: {
-            periodEnd: 'desc',
-          },
-          take: 1,
+  getTotalMonthlyCost: protectedProcedure
+    .input(z.object({
+      includeLastMonthDiff: z.boolean().default(false),
+    }))
+    .query(async ({ ctx, input }) => {
+      const today = new Date();
+      const startOfThisMonth = startOfMonth(today);
+      const startOfLastMonth = startOfMonth(new Date(today.getFullYear(), today.getMonth() - 1));
+      const endOfLastMonth = endOfDay(new Date(today.getFullYear(), today.getMonth(), 0));
+
+      // Get current month's cost calculation
+      const activeSubscriptions = await ctx.db.subscription.findMany({
+        where: {
+          createdById: ctx.user?.id,
+          OR: [
+            { endDate: null },
+            { endDate: { gt: today } }
+          ],
         },
-        paymentMethod: true,
-      },
-    });
+        include: {
+          periods: {
+            where: {
+              isTrial: false,
+            },
+            orderBy: {
+              periodEnd: 'desc',
+            },
+            take: 1,
+          },
+          paymentMethod: true,
+        },
+      });
 
-    const subscriptionsWithPeriod = activeSubscriptions
-      .map(toSubscriptionWithLatestPeriod)
-      .filter((sub): sub is SubscriptionWithLatestPeriod & { latestPeriod: SubscriptionPeriod } => 
-        sub.latestPeriod !== null
-      );
+      const subscriptionsWithPeriod = activeSubscriptions
+        .map(toSubscriptionWithLatestPeriod)
+        .filter((sub): sub is SubscriptionWithLatestPeriod & { latestPeriod: SubscriptionPeriod } => 
+          sub.latestPeriod !== null
+        );
 
-    const monthlyCosts = subscriptionsWithPeriod.map(subscription => {
-      const period = subscription.latestPeriod;
-      const pricePerMonth = period.price * (30 / BILLING_CYCLE_DAYS[subscription.billingCycle]);
-      return pricePerMonth;
-    });
+      const currentMonthCost = subscriptionsWithPeriod.reduce((sum, subscription) => {
+        const period = subscription.latestPeriod;
+        const pricePerMonth = period.price * (30 / BILLING_CYCLE_DAYS[subscription.billingCycle]);
+        return sum + pricePerMonth;
+      }, 0);
 
-    return monthlyCosts.reduce((sum, cost) => sum + cost, 0);
-  }),
+      if (!input.includeLastMonthDiff) {
+        return currentMonthCost;
+      }
+
+      // Get last month's subscriptions and calculate cost
+      const lastMonthPeriods = await ctx.db.subscriptionPeriod.findMany({
+        where: {
+          subscription: {
+            createdById: ctx.user?.id,
+          },
+          isTrial: false,
+          periodStart: {
+            lte: endOfLastMonth,
+          },
+          periodEnd: {
+            gte: startOfLastMonth,
+          },
+        },
+        include: {
+          subscription: true,
+        },
+      });
+
+      const lastMonthCost = lastMonthPeriods.reduce((sum, period) => {
+        const daysInPeriod = Math.ceil((period.periodEnd.getTime() - period.periodStart.getTime()) / (1000 * 60 * 60 * 24));
+        const dailyRate = period.price / daysInPeriod;
+        const daysInMonth = new Date(startOfLastMonth.getFullYear(), startOfLastMonth.getMonth() + 1, 0).getDate();
+        return sum + (dailyRate * daysInMonth);
+      }, 0);
+
+      return {
+        currentAmount: currentMonthCost,
+        lastMonthDiff: currentMonthCost - lastMonthCost,
+      };
+    }),
   delete: protectedProcedure
     .input(z.object({
       id: z.string(),

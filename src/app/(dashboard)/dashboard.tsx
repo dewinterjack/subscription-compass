@@ -27,8 +27,8 @@ export default function Dashboard() {
   const { data: subscriptionCount, isLoading: isSubscriptionCountLoading } =
     api.subscription.count.useQuery();
 
-  const { data: totalMonthlyCost = 0 } =
-    api.subscription.getTotalMonthlyCost.useQuery();
+  const { data: totalMonthlyCost } =
+    api.subscription.getTotalMonthlyCost.useQuery({ includeLastMonthDiff: true });
 
   const { data: endingTrials } = api.subscription.getEndingTrials.useQuery();
 
@@ -80,12 +80,20 @@ export default function Dashboard() {
                   <CardDescription>Monthly Spend</CardDescription>
                   <CardTitle className="text-2xl sm:text-4xl">
                     {CURRENCY_SYMBOL}
-                    {(totalMonthlyCost / 100).toFixed(2)}
+                    {((typeof totalMonthlyCost === 'number' 
+                      ? totalMonthlyCost 
+                      : totalMonthlyCost?.currentAmount ?? 0) / 100).toFixed(2)}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="text-xs text-muted-foreground">
-                    -$50 from last month
+                    {typeof totalMonthlyCost !== 'number' && totalMonthlyCost?.lastMonthDiff !== undefined && (
+                      <>
+                        {totalMonthlyCost.lastMonthDiff > 0 ? '+' : '-'}
+                        {CURRENCY_SYMBOL}
+                        {Math.abs(totalMonthlyCost.lastMonthDiff / 100).toFixed(2)} from last month
+                      </>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -94,7 +102,9 @@ export default function Dashboard() {
                   <CardDescription>Yearly Spend</CardDescription>
                   <CardTitle className="text-2xl sm:text-4xl">
                     {CURRENCY_SYMBOL}
-                    {((totalMonthlyCost * 12) / 100).toFixed(2)}
+                    {((typeof totalMonthlyCost === 'number' 
+                      ? totalMonthlyCost 
+                      : totalMonthlyCost?.currentAmount ?? 0) * 12 / 100).toFixed(2)}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
