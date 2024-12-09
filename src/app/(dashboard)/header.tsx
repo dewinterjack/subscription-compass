@@ -30,6 +30,12 @@ export default function DashboardHeader() {
     },
   });
 
+  const { mutate: markAllAsRead } = api.notifications.markAllAsRead.useMutation({
+    onSuccess: async () => {
+      await utils.notifications.getAll.invalidate();
+    },
+  });
+
   const handleSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     toast.info("Not implemented yet");
@@ -79,7 +85,19 @@ export default function DashboardHeader() {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-80">
-          <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+          <div className="flex items-center justify-between px-2 py-1.5">
+            <DropdownMenuLabel className="py-0">Notifications</DropdownMenuLabel>
+            {notifications.some(n => !n.isRead) && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-auto px-2 py-1 text-sm"
+                onClick={() => markAllAsRead()}
+              >
+                Mark all as read
+              </Button>
+            )}
+          </div>
           <DropdownMenuSeparator />
           {notifications.map((notification) => (
             <DropdownMenuItem
@@ -90,16 +108,24 @@ export default function DashboardHeader() {
               <div className="text-sm text-muted-foreground">
                 {notification.description}
               </div>
-              {!notification.isRead && (
-                <Button
-                  variant="link"
-                  size="sm"
-                  className="mt-1 h-auto p-0"
-                  onClick={() => markAsRead({ id: notification.id })}
-                >
-                  Mark as read
-                </Button>
-              )}
+              <div className="mt-1 flex w-full items-center justify-between gap-2 text-xs text-muted-foreground">
+                <time dateTime={notification.createdAt.toISOString()}>
+                  {new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(
+                    -Math.round((Date.now() - new Date(notification.createdAt).getTime()) / (1000 * 60 * 60 * 24)),
+                    'day'
+                  )}
+                </time>
+                {!notification.isRead && (
+                  <Button
+                    variant="link"
+                    size="sm"
+                    className="h-auto p-0"
+                    onClick={() => markAsRead({ id: notification.id })}
+                  >
+                    Mark as read
+                  </Button>
+                )}
+              </div>
             </DropdownMenuItem>
           ))}
           {notifications.length === 0 && (
