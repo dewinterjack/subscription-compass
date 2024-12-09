@@ -22,6 +22,7 @@ import {
   TooltipProvider,
 } from "@/components/ui/tooltip";
 import { api } from "@/trpc/react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function DashboardSidebar() {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
@@ -119,6 +120,9 @@ export function DashboardSidebar() {
           ))}
         </TooltipProvider>
       </nav>
+      <div className="mt-4 flex justify-center">
+        <ThemeToggle />
+      </div>
     </aside>
   );
 }
