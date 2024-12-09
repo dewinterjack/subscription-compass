@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import type { FormEvent } from "react";
-import { Search, Sparkles, Bell, UserIcon } from "lucide-react";
+import { Search, Sparkles, Bell } from "lucide-react";
 import { api } from "@/trpc/react";
 import type { Notification } from "@prisma/client";
 
@@ -89,9 +88,9 @@ export default function DashboardHeader() {
             <DropdownMenuLabel className="py-0">Notifications</DropdownMenuLabel>
             {notifications.some(n => !n.isRead) && (
               <Button
-                variant="ghost"
+                variant="secondary"
                 size="sm"
-                className="h-auto px-2 py-1 text-sm"
+                className="h-6 rounded-sm px-2 text-xs font-normal"
                 onClick={() => markAllAsRead()}
               >
                 Mark all as read
