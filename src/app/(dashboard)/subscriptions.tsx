@@ -39,6 +39,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
 
 type SortField = "name" | "price" | "paymentMethod" | "billingCycle";
 type SortDirection = "asc" | "desc";
@@ -256,7 +257,12 @@ export function SubscriptionsSection() {
                 subscriptions && subscriptions.length > 0 && getSortedSubscriptions(subscriptions).map((subscription) => (
                   <TableRow key={subscription.id}>
                     <TableCell className="font-medium">
-                      {subscription.name}
+                      <div className="flex items-center gap-2">
+                        {subscription.name}
+                        {subscription.latestPeriod?.isTrial && (
+                          <Badge variant="secondary">Trial</Badge>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell>
                       {CURRENCY_SYMBOL}
