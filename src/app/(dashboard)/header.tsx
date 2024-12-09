@@ -3,6 +3,8 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { Search, Sparkles, Bell, UserIcon } from "lucide-react";
+import { api } from "@/trpc/react";
+import type { Notification } from "@prisma/client";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -17,36 +19,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { UserButton } from "@clerk/nextjs";
-import Link from "next/link";
-
-type Notification = {
-  id: number;
-  title: string;
-  description: string;
-  isRead: boolean;
-};
 
 export default function DashboardHeader() {
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: 1,
-      title: "Price Change",
-      description: "Netflix subscription price increased by $2",
-      isRead: false,
+  const { data: notifications = [] } = api.notifications.getAll.useQuery<Notification[]>();
+  const utils = api.useUtils();
+  
+  const { mutate: markAsRead } = api.notifications.markAsRead.useMutation({
+    onSuccess: async () => {
+      await utils.notifications.getAll.invalidate();
     },
-    {
-      id: 2,
-      title: "Renewal Reminder",
-      description: "Spotify subscription renews in 3 days",
-      isRead: false,
-    },
-    {
-      id: 3,
-      title: "New Feature",
-      description: "Check out our new Subscription Alternative Discovery!",
-      isRead: false,
-    },
-  ]);
+  });
 
   const handleSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -54,12 +36,6 @@ export default function DashboardHeader() {
   };
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
-
-  const markAsRead = (id: number) => {
-    setNotifications(
-      notifications.map((n) => (n.id === id ? { ...n, isRead: true } : n)),
-    );
-  };
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4">
@@ -119,7 +95,7 @@ export default function DashboardHeader() {
                   variant="link"
                   size="sm"
                   className="mt-1 h-auto p-0"
-                  onClick={() => markAsRead(notification.id)}
+                  onClick={() => markAsRead({ id: notification.id })}
                 >
                   Mark as read
                 </Button>

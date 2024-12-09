@@ -33,6 +33,22 @@ export const checkExpiringCardsTask = schedules.task({
       year: nextMonth.getFullYear(),
     });
 
+    // Create notifications for each user with an expiring card
+    const notifications = await Promise.all(
+      expiringCards.map(async (card) => {
+        const expiryDate = format(card.expiresAt!, "MMMM yyyy");
+        
+        return db.notification.create({
+          data: {
+            userId: card.userId,
+            title: "Payment Card Expiring Soon",
+            description: `Your payment card ${card.name} (ending in ${card.number?.slice(-4)}) will expire in ${expiryDate}. Please update your payment information to avoid any service interruptions.`,
+            expiresAt: endDate, // Notification will expire at the end of the expiry month
+          },
+        });
+      })
+    );
+
     return {
       expiringCards: expiringCards.map(card => ({
         id: card.id,
@@ -41,6 +57,7 @@ export const checkExpiringCardsTask = schedules.task({
         userEmail: card.user.email,
       })),
       totalCount: expiringCards.length,
+      notificationsCreated: notifications.length,
     };
   },
 });

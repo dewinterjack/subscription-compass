@@ -23,6 +23,7 @@ model User {
     email                  String?         @unique
     image                  String?
     Subscription           Subscription[]
+    notifications         Notification[]
     paymentMethods         PaymentMethod[]
     defaultPaymentMethod   PaymentMethod?  @relation("defaultPaymentMethod", fields: [defaultPaymentMethodId], references: [id])
     defaultPaymentMethodId String?         @unique
@@ -81,4 +82,18 @@ model PaymentMethod {
     expiresAt               DateTime?
 
     @@index([userId])
+}
+
+model Notification {
+    id          String    @id @default(cuid())
+    title       String
+    description String
+    isRead      Boolean   @default(false)
+    user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId      String
+    createdAt   DateTime  @default(now())
+    expiresAt   DateTime?
+
+    @@index([userId])
+    @@index([createdAt])
 }
