@@ -168,7 +168,6 @@ export const subscriptionRouter = createTRPCRouter({
     }))
     .query(async ({ ctx, input }) => {
       const today = new Date();
-      const startOfThisMonth = startOfMonth(today);
       const startOfLastMonth = startOfMonth(new Date(today.getFullYear(), today.getMonth() - 1));
       const endOfLastMonth = endOfDay(new Date(today.getFullYear(), today.getMonth(), 0));
 
