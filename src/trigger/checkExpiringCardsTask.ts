@@ -1,6 +1,6 @@
 import { logger, schedules } from "@trigger.dev/sdk/v3";
 import { db } from "@/server/db";
-import { addMonths, startOfMonth, endOfMonth } from "date-fns";
+import { addMonths, startOfMonth, endOfMonth, format } from "date-fns";
 
 // Define the scheduled task
 export const checkExpiringCardsTask = schedules.task({
