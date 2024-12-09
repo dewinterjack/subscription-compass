@@ -21,19 +21,9 @@ import {
   TooltipTrigger,
   TooltipProvider,
 } from "@/components/ui/tooltip";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardDescription,
-  CardTitle,
-} from "@/components/ui/card";
 import { api } from "@/trpc/react";
-import ProPlanModal from "./pro-plan-modal";
-import { ThemeToggle } from "@/components/theme-toggle"
 
 export function DashboardSidebar() {
-  const [isProModalOpen, setIsProModalOpen] = useState(false);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const pathname = usePathname();
   const { data: subscriptionCount } = api.subscription.count.useQuery();
@@ -45,8 +35,6 @@ export function DashboardSidebar() {
   const isActive = (path: string) => {
     return pathname === path;
   };
-
-  const isPro = false;
 
   return (
     <aside
@@ -131,41 +119,6 @@ export function DashboardSidebar() {
           ))}
         </TooltipProvider>
       </nav>
-      <div className="p-4">
-        <Card>
-          {isSidebarExpanded && (
-            <>
-              <CardHeader>
-                <CardTitle>Upgrade to Pro</CardTitle>
-                <CardDescription>Unlock all pro features</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {!isPro && (
-                  <Button
-                    size="sm"
-                    className="w-full"
-                    onClick={() => setIsProModalOpen(true)}
-                  >
-                    Upgrade
-                  </Button>
-                )}
-              </CardContent>
-            </>
-          )}
-          {isProModalOpen && (
-            <ProPlanModal
-              isOpen={isProModalOpen}
-              onClose={() => setIsProModalOpen(false)}
-              onSubscribe={() => {
-                console.log("User subscribed to Pro plan");
-              }}
-            />
-          )}
-        </Card>
-        <div className="mt-4 flex justify-center">
-          <ThemeToggle />
-        </div>
-      </div>
     </aside>
   );
 }

@@ -30,7 +30,6 @@ import { AddSubscriptionDialog } from "./add-subscription-dialog";
 import { toast } from "sonner";
 import { api } from "@/trpc/react";
 import { CURRENCY_SYMBOL } from "@/lib/constants";
-import ProPlanModal from "./pro-plan-modal";
 import LoadingDots from "@/components/icons/loading-dots";
 import type { SubscriptionWithLatestPeriod } from "@/types";
 import type { InputType } from "@/server/api/root";
@@ -326,13 +325,6 @@ export function SubscriptionsSection() {
           handleUpdateSubscription.mutate(subscription)
         }
         initialData={editingSubscription}
-      />
-      <ProPlanModal
-        isOpen={isProModalOpen}
-        onClose={() => setIsProModalOpen(false)}
-        onSubscribe={() => {
-          console.log("User subscribed to Pro plan");
-        }}
       />
     </Card>
   );
