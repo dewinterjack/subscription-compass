@@ -300,4 +300,49 @@ export const subscriptionRouter = createTRPCRouter({
       },
     });
   }),
+  getMonthlySpend: protectedProcedure.query(async ({ ctx }) => {
+    const today = new Date();
+    const twelveMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 11, 1);
+
+    const subscriptionPeriods = await ctx.db.subscriptionPeriod.findMany({
+      where: {
+        subscription: {
+          createdById: ctx.user?.id,
+        },
+        isTrial: false,
+        periodStart: {
+          gte: twelveMonthsAgo,
+        },
+      },
+      include: {
+        subscription: true,
+      },
+      orderBy: {
+        periodStart: 'asc',
+      },
+    });
+
+    const monthlySpend: { month: string; spend: number }[] = [];
+    for (let i = 0; i < 12; i++) {
+      const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
+      const month = date.toLocaleString('default', { month: 'short', year: '2-digit' });
+      
+      const spend = subscriptionPeriods
+        .filter(period => {
+          const periodMonth = period.periodStart.getMonth();
+          const periodYear = period.periodStart.getFullYear();
+          return periodMonth === date.getMonth() && periodYear === date.getFullYear();
+        })
+        .reduce((total, period) => {
+          const daysInPeriod = Math.ceil((period.periodEnd.getTime() - period.periodStart.getTime()) / (1000 * 60 * 60 * 24));
+          const dailyRate = period.price / daysInPeriod;
+          const daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+          return total + (dailyRate * daysInMonth);
+        }, 0);
+
+      monthlySpend.unshift({ month, spend });
+    }
+
+    return monthlySpend;
+  }),
 });

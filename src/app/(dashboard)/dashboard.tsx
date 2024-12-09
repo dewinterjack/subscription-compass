@@ -15,6 +15,7 @@ import { CURRENCY_SYMBOL } from "@/lib/constants";
 import { differenceInDays, startOfDay } from "date-fns";
 import LoadingDots from "@/components/icons/loading-dots";
 import { SubscriptionsSection } from "./subscriptions";
+import { MonthlySpendChart } from "./monthly-spend-chart";
 
 export default function Dashboard() {
   const {
@@ -103,6 +104,7 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
             </div>
+            <MonthlySpendChart />
           </div>
 
           <div className="w-full space-y-4">
@@ -158,11 +160,13 @@ export default function Dashboard() {
             </Card>
 
             <Card>
-              <CardHeader className="p-4 sm:p-6">
-                <CardTitle>Alerts</CardTitle>
-                <CardDescription>
-                  Stay informed about your subscriptions
-                </CardDescription>
+              <CardHeader>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <CardTitle>Ending Trials</CardTitle>
+                    <CardDescription>Next 7 days</CardDescription>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent className="space-y-4 p-4 sm:p-6">
                 {endingTrials?.map((trial) => (
@@ -175,10 +179,9 @@ export default function Dashboard() {
                         <AlertCircle className="h-5 w-5 text-yellow-600" />
                       </div>
                       <div>
-                        <p className="font-medium">Trial Ending Soon</p>
+                        <p className="font-medium">{trial.name}</p>
                         <p className="text-sm text-muted-foreground">
-                          {trial.name} trial ends{" "}
-                          {getRenewalText(trial.endDate!)}
+                          Trial ends {getRenewalText(trial.endDate!)}
                         </p>
                       </div>
                     </div>
@@ -194,14 +197,13 @@ export default function Dashboard() {
                   </div>
                 ))}
                 {endingTrials?.length === 0 && (
-                  <p className="text-sm text-muted-foreground">
-                    No active alerts
-                  </p>
+                  <p className="text-sm text-muted-foreground">No ending trials</p>
                 )}
               </CardContent>
             </Card>
-            <SubscriptionsSection />
+          <SubscriptionsSection />
           </div>
+
         </div>
       </main>
     </div>
