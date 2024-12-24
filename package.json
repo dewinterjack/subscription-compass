@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "prisma": {
+    "seed": "npx tsx prisma/seed/seed.ts"
+  },
   "scripts": {
     "build": "next build",
     "db:generate": "prisma migrate dev",
@@ -66,6 +69,8 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@snaplet/copycat": "^5.1.0",
+    "@snaplet/seed": "0.98.0",
     "@tanstack/react-query-devtools": "^5.58.0",
     "@trigger.dev/build": "^3.3.5",
     "@types/eslint": "^8.56.10",
@@ -85,5 +90,8 @@
   },
   "ct3aMetadata": {
     "initVersion": "7.37.0"
+  },
+  "@snaplet/seed": {
+    "config": "prisma/seed/seed.config.ts"
   }
 }

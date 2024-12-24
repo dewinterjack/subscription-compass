@@ -1,0 +1,1051 @@
+{
+  "models": {
+    "Notification": {
+      "id": "public.Notification",
+      "schemaName": "public",
+      "tableName": "Notification",
+      "fields": [
+        {
+          "id": "public.Notification.id",
+          "name": "id",
+          "columnName": "id",
+          "type": "text",
+          "isRequired": true,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": true,
+          "maxLength": null
+        },
+        {
+          "id": "public.Notification.title",
+          "name": "title",
+          "columnName": "title",
+          "type": "text",
+          "isRequired": true,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "id": "public.Notification.description",
+          "name": "description",
+          "columnName": "description",
+          "type": "text",
+          "isRequired": true,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "id": "public.Notification.isRead",
+          "name": "isRead",
+          "columnName": "isRead",
+          "type": "bool",
+          "isRequired": true,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": true,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "id": "public.Notification.userId",
+          "name": "userId",
+          "columnName": "userId",
+          "type": "text",
+          "isRequired": true,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "id": "public.Notification.createdAt",
+          "name": "createdAt",
+          "columnName": "createdAt",
+          "type": "timestamp",
+          "isRequired": true,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": true,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "id": "public.Notification.expiresAt",
+          "name": "expiresAt",
+          "columnName": "expiresAt",
+          "type": "timestamp",
+          "isRequired": false,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "name": "User",
+          "type": "User",
+          "isRequired": true,
+          "kind": "object",
+          "relationName": "NotificationToUser",
+          "relationFromFields": [
+            "userId"
+          ],
+          "relationToFields": [
+            "id"
+          ],
+          "isList": false,
+          "isId": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false
+        }
+      ],
+      "uniqueConstraints": [
+        {
+          "name": "Notification_pkey",
+          "fields": [
+            "id"
+          ],
+          "nullNotDistinct": false
+        }
+      ]
+    },
+    "PaymentMethod": {
+      "id": "public.PaymentMethod",
+      "schemaName": "public",
+      "tableName": "PaymentMethod",
+      "fields": [
+        {
+          "id": "public.PaymentMethod.id",
+          "name": "id",
+          "columnName": "id",
+          "type": "text",
+          "isRequired": true,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": true,
+          "maxLength": null
+        },
+        {
+          "id": "public.PaymentMethod.type",
+          "name": "type",
+          "columnName": "type",
+          "type": "text",
+          "isRequired": true,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": true,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "id": "public.PaymentMethod.name",
+          "name": "name",
+          "columnName": "name",
+          "type": "text",
+          "isRequired": true,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "id": "public.PaymentMethod.number",
+          "name": "number",
+          "columnName": "number",
+          "type": "text",
+          "isRequired": false,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "id": "public.PaymentMethod.userId",
+          "name": "userId",
+          "columnName": "userId",
+          "type": "text",
+          "isRequired": true,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "id": "public.PaymentMethod.createdAt",
+          "name": "createdAt",
+          "columnName": "createdAt",
+          "type": "timestamp",
+          "isRequired": true,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": true,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "id": "public.PaymentMethod.updatedAt",
+          "name": "updatedAt",
+          "columnName": "updatedAt",
+          "type": "timestamp",
+          "isRequired": true,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "id": "public.PaymentMethod.expiresAt",
+          "name": "expiresAt",
+          "columnName": "expiresAt",
+          "type": "timestamp",
+          "isRequired": false,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "name": "User",
+          "type": "User",
+          "isRequired": true,
+          "kind": "object",
+          "relationName": "PaymentMethodToUser",
+          "relationFromFields": [
+            "userId"
+          ],
+          "relationToFields": [
+            "id"
+          ],
+          "isList": false,
+          "isId": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false
+        },
+        {
+          "name": "Subscription",
+          "type": "Subscription",
+          "isRequired": false,
+          "kind": "object",
+          "relationName": "SubscriptionToPaymentMethod",
+          "relationFromFields": [],
+          "relationToFields": [],
+          "isList": true,
+          "isId": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false
+        },
+        {
+          "name": "User",
+          "type": "User",
+          "isRequired": false,
+          "kind": "object",
+          "relationName": "UserToPaymentMethod",
+          "relationFromFields": [],
+          "relationToFields": [],
+          "isList": true,
+          "isId": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false
+        }
+      ],
+      "uniqueConstraints": [
+        {
+          "name": "PaymentMethod_pkey",
+          "fields": [
+            "id"
+          ],
+          "nullNotDistinct": false
+        }
+      ]
+    },
+    "Subscription": {
+      "id": "public.Subscription",
+      "schemaName": "public",
+      "tableName": "Subscription",
+      "fields": [
+        {
+          "id": "public.Subscription.id",
+          "name": "id",
+          "columnName": "id",
+          "type": "text",
+          "isRequired": true,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": true,
+          "maxLength": null
+        },
+        {
+          "id": "public.Subscription.name",
+          "name": "name",
+          "columnName": "name",
+          "type": "text",
+          "isRequired": true,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "id": "public.Subscription.billingCycle",
+          "name": "billingCycle",
+          "columnName": "billingCycle",
+          "type": "BillingCycle",
+          "isRequired": true,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "id": "public.Subscription.createdById",
+          "name": "createdById",
+          "columnName": "createdById",
+          "type": "text",
+          "isRequired": true,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "id": "public.Subscription.createdAt",
+          "name": "createdAt",
+          "columnName": "createdAt",
+          "type": "timestamp",
+          "isRequired": true,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": true,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "id": "public.Subscription.updatedAt",
+          "name": "updatedAt",
+          "columnName": "updatedAt",
+          "type": "timestamp",
+          "isRequired": true,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "id": "public.Subscription.autoRenew",
+          "name": "autoRenew",
+          "columnName": "autoRenew",
+          "type": "bool",
+          "isRequired": true,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": true,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "id": "public.Subscription.endDate",
+          "name": "endDate",
+          "columnName": "endDate",
+          "type": "timestamp",
+          "isRequired": false,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "id": "public.Subscription.startDate",
+          "name": "startDate",
+          "columnName": "startDate",
+          "type": "timestamp",
+          "isRequired": true,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "id": "public.Subscription.paymentMethodId",
+          "name": "paymentMethodId",
+          "columnName": "paymentMethodId",
+          "type": "text",
+          "isRequired": false,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "id": "public.Subscription.pausedUntil",
+          "name": "pausedUntil",
+          "columnName": "pausedUntil",
+          "type": "timestamp",
+          "isRequired": false,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "name": "PaymentMethod",
+          "type": "PaymentMethod",
+          "isRequired": false,
+          "kind": "object",
+          "relationName": "SubscriptionToPaymentMethod",
+          "relationFromFields": [
+            "paymentMethodId"
+          ],
+          "relationToFields": [
+            "id"
+          ],
+          "isList": false,
+          "isId": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false
+        },
+        {
+          "name": "User",
+          "type": "User",
+          "isRequired": true,
+          "kind": "object",
+          "relationName": "SubscriptionToUser",
+          "relationFromFields": [
+            "createdById"
+          ],
+          "relationToFields": [
+            "id"
+          ],
+          "isList": false,
+          "isId": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false
+        },
+        {
+          "name": "SubscriptionPeriod",
+          "type": "SubscriptionPeriod",
+          "isRequired": false,
+          "kind": "object",
+          "relationName": "SubscriptionPeriodToSubscription",
+          "relationFromFields": [],
+          "relationToFields": [],
+          "isList": true,
+          "isId": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false
+        }
+      ],
+      "uniqueConstraints": [
+        {
+          "name": "Subscription_pkey",
+          "fields": [
+            "id"
+          ],
+          "nullNotDistinct": false
+        }
+      ]
+    },
+    "SubscriptionPeriod": {
+      "id": "public.SubscriptionPeriod",
+      "schemaName": "public",
+      "tableName": "SubscriptionPeriod",
+      "fields": [
+        {
+          "id": "public.SubscriptionPeriod.id",
+          "name": "id",
+          "columnName": "id",
+          "type": "text",
+          "isRequired": true,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": true,
+          "maxLength": null
+        },
+        {
+          "id": "public.SubscriptionPeriod.subscriptionId",
+          "name": "subscriptionId",
+          "columnName": "subscriptionId",
+          "type": "text",
+          "isRequired": true,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "id": "public.SubscriptionPeriod.price",
+          "name": "price",
+          "columnName": "price",
+          "type": "int4",
+          "isRequired": true,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "id": "public.SubscriptionPeriod.periodStart",
+          "name": "periodStart",
+          "columnName": "periodStart",
+          "type": "timestamp",
+          "isRequired": true,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "id": "public.SubscriptionPeriod.periodEnd",
+          "name": "periodEnd",
+          "columnName": "periodEnd",
+          "type": "timestamp",
+          "isRequired": true,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "id": "public.SubscriptionPeriod.isTrial",
+          "name": "isTrial",
+          "columnName": "isTrial",
+          "type": "bool",
+          "isRequired": true,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": true,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "name": "Subscription",
+          "type": "Subscription",
+          "isRequired": true,
+          "kind": "object",
+          "relationName": "SubscriptionPeriodToSubscription",
+          "relationFromFields": [
+            "subscriptionId"
+          ],
+          "relationToFields": [
+            "id"
+          ],
+          "isList": false,
+          "isId": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false
+        }
+      ],
+      "uniqueConstraints": [
+        {
+          "name": "SubscriptionPeriod_pkey",
+          "fields": [
+            "id"
+          ],
+          "nullNotDistinct": false
+        }
+      ]
+    },
+    "User": {
+      "id": "public.User",
+      "schemaName": "public",
+      "tableName": "User",
+      "fields": [
+        {
+          "id": "public.User.id",
+          "name": "id",
+          "columnName": "id",
+          "type": "text",
+          "isRequired": true,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": true,
+          "maxLength": null
+        },
+        {
+          "id": "public.User.email",
+          "name": "email",
+          "columnName": "email",
+          "type": "text",
+          "isRequired": false,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "id": "public.User.image",
+          "name": "image",
+          "columnName": "image",
+          "type": "text",
+          "isRequired": false,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "id": "public.User.clerkId",
+          "name": "clerkId",
+          "columnName": "clerkId",
+          "type": "text",
+          "isRequired": true,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "id": "public.User.firstName",
+          "name": "firstName",
+          "columnName": "firstName",
+          "type": "text",
+          "isRequired": false,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "id": "public.User.lastName",
+          "name": "lastName",
+          "columnName": "lastName",
+          "type": "text",
+          "isRequired": false,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "id": "public.User.defaultPaymentMethodId",
+          "name": "defaultPaymentMethodId",
+          "columnName": "defaultPaymentMethodId",
+          "type": "text",
+          "isRequired": false,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "name": "PaymentMethod",
+          "type": "PaymentMethod",
+          "isRequired": false,
+          "kind": "object",
+          "relationName": "UserToPaymentMethod",
+          "relationFromFields": [
+            "defaultPaymentMethodId"
+          ],
+          "relationToFields": [
+            "id"
+          ],
+          "isList": false,
+          "isId": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false
+        },
+        {
+          "name": "Notification",
+          "type": "Notification",
+          "isRequired": false,
+          "kind": "object",
+          "relationName": "NotificationToUser",
+          "relationFromFields": [],
+          "relationToFields": [],
+          "isList": true,
+          "isId": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false
+        },
+        {
+          "name": "PaymentMethod",
+          "type": "PaymentMethod",
+          "isRequired": false,
+          "kind": "object",
+          "relationName": "PaymentMethodToUser",
+          "relationFromFields": [],
+          "relationToFields": [],
+          "isList": true,
+          "isId": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false
+        },
+        {
+          "name": "Subscription",
+          "type": "Subscription",
+          "isRequired": false,
+          "kind": "object",
+          "relationName": "SubscriptionToUser",
+          "relationFromFields": [],
+          "relationToFields": [],
+          "isList": true,
+          "isId": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false
+        }
+      ],
+      "uniqueConstraints": [
+        {
+          "name": "User_pkey",
+          "fields": [
+            "id"
+          ],
+          "nullNotDistinct": false
+        },
+        {
+          "name": "User_clerkId_key",
+          "fields": [
+            "clerkId"
+          ],
+          "nullNotDistinct": false
+        },
+        {
+          "name": "User_defaultPaymentMethodId_key",
+          "fields": [
+            "defaultPaymentMethodId"
+          ],
+          "nullNotDistinct": false
+        },
+        {
+          "name": "User_email_key",
+          "fields": [
+            "email"
+          ],
+          "nullNotDistinct": false
+        }
+      ]
+    },
+    "_prisma_migrations": {
+      "id": "public._prisma_migrations",
+      "schemaName": "public",
+      "tableName": "_prisma_migrations",
+      "fields": [
+        {
+          "id": "public._prisma_migrations.id",
+          "name": "id",
+          "columnName": "id",
+          "type": "varchar",
+          "isRequired": true,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": true,
+          "maxLength": 36
+        },
+        {
+          "id": "public._prisma_migrations.checksum",
+          "name": "checksum",
+          "columnName": "checksum",
+          "type": "varchar",
+          "isRequired": true,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": false,
+          "maxLength": 64
+        },
+        {
+          "id": "public._prisma_migrations.finished_at",
+          "name": "finished_at",
+          "columnName": "finished_at",
+          "type": "timestamptz",
+          "isRequired": false,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "id": "public._prisma_migrations.migration_name",
+          "name": "migration_name",
+          "columnName": "migration_name",
+          "type": "varchar",
+          "isRequired": true,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": false,
+          "maxLength": 255
+        },
+        {
+          "id": "public._prisma_migrations.logs",
+          "name": "logs",
+          "columnName": "logs",
+          "type": "text",
+          "isRequired": false,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "id": "public._prisma_migrations.rolled_back_at",
+          "name": "rolled_back_at",
+          "columnName": "rolled_back_at",
+          "type": "timestamptz",
+          "isRequired": false,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "id": "public._prisma_migrations.started_at",
+          "name": "started_at",
+          "columnName": "started_at",
+          "type": "timestamptz",
+          "isRequired": true,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": true,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "id": "public._prisma_migrations.applied_steps_count",
+          "name": "applied_steps_count",
+          "columnName": "applied_steps_count",
+          "type": "int4",
+          "isRequired": true,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": true,
+          "isId": false,
+          "maxLength": null
+        }
+      ],
+      "uniqueConstraints": [
+        {
+          "name": "_prisma_migrations_pkey",
+          "fields": [
+            "id"
+          ],
+          "nullNotDistinct": false
+        }
+      ]
+    },
+    "schema_migrations": {
+      "id": "supabase_migrations.schema_migrations",
+      "schemaName": "supabase_migrations",
+      "tableName": "schema_migrations",
+      "fields": [
+        {
+          "id": "supabase_migrations.schema_migrations.version",
+          "name": "version",
+          "columnName": "version",
+          "type": "text",
+          "isRequired": true,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": true,
+          "maxLength": null
+        },
+        {
+          "id": "supabase_migrations.schema_migrations.statements",
+          "name": "statements",
+          "columnName": "statements",
+          "type": "text[]",
+          "isRequired": false,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": false,
+          "maxLength": null
+        },
+        {
+          "id": "supabase_migrations.schema_migrations.name",
+          "name": "name",
+          "columnName": "name",
+          "type": "text",
+          "isRequired": false,
+          "kind": "scalar",
+          "isList": false,
+          "isGenerated": false,
+          "sequence": false,
+          "hasDefaultValue": false,
+          "isId": false,
+          "maxLength": null
+        }
+      ],
+      "uniqueConstraints": [
+        {
+          "name": "schema_migrations_pkey",
+          "fields": [
+            "version"
+          ],
+          "nullNotDistinct": false
+        }
+      ]
+    }
+  },
+  "enums": {
+    "BillingCycle": {
+      "schemaName": "public",
+      "values": [
+        {
+          "name": "Biweekly"
+        },
+        {
+          "name": "Monthly"
+        },
+        {
+          "name": "Unknown"
+        },
+        {
+          "name": "Weekly"
+        },
+        {
+          "name": "Yearly"
+        }
+      ]
+    }
+  }
+}

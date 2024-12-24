@@ -1,0 +1,4 @@
+{
+  "adapter": "prisma",
+  "projectDescription": "This project is about managing user subscriptions and payments, as well as handling notifications related to subscriptions."
+}
