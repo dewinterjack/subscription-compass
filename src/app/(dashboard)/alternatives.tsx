@@ -1,6 +1,9 @@
+"use client";
+
 import LoadingDots from "@/components/icons/loading-dots";
 import { Button } from "@/components/ui/button";
 import { useChat } from "ai/react";
+import ReactMarkdown from "react-markdown";
 
 const Alternatives = ({ subscriptionName }: { subscriptionName: string }) => {
   const { messages, handleSubmit, isLoading } = useChat({
@@ -22,7 +25,11 @@ const Alternatives = ({ subscriptionName }: { subscriptionName: string }) => {
     );
   }
 
-  return <div>{messages[1]?.content}</div>;
+  return (
+    <div className="prose dark:prose-invert max-w-none">
+      <ReactMarkdown>{messages[1]?.content ?? ""}</ReactMarkdown>
+    </div>
+  );
 };
 
 export default Alternatives;

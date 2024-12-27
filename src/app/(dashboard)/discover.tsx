@@ -20,8 +20,8 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { useChat } from "ai/react";
 import Alternatives from "./alternatives";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 const Discover = () => {
   const { data, isLoading } = api.subscription.getAll.useQuery();
@@ -41,8 +41,8 @@ const Discover = () => {
   }
 
   return (
-    <div className="p-4">
-      <h1 className="mb-4 text-2xl font-bold">Discover Alternatives</h1>
+    <div className="space-y-6 p-4">
+      <h1 className="text-3xl font-bold">Discover Alternatives</h1>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -95,10 +95,23 @@ const Discover = () => {
         </PopoverContent>
       </Popover>
       {selectedSubscription && (
-        <div className="mt-4">
-          <h2 className="text-lg font-semibold">Selected Subscription:</h2>
-          <p>{selectedSubscription}</p>
-          <Alternatives subscriptionName={selectedSubscription} />
+        <div className="space-y-6">
+          <Card className="bg-primary/5">
+            <CardHeader>
+              <CardTitle>Selected Subscription</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-lg font-medium">{selectedSubscription}</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Alternatives</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Alternatives subscriptionName={selectedSubscription} />
+            </CardContent>
+          </Card>
         </div>
       )}
     </div>
