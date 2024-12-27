@@ -80,8 +80,12 @@ export function DashboardSidebar() {
               href: "/subscriptions",
               badge: subscriptionCount,
             },
-            { icon: CreditCard, label: "Payment Methods", href: "/payment-methods" },
-            { icon: Zap, label: "Discover", href: "#" },
+            {
+              icon: CreditCard,
+              label: "Payment Methods",
+              href: "/payment-methods",
+            },
+            { icon: Zap, label: "Discover", href: "/discover" },
           ].map((item, index) => (
             <Tooltip key={index}>
               <TooltipTrigger asChild>
