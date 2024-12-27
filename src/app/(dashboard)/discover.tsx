@@ -20,6 +20,8 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { useChat } from "ai/react";
+import Alternatives from "./alternatives";
 
 const Discover = () => {
   const { data, isLoading } = api.subscription.getAll.useQuery();
@@ -96,6 +98,7 @@ const Discover = () => {
         <div className="mt-4">
           <h2 className="text-lg font-semibold">Selected Subscription:</h2>
           <p>{selectedSubscription}</p>
+          <Alternatives subscriptionName={selectedSubscription} />
         </div>
       )}
     </div>
