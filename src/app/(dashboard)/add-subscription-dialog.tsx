@@ -154,7 +154,7 @@ export function AddSubscriptionDialog({
   const [userInput, setUserInput] = useState("");
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [isCustomService, setIsCustomService] = useState(false);
-  const [showPaymentMethodForm, setShowPaymentMethodForm] = useState(true);
+  const [showPaymentMethodForm, setShowPaymentMethodForm] = useState(false);
   const [formData, setFormData] = useState<Partial<SubscriptionFormData>>({});
 
   const { data: paymentMethods } = api.paymentMethod.getAll.useQuery();
@@ -282,14 +282,19 @@ export function AddSubscriptionDialog({
 
   const handlePaymentMethodAdded = (paymentMethodId: string) => {
     setShowPaymentMethodForm(false);
-    setFormData(prev => ({
+    setNewSubscription(prev => ({
       ...prev,
       paymentMethodId
     }));
   };
 
+  const closeDialog = () => {
+    onClose();
+    setTimeout(() => setShowPaymentMethodForm(false), 1000);
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={closeDialog}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>
@@ -298,10 +303,14 @@ export function AddSubscriptionDialog({
               : initialData ? "Edit Subscription" : "Add Subscription"}
           </DialogTitle>
         </DialogHeader>
-
+        
         {showPaymentMethodForm ? (
-          <AddPaymentMethodForm 
-          />
+          <>
+            <Button onClick={() => setShowPaymentMethodForm(false)}>Back</Button>
+            <AddPaymentMethodForm 
+              onSuccess={handlePaymentMethodAdded}
+            />
+          </>
         ) : (
           <Form {...form}>
             <div className="grid gap-4 py-4">

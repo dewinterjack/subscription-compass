@@ -21,7 +21,7 @@ import {
 } from "@/lib/schema/paymentMethod";
 import { api } from "@/trpc/react";
 
-export function AddPaymentMethodForm() {
+export function AddPaymentMethodForm({ onSuccess }: { onSuccess?: (paymentMethodId: string) => void }) {
   const utils = api.useUtils();
 
   const { mutate: createPaymentMethod, isPending } =
@@ -33,6 +33,7 @@ export function AddPaymentMethodForm() {
         form.reset();
         void utils.paymentMethod.getAll.invalidate();
         void utils.user.getCurrent.invalidate();
+        onSuccess?.(data.id);
       },
       onError: (error) => {
         toast.error(
