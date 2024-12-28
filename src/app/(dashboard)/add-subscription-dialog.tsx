@@ -42,7 +42,7 @@ import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { addDays } from "date-fns";
 import { api } from "@/trpc/react";
-import { AddPaymentMethodForm } from "./add-payment-method-form";
+import { AddPaymentMethodForm } from "@/components/add-payment-method-form";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 
@@ -301,8 +301,6 @@ export function AddSubscriptionDialog({
 
         {showPaymentMethodForm ? (
           <AddPaymentMethodForm 
-            onSuccess={handlePaymentMethodAdded}
-            onCancel={() => setShowPaymentMethodForm(false)}
           />
         ) : (
           <Form {...form}>

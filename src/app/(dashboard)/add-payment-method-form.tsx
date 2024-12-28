@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { api } from "@/trpc/react";
+import { toast } from "sonner";
 
 const paymentMethodSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -37,10 +38,16 @@ export function AddPaymentMethodForm({ onSuccess, onCancel }: AddPaymentMethodFo
     onSuccess: (data) => {
       onSuccess(data.id);
     },
+    onError: (error) => {
+      toast.error(error.message);
+    },
   });
 
   const onSubmit = (values: z.infer<typeof paymentMethodSchema>) => {
-    createPaymentMethod.mutate(values);
+    createPaymentMethod.mutate({
+      type: "card",
+      name: values.name,
+    });
   };
 
   return (
