@@ -296,21 +296,31 @@ export function AddSubscriptionDialog({
   return (
     <Dialog open={isOpen} onOpenChange={closeDialog}>
       <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>
-            {showPaymentMethodForm 
-              ? "Add Payment Method" 
-              : initialData ? "Edit Subscription" : "Add Subscription"}
-          </DialogTitle>
+        <DialogHeader className="mb-4">
+          <div className="flex items-center justify-center relative h-6">
+            {showPaymentMethodForm && (
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => setShowPaymentMethodForm(false)}
+                className="absolute left-0 h-6 px-1.5 text-xs"
+              >
+                <ChevronDownIcon className="mr-1 h-2.5 w-2.5 rotate-90" />
+                Back
+              </Button>
+            )}
+            <DialogTitle className="text-base">
+              {showPaymentMethodForm 
+                ? "Add Payment Method" 
+                : initialData ? "Edit Subscription" : "Add Subscription"}
+            </DialogTitle>
+          </div>
         </DialogHeader>
         
         {showPaymentMethodForm ? (
-          <>
-            <Button onClick={() => setShowPaymentMethodForm(false)}>Back</Button>
-            <AddPaymentMethodForm 
-              onSuccess={handlePaymentMethodAdded}
-            />
-          </>
+          <AddPaymentMethodForm 
+            onSuccess={handlePaymentMethodAdded}
+          />
         ) : (
           <Form {...form}>
             <div className="grid gap-4 py-4">
