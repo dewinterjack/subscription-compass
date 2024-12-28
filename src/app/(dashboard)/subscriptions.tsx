@@ -39,6 +39,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
@@ -48,6 +49,7 @@ type SortDirection = "asc" | "desc";
 
 interface FilterState {
   paymentMethods: Set<string | null>;
+  subscriptionType: "all" | "trial" | "non-trial";
 }
 
 export function SubscriptionsSection() {
@@ -60,6 +62,7 @@ export function SubscriptionsSection() {
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [filters, setFilters] = useState<FilterState>({
     paymentMethods: new Set(),
+    subscriptionType: "all",
   });
 
   const utils = api.useUtils();
@@ -178,9 +181,17 @@ export function SubscriptionsSection() {
     if (!subscriptions) return [];
 
     const filtered = subscriptions.filter((sub) => {
-      if (filters.paymentMethods.size === 0) return true;
+      const paymentMethodMatch =
+        filters.paymentMethods.size === 0 ||
+        filters.paymentMethods.has(sub.paymentMethod?.name ?? null);
 
-      return filters.paymentMethods.has(sub.paymentMethod?.name ?? null);
+      const subscriptionTypeMatch =
+        filters.subscriptionType === "all" ||
+        (filters.subscriptionType === "trial" && sub.latestPeriod?.isTrial) ||
+        (filters.subscriptionType === "non-trial" &&
+          !sub.latestPeriod?.isTrial);
+
+      return paymentMethodMatch && subscriptionTypeMatch;
     });
 
     return getSortedSubscriptions(filtered);
@@ -213,71 +224,125 @@ export function SubscriptionsSection() {
               <Button variant="outline" size="sm" className="w-full sm:w-auto">
                 <Filter className="mr-2 h-4 w-4" />
                 Filter
-                {filters.paymentMethods.size > 0 && (
+                {(filters.paymentMethods.size > 0 ||
+                  filters.subscriptionType !== "all") && (
                   <Badge variant="secondary" className="ml-2">
-                    {filters.paymentMethods.size}
+                    {filters.paymentMethods.size +
+                      (filters.subscriptionType !== "all" ? 1 : 0)}
                   </Badge>
                 )}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-[200px]">
-              {filters.paymentMethods.size > 0 && (
-                <DropdownMenuItem
-                  className="flex items-center justify-between text-destructive"
-                  onClick={() => {
-                    setFilters((prev) => ({
-                      ...prev,
-                      paymentMethods: new Set(),
-                    }));
-                  }}
-                >
-                  Clear filters
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuItem
-                className="flex items-center justify-between"
-                onClick={() => {
-                  setFilters((prev) => ({
-                    ...prev,
-                    paymentMethods: new Set(
-                      prev.paymentMethods.has(null)
-                        ? Array.from(prev.paymentMethods).filter(
-                            (m) => m !== null,
-                          )
-                        : [...prev.paymentMethods, null],
-                    ),
-                  }));
-                }}
-              >
-                No Payment Method
-                {filters.paymentMethods.has(null) && (
-                  <Check className="h-4 w-4" />
-                )}
-              </DropdownMenuItem>
-              {subscriptions &&
-                getUniquePaymentMethods(subscriptions).map((method) => (
+            <DropdownMenuContent align="end" className="w-[240px]">
+              <div className="p-2">
+                <h4 className="mb-2 text-sm font-medium">Payment Methods</h4>
+                <div className="space-y-2">
                   <DropdownMenuItem
-                    key={method}
                     className="flex items-center justify-between"
                     onClick={() => {
                       setFilters((prev) => ({
                         ...prev,
-                        paymentMethods: new Set([
-                          ...(prev.paymentMethods.has(method)
+                        paymentMethods: new Set(
+                          prev.paymentMethods.has(null)
                             ? Array.from(prev.paymentMethods).filter(
-                                (m) => m !== method,
+                                (m) => m !== null,
                               )
-                            : [...prev.paymentMethods, method]),
-                        ]),
+                            : [...prev.paymentMethods, null],
+                        ),
                       }));
                     }}
                   >
-                    {method}
-                    {filters.paymentMethods.has(method) && (
+                    No Payment Method
+                    {filters.paymentMethods.has(null) && (
                       <Check className="h-4 w-4" />
                     )}
                   </DropdownMenuItem>
-                ))}
+                  {subscriptions &&
+                    getUniquePaymentMethods(subscriptions).map((method) => (
+                      <DropdownMenuItem
+                        key={method}
+                        className="flex items-center justify-between"
+                        onClick={() => {
+                          setFilters((prev) => ({
+                            ...prev,
+                            paymentMethods: new Set(
+                              prev.paymentMethods.has(method)
+                                ? Array.from(prev.paymentMethods).filter(
+                                    (m) => m !== method,
+                                  )
+                                : [...prev.paymentMethods, method],
+                            ),
+                          }));
+                        }}
+                      >
+                        {method}
+                        {filters.paymentMethods.has(method) && (
+                          <Check className="h-4 w-4" />
+                        )}
+                      </DropdownMenuItem>
+                    ))}
+                </div>
+              </div>
+              <DropdownMenuSeparator />
+              <div className="p-2">
+                <h4 className="mb-2 text-sm font-medium">Subscription Type</h4>
+                <div className="space-y-2">
+                  <DropdownMenuItem
+                    className="flex items-center justify-between"
+                    onClick={() =>
+                      setFilters((prev) => ({
+                        ...prev,
+                        subscriptionType: "all",
+                      }))
+                    }
+                  >
+                    All Subscriptions
+                    {filters.subscriptionType === "all" && (
+                      <Check className="h-4 w-4" />
+                    )}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="flex items-center justify-between"
+                    onClick={() =>
+                      setFilters((prev) => ({
+                        ...prev,
+                        subscriptionType: "trial",
+                      }))
+                    }
+                  >
+                    Trial Subscriptions
+                    {filters.subscriptionType === "trial" && (
+                      <Check className="h-4 w-4" />
+                    )}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="flex items-center justify-between"
+                    onClick={() =>
+                      setFilters((prev) => ({
+                        ...prev,
+                        subscriptionType: "non-trial",
+                      }))
+                    }
+                  >
+                    Non-Trial Subscriptions
+                    {filters.subscriptionType === "non-trial" && (
+                      <Check className="h-4 w-4" />
+                    )}
+                  </DropdownMenuItem>
+                </div>
+              </div>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="flex items-center justify-between text-destructive"
+                onClick={() => {
+                  setFilters({
+                    paymentMethods: new Set(),
+                    subscriptionType: "all",
+                  });
+                }}
+              >
+                Clear all filters
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           <Button
