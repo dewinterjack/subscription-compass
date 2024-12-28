@@ -221,6 +221,19 @@ export function SubscriptionsSection() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[200px]">
+              {filters.paymentMethods.size > 0 && (
+                <DropdownMenuItem
+                  className="flex items-center justify-between text-destructive"
+                  onClick={() => {
+                    setFilters((prev) => ({
+                      ...prev,
+                      paymentMethods: new Set(),
+                    }));
+                  }}
+                >
+                  Clear filters
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem
                 className="flex items-center justify-between"
                 onClick={() => {
