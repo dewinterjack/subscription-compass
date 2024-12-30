@@ -37,7 +37,6 @@ import { ChevronDownIcon, Loader2, PlusCircle } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import { addDays } from "date-fns";
 import { api } from "@/trpc/react";
 import { AddPaymentMethodForm } from "@/components/add-payment-method-form";
 import {
@@ -53,15 +52,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Checkbox } from "@/components/ui/checkbox";
-
-interface SubscriptionFormData {
-  name: string;
-  price: number;
-  billingCycle: BillingCycle;
-  startDate: Date;
-  paymentMethodId: string | null;
-  isTrial: boolean;
-}
+import { baseSubscriptionSchema } from "@/schemas";
 
 type AddSubscriptionDialogProps = {
   isOpen: boolean;
@@ -134,18 +125,10 @@ const mockServices = [
   },
 ];
 
-const formSchema = z.object({
-  name: z.string().min(2, {
-    message: "Name must be at least 2 characters.",
-  }),
-  price: z.number().min(0, {
-    message: "Price must be a positive number.",
-  }),
-  billingCycle: z.enum(["Weekly", "Biweekly", "Monthly", "Yearly"]),
-  startDate: z.date(),
-  paymentMethodId: z.string().nullable(),
-  isTrial: z.boolean(),
-});
+type SubscriptionFormSchema = z.infer<typeof baseSubscriptionSchema> & {
+  isTrial: boolean;
+  trialEndDate?: Date;
+};
 
 export function AddSubscriptionDialog({
   isOpen,
@@ -166,30 +149,32 @@ export function AddSubscriptionDialog({
     paymentMethodId: null,
   });
 
-  const [trialEndDate, setTrialEndDate] = useState<Date>(
-    addDays(new Date(), 30),
-  );
-
   const [searchResults, setSearchResults] = useState<typeof mockServices>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [userInput, setUserInput] = useState("");
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [isCustomService, setIsCustomService] = useState(false);
   const [showPaymentMethodForm, setShowPaymentMethodForm] = useState(false);
-  const [formData, setFormData] = useState<Partial<SubscriptionFormData>>({});
 
   const { data: paymentMethods } = api.paymentMethod.getAll.useQuery();
   const { data: user } = api.user.getCurrent.useQuery();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<SubscriptionFormSchema>({
+    resolver: zodResolver(
+      baseSubscriptionSchema.extend({
+        isTrial: z.boolean(),
+        trialEndDate: z.date().optional(),
+      }),
+    ),
     defaultValues: {
       name: initialData?.name ?? "",
       price: initialData ? initialData.price / 100 : 0,
       billingCycle: initialData?.billingCycle ?? "Monthly",
       startDate: initialData?.startDate ?? new Date(),
       paymentMethodId: initialData?.paymentMethodId ?? null,
+      autoRenew: true,
       isTrial: initialData?.isTrial ?? false,
+      trialEndDate: initialData?.isTrial ? initialData.endDate : undefined,
     },
   });
 
@@ -201,9 +186,6 @@ export function AddSubscriptionDialog({
         paymentMethodId: initialData.paymentMethodId ?? null,
       });
       setUserInput(initialData.name);
-      if (initialData.isTrial && initialData.endDate) {
-        setTrialEndDate(initialData.endDate);
-      }
     } else if (isOpen && user?.defaultPaymentMethodId) {
       setNewSubscription((prev) => ({
         ...prev,
@@ -236,15 +218,18 @@ export function AddSubscriptionDialog({
     }
   }, [isOpen, user?.defaultPaymentMethodId, form]);
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
-    const subscriptionData = {
+  const onSubmit = (data: SubscriptionFormSchema) => {
+    const baseData = {
       ...data,
       price: data.price * 100,
       autoRenew: true,
-      ...(data.isTrial && { endDate: trialEndDate }),
       paymentMethodId:
         data.paymentMethodId === "none" ? null : data.paymentMethodId,
     };
+
+    const subscriptionData = data.isTrial
+      ? { ...baseData, isTrial: true as const, endDate: data.trialEndDate }
+      : { ...baseData, isTrial: false as const };
 
     if (initialData?.id) {
       onUpdateSubscription?.({ ...subscriptionData, id: initialData.id });
@@ -253,7 +238,6 @@ export function AddSubscriptionDialog({
     }
 
     form.reset();
-    setTrialEndDate(addDays(new Date(), 30));
     setUserInput("");
     setIsCustomService(false);
   };
@@ -282,21 +266,6 @@ export function AddSubscriptionDialog({
       price: 0,
     });
     setUserInput("");
-  };
-
-  const handleTrialToggle = (checked: boolean) => {
-    if (checked) {
-      setNewSubscription({
-        ...newSubscription,
-        isTrial: true as const,
-        endDate: trialEndDate,
-      });
-    } else {
-      setNewSubscription({
-        ...newSubscription,
-        isTrial: false as const,
-      });
-    }
   };
 
   const handlePaymentMethodAdded = (paymentMethodId: string) => {
