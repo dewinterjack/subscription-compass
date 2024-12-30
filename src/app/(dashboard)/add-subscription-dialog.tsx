@@ -5,13 +5,11 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -19,7 +17,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { toast } from "sonner";
 import type { InputType } from "@/server/api/root";
 import type { BillingCycle } from "@prisma/client";
 import {
@@ -320,6 +317,13 @@ export function AddSubscriptionDialog({
     setTimeout(() => setShowPaymentMethodForm(false), 1000);
   };
 
+  const closeAddPaymentMethodDialog = () => {
+    setShowPaymentMethodForm(false);
+    if (user?.defaultPaymentMethodId) {
+      form.setValue("paymentMethodId", user.defaultPaymentMethodId);
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={closeDialog}>
       <DialogContent className="sm:max-w-[425px]">
@@ -329,7 +333,7 @@ export function AddSubscriptionDialog({
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setShowPaymentMethodForm(false)}
+                onClick={closeAddPaymentMethodDialog}
                 className="absolute left-0 h-6 px-1.5 text-xs"
               >
                 <ChevronDownIcon className="mr-1 h-2.5 w-2.5 rotate-90" />
