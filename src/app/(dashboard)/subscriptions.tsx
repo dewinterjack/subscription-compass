@@ -462,10 +462,9 @@ export function SubscriptionsSection() {
                   </TableCell>
                 </TableRow>
               ) : (
-                subscriptions &&
-                subscriptions.length > 0 &&
-                getFilteredAndSortedSubscriptions(subscriptions).map(
-                  (subscription) => (
+                getFilteredAndSortedSubscriptions(
+                  getFilteredSubscriptions(subscriptions)
+                ).map((subscription) => (
                     <TableRow key={subscription.id}>
                       <TableCell className="font-medium">
                         <div className="flex items-center gap-2">
