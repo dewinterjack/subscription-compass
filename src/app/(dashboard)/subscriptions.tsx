@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Plus,
   ShoppingBasket,
@@ -54,6 +54,7 @@ interface FilterState {
 
 export function SubscriptionsSection() {
   const { data: subscriptions, isLoading } = api.subscription.getAll.useQuery();
+  const [searchQuery, setSearchQuery] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingSubscription, setEditingSubscription] = useState<
     InputType["subscription"]["update"] | undefined
@@ -209,7 +210,18 @@ export function SubscriptionsSection() {
     return Array.from(methods);
   };
 
-  return (
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const getFilteredSubscriptions = (
+    subscriptions: SubscriptionWithLatestPeriod[],
+  ) => {
+    if (!subscriptions) return [];
+    return subscriptions.filter((sub) =>
+      sub.name.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
+  };
     <Card>
       <CardHeader className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
         <div>
@@ -219,6 +231,13 @@ export function SubscriptionsSection() {
           </CardDescription>
         </div>
         <div className="flex w-full flex-col space-y-2 sm:w-auto sm:flex-row sm:space-x-2 sm:space-y-0">
+          <input
+            type="text"
+            placeholder="Search subscriptions..."
+            value={searchQuery}
+            onChange={handleSearchChange}
+            className="border rounded p-2"
+          />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="w-full sm:w-auto">
