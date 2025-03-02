@@ -127,8 +127,8 @@ jobs:
             return `Apply all necessary changes based on below issue description. \nIssue title: ${title}\nIssue description:\n${body}`;
       - name: Apply changes with Aider
         uses: mirrajabi/aider-github-action@main
-        timeout-minutes: ${{ inputs.chat-timeout }}
         with:
+          timeout-minutes: ${{ inputs.chat-timeout }}
           branch: ${{ fromJson(steps.create_branch.outputs.result).ref }}
           model: ${{ inputs.model }}
           aider_args: '--yes --message "${{ steps.create_prompt.outputs.result }}"'
