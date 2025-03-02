@@ -222,6 +222,28 @@ export function SubscriptionsSection() {
       sub.name.toLowerCase().includes(searchQuery.toLowerCase()),
     );
   };
+
+  const getFilteredAndSortedSubscriptions = (
+    subscriptions: SubscriptionWithLatestPeriod[],
+  ) => {
+    if (!subscriptions) return [];
+
+    const filtered = getFilteredSubscriptions(subscriptions).filter((sub) => {
+      const paymentMethodMatch =
+        filters.paymentMethods.size === 0 ||
+        filters.paymentMethods.has(sub.paymentMethod?.name ?? null);
+
+      const subscriptionTypeMatch =
+        filters.subscriptionType === "all" ||
+        (filters.subscriptionType === "trial" && sub.latestPeriod?.isTrial) ||
+        (filters.subscriptionType === "non-trial" &&
+          !sub.latestPeriod?.isTrial);
+
+      return paymentMethodMatch && subscriptionTypeMatch;
+    });
+
+    return getSortedSubscriptions(filtered);
+  };
     <Card>
       <CardHeader className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
         <div>
