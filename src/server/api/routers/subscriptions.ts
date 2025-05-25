@@ -1,9 +1,10 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
-import { BillingCycle } from "@prisma/client";
+import type { BillingCycle } from "@prisma/client";
 import { addDays, endOfDay, startOfDay, startOfMonth } from "date-fns";
 import { toSubscriptionWithLatestPeriod, type SubscriptionWithLatestPeriod } from "@/types";
 import type { SubscriptionPeriod } from "@prisma/client";
+import { baseSubscriptionSchema } from "@/schemas";
 
 const BILLING_CYCLE_DAYS: Record<BillingCycle, number> = {
   Weekly: 7,
@@ -12,15 +13,6 @@ const BILLING_CYCLE_DAYS: Record<BillingCycle, number> = {
   Yearly: 365,
   Unknown: 30,
 };
-
-const baseSubscriptionSchema = z.object({
-  name: z.string().min(1),
-  price: z.number().positive(),
-  billingCycle: z.nativeEnum(BillingCycle),
-  autoRenew: z.boolean().default(true),
-  startDate: z.date(),
-  paymentMethodId: z.string().nullable(),
-});
 
 export const subscriptionRouter = createTRPCRouter({
   create: protectedProcedure
